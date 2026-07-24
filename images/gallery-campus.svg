@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Illustration of the APLS campus">
+  <rect width="600" height="600" fill="#FBF6EC"/>
+  <circle cx="120" cy="112" r="40" fill="#F5C45B"/>
+  <rect x="0" y="452" width="600" height="150" fill="#6FA85A" opacity="0.25"/>
+
+  <!-- trees -->
+  <rect x="90" y="360" width="20" height="96" fill="#B98A55"/>
+  <circle cx="100" cy="350" r="52" fill="#6FA85A"/>
+  <rect x="500" y="360" width="20" height="96" fill="#B98A55"/>
+  <circle cx="510" cy="350" r="52" fill="#6FA85A"/>
+
+  <!-- building -->
+  <rect x="180" y="252" width="240" height="200" fill="#ffffff" stroke="#3B5A4A" stroke-width="6"/>
+  <path d="M168 252 L300 160 L432 252 Z" fill="#E5714E"/>
+  <rect x="278" y="362" width="52" height="90" rx="4" fill="#2E8296"/>
+  <rect x="208" y="300" width="46" height="46" rx="4" fill="#F5C45B"/>
+  <rect x="346" y="300" width="46" height="46" rx="4" fill="#F5C45B"/>
+
+  <!-- flag -->
+  <line x1="300" y1="160" x2="300" y2="120" stroke="#3B5A4A" stroke-width="4"/>
+  <path d="M300 122 l42 11 l-42 12 z" fill="#E5714E"/>
+</svg>

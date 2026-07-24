@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Illustration of arts and crafts at APLS">
+  <rect width="600" height="600" fill="#FBF6EC"/>
+  <ellipse cx="300" cy="480" rx="240" ry="52" fill="#6FA85A" opacity="0.2"/>
+
+  <!-- easel legs -->
+  <g stroke="#B98A55" stroke-width="12" stroke-linecap="round">
+    <line x1="220" y1="200" x2="180" y2="470"/>
+    <line x1="380" y1="200" x2="420" y2="470"/>
+    <line x1="300" y1="320" x2="300" y2="500"/>
+  </g>
+
+  <!-- canvas -->
+  <rect x="176" y="150" width="248" height="184" rx="10" fill="#ffffff" stroke="#3B5A4A" stroke-width="6"/>
+  <path d="M200 300 q44 -84 104 -40 q42 30 100 -22" stroke="#E5714E" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <circle cx="248" cy="206" r="22" fill="#F5C45B"/>
+
+  <!-- palette -->
+  <ellipse cx="432" cy="436" rx="72" ry="52" fill="#F4EBDC" stroke="#3B5A4A" stroke-width="4"/>
+  <circle cx="406" cy="420" r="12" fill="#E5714E"/>
+  <circle cx="446" cy="414" r="12" fill="#2E8296"/>
+  <circle cx="462" cy="450" r="12" fill="#6FA85A"/>
+</svg>

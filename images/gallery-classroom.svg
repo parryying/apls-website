@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Illustration of a classroom with books and letter blocks">
+  <rect width="600" height="600" fill="#FBF6EC"/>
+  <circle cx="300" cy="120" r="44" fill="#F5C45B" opacity="0.5"/>
+  <ellipse cx="300" cy="470" rx="240" ry="52" fill="#6FA85A" opacity="0.2"/>
+
+  <!-- stacked books -->
+  <rect x="196" y="362" width="208" height="42" rx="8" fill="#E5714E"/>
+  <rect x="212" y="320" width="184" height="42" rx="8" fill="#2E8296"/>
+  <rect x="190" y="278" width="220" height="42" rx="8" fill="#F5C45B"/>
+
+  <!-- abc blocks -->
+  <g font-family="'Nunito',sans-serif" font-weight="800" font-size="46" text-anchor="middle">
+    <rect x="150" y="196" width="80" height="80" rx="12" fill="#6FA85A"/>
+    <text x="190" y="252" fill="#fff">A</text>
+    <rect x="260" y="176" width="80" height="80" rx="12" fill="#E5714E"/>
+    <text x="300" y="232" fill="#fff">你</text>
+    <rect x="370" y="196" width="80" height="80" rx="12" fill="#2E8296"/>
+    <text x="410" y="252" fill="#fff">あ</text>
+  </g>
+</svg>
