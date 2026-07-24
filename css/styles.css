@@ -164,6 +164,8 @@ a:hover { text-decoration: underline; }
 .program-detail { scroll-margin-top: 84px; text-align: center; }
 .program-detail .prose { text-align: left; }
 .badge-open { display: inline-block; background: var(--green); color: #fff; font-size: .78rem; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; padding: .25em .8em; border-radius: 999px; margin: 0 0 .6rem; }
+.program-detail .badge-open { display: block; width: fit-content; margin: 0 auto .6rem; }
+.prog-dates { text-align: center; font-weight: 700; color: var(--navy); margin: .2rem 0 1.2rem; }
 .prog-meta { text-align: center; margin: 0 0 1.1rem; }
 .prog-meta .ages { display: inline-block; background: var(--navy); color: #fff; font-size: .82rem; font-weight: 700; padding: .2em .8em; border-radius: 999px; }
 .prog-meta .langs { display: inline-block; border: 1.5px solid var(--blue); color: var(--blue); font-size: .82rem; font-weight: 700; padding: .2em .8em; border-radius: 999px; }
