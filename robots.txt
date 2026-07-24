@@ -1,0 +1,7 @@
+# Asia Pacific Language School
+# Allow all search engines to crawl the whole site
+User-agent: *
+Allow: /
+
+# ✏️ EDIT: update the domain below if the live site is not www.apls.org
+Sitemap: https://www.apls.org/sitemap.xml
