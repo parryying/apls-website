@@ -21,6 +21,10 @@
   embedded directly in an iframe.
 */
 (function () {
+  // Signals to tour-booking.js whether a real, submit-detectable inquiry
+  // form is active (only Tally forms emit a submit event we can listen for).
+  window.APLS_INQUIRY_ACTIVE = false;
+
   var box = document.getElementById('inquiry-form');
   if (!box) return;
 
@@ -58,5 +62,17 @@
     s.src = 'https://tally.so/widgets/embed.js';
     s.async = true;
     document.body.appendChild(s);
+
+    // Only Tally forms report submission back to the page, so only they can
+    // gate the tour calendar. Tell tour-booking.js to lock it until submit.
+    window.APLS_INQUIRY_ACTIVE = true;
+
+    // When the family submits the inquiry, unlock the tour calendar.
+    window.addEventListener('message', function (e) {
+      var data = e && e.data;
+      if (typeof data === 'string' && data.indexOf('Tally.FormSubmitted') !== -1) {
+        document.dispatchEvent(new CustomEvent('apls:inquiry-submitted'));
+      }
+    });
   }
 })();

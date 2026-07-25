@@ -236,9 +236,9 @@ a.program h3 { color: var(--navy); }
 .booking-placeholder strong { color: var(--navy); font-size: 1.05rem; }
 .booking-placeholder span { color: var(--muted); font-size: .95rem; }
 .booking-fallback { color: var(--muted); }
-.tour-divider { display: flex; align-items: center; text-align: center; gap: 1rem; margin: 1.6rem 0; color: var(--muted); }
-.tour-divider::before, .tour-divider::after { content: ""; flex: 1; height: 1px; background: rgba(0, 0, 0, .12); }
-.tour-divider span { font-weight: 600; font-size: .95rem; white-space: nowrap; }
+.tour-step-label { display: flex; align-items: center; gap: .6rem; font-weight: 700; font-size: 1.1rem; color: var(--navy); margin: 1.8rem 0 .7rem; }
+.tour-step-num { display: inline-flex; align-items: center; justify-content: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--red); color: #fff; font-size: .95rem; flex: 0 0 auto; }
+.tour-lock { background: var(--light); border: 2px dashed var(--muted); border-radius: var(--radius); padding: 1.6rem 1.4rem; margin: 0 0 1.2rem; color: var(--muted); text-align: center; }
 .tour-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1.2rem 0 0; }
 
 /* ---------- FAQ accordion ---------- */

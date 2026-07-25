@@ -105,9 +105,11 @@
       <h2>Schedule a tour</h2>
       <p>
         Tours are by appointment and take about 30 minutes. You'll see a class in session, meet the
-        teachers, and get all your questions answered. Send a quick inquiry, pick a time below, or
-        give us a call — we'd love to meet you.
+        teachers, and get all your questions answered. Just tell us a little about your family first,
+        then pick a time that works for you — or give us a call, we'd love to meet you.
       </p>
+
+      <p class="tour-step-label"><span class="tour-step-num">1</span> Tell us about your family</p>
 
       <!-- ✏️ EDIT: paste your inquiry-form link between the quotes in data-tally-url below.
            Recommended: build a free form at https://tally.so with these fields —
@@ -119,19 +121,22 @@
            The form appears here automatically once a real link is added. -->
       <div id="inquiry-form" class="booking-placeholder" data-tally-url="PASTE_TALLY_FORM_LINK_HERE">
         <strong>Inquiry form will appear here.</strong>
-        <span>Once APLS's form link is added, families can send a quick inquiry right on this page &mdash; great for anyone not ready to pick a time yet.</span>
+        <span>Once APLS's form link is added, families fill this out first, then their tour times unlock below.</span>
       </div>
 
-      <div class="tour-divider"><span>or pick a time now</span></div>
+      <p class="tour-step-label"><span class="tour-step-num">2</span> Pick your tour time</p>
 
       <!-- ✏️ EDIT: paste your Calendly scheduling link between the quotes in data-calendly-url below
            (for example: https://calendly.com/apls-tours/school-tour).
-           The moment a real link is added, the live booking calendar replaces this box automatically.
+           The moment a real link is added, the live booking calendar appears here automatically.
+           NOTE: when an inquiry form (above) is also active, this calendar stays locked until the
+           family submits the form — so every tour request captures the family's details first.
            Leave it as PASTE_CALENDLY_LINK_HERE to keep showing the placeholder. -->
       <div id="tour-booking" class="booking-placeholder" data-calendly-url="PASTE_CALENDLY_LINK_HERE">
         <strong>Tour booking calendar will appear here.</strong>
         <span>Once APLS's Calendly link is added, families can pick a time right on this page.</span>
       </div>
+      <p id="tour-lock" class="tour-lock" hidden>🔒 Please complete the form above first — your available tour times will appear here right after you send it.</p>
 
       <p class="booking-fallback">
         Prefer to talk to a person? Call

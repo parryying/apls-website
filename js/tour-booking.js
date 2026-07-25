@@ -23,17 +23,38 @@
   // Only activate for a real Calendly link (ignores the placeholder text).
   if (!/^https:\/\/calendly\.com\/.+/i.test(url)) return;
 
-  // Swap the placeholder box for Calendly's inline widget.
-  var widget = document.createElement('div');
-  widget.className = 'calendly-inline-widget';
-  widget.setAttribute('data-url', url);
-  widget.style.minWidth = '320px';
-  widget.style.height = '700px';
-  box.replaceWith(widget);
+  var lock = document.getElementById('tour-lock');
 
-  // Load Calendly's embed script once.
-  var s = document.createElement('script');
-  s.src = 'https://assets.calendly.com/assets/external/widget.js';
-  s.async = true;
-  document.body.appendChild(s);
+  function buildCalendly() {
+    var widget = document.createElement('div');
+    widget.className = 'calendly-inline-widget';
+    widget.setAttribute('data-url', url);
+    widget.style.minWidth = '320px';
+    widget.style.height = '700px';
+    box.replaceWith(widget);
+
+    // Load Calendly's embed script once.
+    var s = document.createElement('script');
+    s.src = 'https://assets.calendly.com/assets/external/widget.js';
+    s.async = true;
+    document.body.appendChild(s);
+  }
+
+  // If a submit-detectable inquiry form is active, the inquiry is mandatory:
+  // keep the calendar locked until the family submits the form.
+  if (window.APLS_INQUIRY_ACTIVE) {
+    box.hidden = true;
+    if (lock) lock.hidden = false;
+
+    document.addEventListener('apls:inquiry-submitted', function () {
+      if (lock) lock.hidden = true;
+      box.hidden = false;
+      buildCalendly();
+      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, { once: true });
+    return;
+  }
+
+  // No inquiry form to gate behind — show the calendar directly.
+  buildCalendly();
 })();
