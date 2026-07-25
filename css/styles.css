@@ -169,7 +169,11 @@ a:hover { text-decoration: underline; }
 .program:nth-child(4n+3) { border-top-color: var(--green); }
 .program:nth-child(4n+4) { border-top-color: var(--gold); }
 .program .ages { display: inline-block; background: var(--navy); color: #fff; font-size: .8rem; font-weight: 700; padding: .15em .7em; border-radius: 999px; margin: 0 0 .6rem; }
-.program p:last-child { color: var(--muted); margin: 0; }
+.program p:not(.ages) { color: var(--muted); margin: 0; }
+a.program { display: block; text-decoration: none; color: var(--text); transition: transform .15s ease, box-shadow .15s ease; }
+a.program:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(59,90,74,0.16); text-decoration: none; }
+a.program h3 { color: var(--navy); }
+.program-more { display: inline-block; margin-top: .9rem; color: var(--red); font-weight: 800; }
 
 /* ---------- Program detail sections (programs.html) ---------- */
 .jumpbar { background: var(--white); border-bottom: 1px solid #e7ddc9; }
