@@ -109,11 +109,11 @@
         love to meet you.
       </p>
 
-      <!-- ✏️ EDIT: paste the APLS Calendly embed here. Replace this whole placeholder box with:
-           <div class="calendly-inline-widget" data-url="https://calendly.com/APLS-USERNAME"
-                style="min-width:320px;height:700px;"></div>
-           <script src="https://assets.calendly.com/assets/external/widget.js" async></script> -->
-      <div class="booking-placeholder">
+      <!-- ✏️ EDIT: paste your Calendly scheduling link between the quotes in data-calendly-url below
+           (for example: https://calendly.com/apls-tours/school-tour).
+           The moment a real link is added, the live booking calendar replaces this box automatically.
+           Leave it as PASTE_CALENDLY_LINK_HERE to keep showing the placeholder. -->
+      <div id="tour-booking" class="booking-placeholder" data-calendly-url="PASTE_CALENDLY_LINK_HERE">
         <strong>Tour booking calendar will appear here.</strong>
         <span>Once APLS's Calendly link is added, families can pick a time right on this page.</span>
       </div>
@@ -245,5 +245,6 @@
     </div>
   </footer>
 
+  <script src="js/tour-booking.js"></script>
 </body>
 </html>
