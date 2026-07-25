@@ -393,4 +393,8 @@ a.program h3 { color: var(--navy); }
   .cards.cols-3, .cards.cols-2 { grid-template-columns: 1fr; }
   .utility-inner { gap: 1rem; font-size: .82rem; }
   .brand-text small { display: none; }
+
+  /* Hero CTAs: equal width, single row */
+  .hero-actions { flex-wrap: nowrap; gap: .6rem; }
+  .hero-actions .btn { flex: 1 1 0; min-width: 0; text-align: center; white-space: nowrap; padding-left: .8em; padding-right: .8em; }
 }
