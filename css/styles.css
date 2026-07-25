@@ -166,6 +166,11 @@ a:hover { text-decoration: underline; }
 .badge-open { display: inline-block; background: var(--green); color: #fff; font-size: .78rem; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; padding: .25em .8em; border-radius: 999px; margin: 0 0 .6rem; }
 .program-detail .badge-open { display: block; width: fit-content; margin: 0 auto .6rem; }
 .prog-dates { text-align: center; font-weight: 700; color: var(--navy); margin: .2rem 0 1.2rem; }
+.schedule-table { width: 100%; border-collapse: collapse; margin: 0 0 1.4rem; font-size: 1rem; }
+.schedule-table th, .schedule-table td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid #e7ddc9; vertical-align: top; }
+.schedule-table thead th { background: var(--navy); color: #fff; }
+.schedule-table tbody td:first-child { font-weight: 700; color: var(--navy); white-space: nowrap; width: 1%; }
+.schedule-table tbody tr:nth-child(even) { background: var(--light); }
 .prog-meta { text-align: center; margin: 0 0 1.1rem; }
 .prog-meta .ages { display: inline-block; background: var(--navy); color: #fff; font-size: .82rem; font-weight: 700; padding: .2em .8em; border-radius: 999px; }
 .prog-meta .langs { display: inline-block; border: 1.5px solid var(--blue); color: var(--blue); font-size: .82rem; font-weight: 700; padding: .2em .8em; border-radius: 999px; }
