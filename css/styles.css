@@ -382,14 +382,12 @@ a.program h3 { color: var(--navy); }
   .nav-toggle:checked ~ .site-nav { display: flex; }
   .header-inner { position: relative; }
 
-  /* Programs submenu expands inline on mobile */
+  /* Collapse submenus on mobile — top-level Programs/Enrollment links lead to full lists */
   .nav-programs { display: flex; flex-direction: column; align-items: stretch; padding: 0; }
-  .nav-programs > a::after { display: none; }
-  .submenu {
-    display: flex; flex-direction: column; position: static; transform: none;
-    box-shadow: none; background: var(--cream); border-radius: 0; padding: 0; min-width: 0;
-  }
-  .submenu a { padding: .6rem 20px .6rem 40px; font-size: .95rem; color: var(--muted); font-weight: 700; }
+  .nav-programs > a { padding: .8rem 20px; }
+  /* Triangle signals there are subpages under this item */
+  .nav-programs > a::after { display: inline; content: " \25BE"; font-size: .75em; color: var(--muted); }
+  .submenu { display: none; }
 }
 
 @media (max-width: 560px) {
