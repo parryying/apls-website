@@ -257,6 +257,10 @@ a.program h3 { color: var(--navy); }
 .fee-list li { margin-bottom: .8rem; color: var(--muted); }
 .fee-list li strong { color: var(--text); }
 
+/* ---------- Calendar tables ---------- */
+.cal-table { margin-bottom: 2.2rem; }
+.cal-table .cal-month { background: var(--peach); color: var(--navy); text-align: left; font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; padding: .5rem .8rem; }
+
 /* ---------- Utility ---------- */
 .muted { color: var(--muted); }
 
