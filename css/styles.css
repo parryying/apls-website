@@ -284,6 +284,10 @@ a.program h3 { color: var(--navy); }
 .contact-map iframe { display: block; width: 100%; height: 100%; }
 @media (max-width: 640px) { .contact-map { aspect-ratio: 4 / 3; } }
 
+/* Homepage enrollment + tour cards */
+.home-cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: stretch; }
+@media (max-width: 760px) { .home-cta-grid { grid-template-columns: 1fr; } }
+
 /* ---------- Utility ---------- */
 .muted { color: var(--muted); }
 
