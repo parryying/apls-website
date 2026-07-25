@@ -105,9 +105,24 @@
       <h2>Schedule a tour</h2>
       <p>
         Tours are by appointment and take about 30 minutes. You'll see a class in session, meet the
-        teachers, and get all your questions answered. Pick a time below, or give us a call — we'd
-        love to meet you.
+        teachers, and get all your questions answered. Send a quick inquiry, pick a time below, or
+        give us a call — we'd love to meet you.
       </p>
+
+      <!-- ✏️ EDIT: paste your inquiry-form link between the quotes in data-tally-url below.
+           Recommended: build a free form at https://tally.so with these fields —
+             • Parent name          • Email               • Phone
+             • Child's first name    • Child's age / DOB    • Desired start date
+             • Program interest (Chinese / Japanese; preschool / after-school / etc.)
+             • Where did you hear about us?
+           Then copy the form's share link (e.g. https://tally.so/r/XXXXXX) and paste it below.
+           The form appears here automatically once a real link is added. -->
+      <div id="inquiry-form" class="booking-placeholder" data-tally-url="PASTE_TALLY_FORM_LINK_HERE">
+        <strong>Inquiry form will appear here.</strong>
+        <span>Once APLS's form link is added, families can send a quick inquiry right on this page &mdash; great for anyone not ready to pick a time yet.</span>
+      </div>
+
+      <div class="tour-divider"><span>or pick a time now</span></div>
 
       <!-- ✏️ EDIT: paste your Calendly scheduling link between the quotes in data-calendly-url below
            (for example: https://calendly.com/apls-tours/school-tour).
@@ -245,6 +260,7 @@
     </div>
   </footer>
 
+  <script src="js/inquiry-form.js"></script>
   <script src="js/tour-booking.js"></script>
 </body>
 </html>
