@@ -102,39 +102,13 @@
         <a href="enrollment.html#tour">contact us</a> for current pricing.
       </p>
 
-      <h2>Preschool monthly tuition</h2>
-      <p>
-        Choose a half-day morning session (9:00&nbsp;a.m.–12:00&nbsp;p.m.) or a whole-day program
-        (8:00&nbsp;a.m.–6:00&nbsp;p.m.), 2 to 5 days per week.
-      </p>
-      <table class="schedule-table tuition-table">
-        <thead>
-          <tr><th>Days per week</th><th>Half day (AM) &middot; monthly</th><th>Whole day &middot; monthly</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>5 days</td><td>$1,100</td><td>$2,050</td></tr>
-          <tr><td>4 days</td><td>$950</td><td>$1,850</td></tr>
-          <tr><td>3 days</td><td>$850</td><td>$1,650</td></tr>
-          <tr><td>2 days</td><td>$650</td><td>$1,250</td></tr>
-        </tbody>
-      </table>
-
-      <h2>Registration &amp; other fees</h2>
-      <ul class="fee-list">
-        <li><strong>Registration fee &amp; deposit — $175 per child.</strong> A $75 non-refundable
-          registration fee plus a $100 deposit that holds your child's spot and is applied toward the
-          first month's tuition. Due when the Enrollment Application Form is signed. The deposit is
-          refundable if enrollment is cancelled.</li>
-        <li><strong>Annual material fee — $75 half-day / $100 whole-day.</strong> Covers textbooks and
-          art supplies; the whole-day program also includes sleeping sheets.</li>
-        <li><strong>Extra care — $15 per hour</strong> (one-hour minimum) for registered students.</li>
-        <li><strong>Overtime — $35 per 30-minute interval</strong> if a child is not picked up by the
-          scheduled time. This fee is billed with the next scheduled payment.</li>
-        <li><strong>Non-potty-trained children.</strong> An additional fee applies, as we provide
-          teaching assistants for toileting help. Parents supply pull-ups (no diapers), baby wipes, and
-          plastic bags.</li>
-        <li><strong>Sibling discount — 10%</strong> for siblings of enrolled students.</li>
-      </ul>
+      <!-- Tuition table & fees are rendered from data/tuition.js — edit that one file to update prices. -->
+      <div id="tuition-root">
+        <noscript>
+          <p>Please <a href="enrollment.html#tour">contact us</a> or call
+            <a href="tel:+14257474172">425-747-4172</a> for current tuition rates.</p>
+        </noscript>
+      </div>
 
       <h2>Our commitment to affordability</h2>
       <p>
@@ -195,6 +169,10 @@
       </div>
     </div>
   </footer>
+
+  <!-- Tuition data + renderer -->
+  <script src="data/tuition.js"></script>
+  <script src="js/apls-render.js"></script>
 
 </body>
 </html>
