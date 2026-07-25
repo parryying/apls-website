@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="Illustration of a teen student preparing for an AP language exam">
+  <defs>
+    <linearGradient id="skyAP" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EAF0EC"/><stop offset="1" stop-color="#FBF6EC"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="520" fill="url(#skyAP)"/>
+  <rect x="0" y="474" width="800" height="46" fill="#3B5A4A" opacity="0.85"/>
+  <!-- diploma/AP badge -->
+  <g transform="translate(150,150)">
+    <circle r="78" fill="#F5C45B"/>
+    <circle r="78" fill="none" stroke="#d9a441" stroke-width="6"/>
+    <text x="0" y="14" font-family="Nunito, sans-serif" font-size="46" font-weight="800" fill="#3B5A4A" text-anchor="middle">AP</text>
+    <path d="M-30 70 l-14 46 l30 -18 l30 18 l-14 -46 z" fill="#E5714E"/>
+  </g>
+  <!-- desk -->
+  <rect x="360" y="360" width="360" height="26" rx="8" fill="#c98f33"/>
+  <!-- laptop -->
+  <g transform="translate(420,300)">
+    <rect x="0" y="0" width="150" height="96" rx="8" fill="#3B5A4A"/>
+    <rect x="10" y="10" width="130" height="76" rx="4" fill="#2E8296"/>
+    <text x="75" y="58" font-family="Nunito, sans-serif" font-size="34" font-weight="800" fill="#fff" text-anchor="middle">語</text>
+    <rect x="-14" y="96" width="178" height="12" rx="4" fill="#2f4a3c"/>
+  </g>
+  <!-- books stack -->
+  <g transform="translate(610,300)">
+    <rect x="0" y="66" width="110" height="26" rx="5" fill="#E5714E"/>
+    <rect x="8" y="40" width="110" height="26" rx="5" fill="#2E8296"/>
+    <rect x="2" y="14" width="110" height="26" rx="5" fill="#6FA85A"/>
+  </g>
+  <!-- teen student -->
+  <g transform="translate(560,250)">
+    <rect x="-44" y="44" width="88" height="96" rx="24" fill="#2E8296"/>
+    <circle cx="0" cy="4" r="48" fill="#F3B98C"/>
+    <path d="M-48 -6 a48 42 0 0 1 96 0 v-10 a48 42 0 0 0 -96 0 z" fill="#2b2016"/>
+    <circle cx="-16" cy="2" r="5" fill="#3B2A20"/><circle cx="16" cy="2" r="5" fill="#3B2A20"/>
+    <path d="M-14 22 q14 10 28 0" stroke="#3B2A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
