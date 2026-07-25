@@ -211,6 +211,9 @@ a:hover { text-decoration: underline; }
 .back-link { margin-top: 1.6rem; }
 .back-link a { color: var(--muted); font-weight: 700; text-decoration: none; }
 .back-link a:hover { color: var(--red); }
+
+/* Offset anchor jumps so the sticky header doesn't cover the target */
+:target { scroll-margin-top: 90px; }
 .prog-meta { text-align: center; margin: 0 0 1.1rem; }
 .prog-meta .ages { display: inline-block; background: var(--navy); color: #fff; font-size: .82rem; font-weight: 700; padding: .2em .8em; border-radius: 999px; }
 .prog-meta .langs { display: inline-block; border: 1.5px solid var(--blue); color: var(--blue); font-size: .82rem; font-weight: 700; padding: .2em .8em; border-radius: 999px; }

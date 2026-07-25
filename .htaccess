@@ -1,0 +1,57 @@
+# ============================================================
+#  APLS — Apache config for the new static site
+#  HANDOFF NOTE: This preserves the OLD .php URLs by permanently
+#  (301) redirecting them to the new .html pages, so existing links
+#  and Google rankings carry over to the new site.
+#  Requires Apache with mod_rewrite (standard on cPanel / Site5).
+#  Fragments (e.g. #Preschool) are re-applied by the browser
+#  automatically, so anchor links keep working.
+# ============================================================
+
+# Serve index.html as the homepage (old site used index.php)
+DirectoryIndex index.html index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- Old homepage -> new homepage (avoid a duplicate /index.php) ---
+  RewriteRule ^index\.php$ / [R=301,L]
+
+  # --- Programs ---
+  RewriteRule ^pro_preschool\.php$       /preschool.html                 [R=301,L]
+  RewriteRule ^pro_kindergarten\.php$    /kindergarten.html              [R=301,L]
+  RewriteRule ^pro_grade1\.php$          /kindergarten.html#first-grade  [R=301,L]
+  RewriteRule ^pro_after_saturday\.php$  /after-school.html              [R=301,L]
+  RewriteRule ^pro_summercamp\.php$      /summer-camp.html               [R=301,L]
+  RewriteRule ^pro_tutoring\.php$        /ap-prep.html                   [R=301,L]
+  RewriteRule ^pro_benefits\.php$        /why-apls.html                  [R=301,L]
+
+  # --- About Us ---
+  RewriteRule ^abo_mission\.php$         /why-apls.html                  [R=301,L]
+  RewriteRule ^abo_testimonials\.php$    /why-apls.html                  [R=301,L]
+  RewriteRule ^abo_photos\.php$          /gallery.html                   [R=301,L]
+  # ✏️ EDIT: no dedicated new page yet — pointing at sensible fallbacks.
+  #         Give these a real target (or build the pages) before go-live.
+  RewriteRule ^abo_news\.php$            /index.html                     [R=301,L]
+  RewriteRule ^abo_sponsors\.php$        /index.html                     [R=301,L]
+
+  # --- Family / resources (no new page yet) ---
+  # ✏️ EDIT: point these at a real page once built.
+  RewriteRule ^fam_preschoolpto\.php$    /enrollment.html                [R=301,L]
+  RewriteRule ^fam_resources\.php$       /enrollment.html                [R=301,L]
+
+  # --- Top-level pages ---
+  RewriteRule ^enrollment\.php$          /enrollment.html                [R=301,L]
+  RewriteRule ^calendar\.php$            /enrollment.html                [R=301,L]
+  RewriteRule ^contact\.php$             /contact.html                   [R=301,L]
+  RewriteRule ^japanese\.php$            /japanese.html                  [R=301,L]
+  # ✏️ EDIT: no Support page in the new site yet — falls back to home.
+  RewriteRule ^support\.php$             /index.html                     [R=301,L]
+</IfModule>
+
+# ------------------------------------------------------------
+#  ⚠️ Before go-live, these redirect TARGETS must exist as files:
+#     enrollment.html, contact.html, gallery.html, japanese.html
+#  (they are planned but not built yet). Until they exist, the
+#  redirects above will land on a 404.
+# ------------------------------------------------------------
