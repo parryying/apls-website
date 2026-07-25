@@ -401,4 +401,8 @@ a.program h3 { color: var(--navy); }
   /* Hero CTAs: equal width, single row */
   .hero-actions { flex-wrap: nowrap; gap: .6rem; }
   .hero-actions .btn { flex: 1 1 0; min-width: 0; text-align: center; white-space: nowrap; padding-left: .8em; padding-right: .8em; }
+
+  /* Tour actions: stack equal width */
+  .tour-actions { flex-direction: column; align-items: stretch; }
+  .tour-actions .btn { width: 100%; text-align: center; }
 }
