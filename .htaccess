@@ -42,7 +42,7 @@ DirectoryIndex index.html index.php
 
   # --- Top-level pages ---
   RewriteRule ^enrollment\.php$          /enrollment.html                [R=301,L]
-  RewriteRule ^calendar\.php$            /enrollment.html                [R=301,L]
+  RewriteRule ^calendar\.php$            /calendar.html                  [R=301,L]
   RewriteRule ^contact\.php$             /contact.html                   [R=301,L]
   RewriteRule ^japanese\.php$            /japanese.html                  [R=301,L]
   # ✏️ EDIT: no Support page in the new site yet — falls back to home.

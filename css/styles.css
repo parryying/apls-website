@@ -212,6 +212,49 @@ a.program h3 { color: var(--navy); }
 .hub-card .badge-open { align-self: flex-start; margin: 0 0 .5rem; }
 @media (max-width: 640px) { .hub-grid { grid-template-columns: 1fr; } }
 
+/* ---------- Enrollment hub cards ---------- */
+.enroll-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; }
+.enroll-card { display: flex; flex-direction: column; background: var(--white); border-radius: var(--radius); padding: 1.5rem 1.6rem; box-shadow: var(--shadow); text-decoration: none; color: var(--text); border-top: 4px solid var(--blue); transition: transform .15s ease, box-shadow .15s ease; }
+.enroll-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(59,90,74,0.16); }
+.enroll-icon { font-size: 2rem; line-height: 1; margin: 0 0 .6rem; }
+.enroll-card h3 { margin: 0 0 .3rem; color: var(--navy); }
+.enroll-card p { color: var(--muted); margin: 0 0 1rem; font-size: .98rem; }
+.enroll-card .go { margin-top: auto; color: var(--red); font-weight: 800; }
+@media (max-width: 640px) { .enroll-cards { grid-template-columns: 1fr; } }
+
+/* ---------- Enrollment steps ---------- */
+.steps { list-style: none; counter-reset: step; margin: 0 auto; padding: 0; max-width: 760px; display: grid; gap: 1.2rem; }
+.step { position: relative; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem 1.6rem 1.5rem 4.6rem; }
+.step-num { position: absolute; left: 1.4rem; top: 1.5rem; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: var(--red); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.step h3 { margin: 0 0 .35rem; color: var(--navy); }
+.step p { color: var(--muted); margin: 0 0 1rem; }
+.step p:last-child { margin-bottom: 0; }
+.step .btn { margin-top: .2rem; }
+
+/* ---------- Tour booking ---------- */
+.booking-placeholder { display: flex; flex-direction: column; gap: .4rem; align-items: center; text-align: center; background: var(--peach); border: 2px dashed var(--red); border-radius: var(--radius); padding: 2.4rem 1.4rem; margin: 0 0 1.2rem; }
+.booking-placeholder strong { color: var(--navy); font-size: 1.05rem; }
+.booking-placeholder span { color: var(--muted); font-size: .95rem; }
+.booking-fallback { color: var(--muted); }
+.tour-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1.2rem 0 0; }
+
+/* ---------- FAQ accordion ---------- */
+.faq { display: grid; gap: .8rem; }
+.faq details { background: var(--white); border-radius: 12px; box-shadow: var(--shadow); padding: 0 1.2rem; overflow: hidden; }
+.faq summary { cursor: pointer; font-weight: 700; color: var(--navy); padding: 1rem 0; list-style: none; position: relative; padding-right: 1.8rem; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; position: absolute; right: .2rem; top: 50%; transform: translateY(-50%); color: var(--red); font-weight: 800; font-size: 1.3rem; line-height: 1; }
+.faq details[open] summary::after { content: "\2013"; }
+.faq details p { color: var(--muted); margin: 0 0 1.1rem; }
+
+/* ---------- Forms page groups ---------- */
+.form-group { margin: 0 0 1.6rem; }
+.form-group h3 { margin: 0 0 .4rem; color: var(--navy); }
+.prog-downloads-stack { flex-direction: column; gap: .7rem; }
+
+/* ---------- Utility ---------- */
+.muted { color: var(--muted); }
+
 .back-link { margin-top: 1.6rem; }
 .back-link a { color: var(--muted); font-weight: 700; text-decoration: none; }
 .back-link a:hover { color: var(--red); }
