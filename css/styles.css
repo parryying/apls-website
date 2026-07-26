@@ -207,7 +207,7 @@ a.program h3 { color: var(--navy); }
 .story-row { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; }
 .story-row.reverse .story-row-media { order: 2; }
 .story-row-media { margin: 0; }
-.story-row-media img { width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); display: block; }
+.story-row-media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); box-shadow: var(--shadow); display: block; }
 .story-row-media figcaption { text-align: center; color: var(--muted); font-size: .82rem; margin-top: .5rem; }
 .story-row-text > :first-child { margin-top: 0; }
 .story-row-text > :last-child { margin-bottom: 0; }
