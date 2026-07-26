@@ -202,6 +202,21 @@ a.program h3 { color: var(--navy); }
 .program-figure img { width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); display: block; }
 .program-figure figcaption { text-align: center; color: var(--muted); font-size: .82rem; margin-top: .5rem; }
 
+/* ---------- Story rows (alternating image + text) ---------- */
+.story-rows { display: flex; flex-direction: column; gap: clamp(2rem, 4vw, 3.5rem); max-width: var(--maxw); margin: 0 auto; }
+.story-row { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; }
+.story-row.reverse .story-row-media { order: 2; }
+.story-row-media { margin: 0; }
+.story-row-media img { width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); display: block; }
+.story-row-media figcaption { text-align: center; color: var(--muted); font-size: .82rem; margin-top: .5rem; }
+.story-row-text > :first-child { margin-top: 0; }
+.story-row-text > :last-child { margin-bottom: 0; }
+.story-row-text .story-highlight { margin-top: 1.2rem; }
+@media (max-width: 760px) {
+  .story-row { grid-template-columns: 1fr; }
+  .story-row.reverse .story-row-media { order: 0; }
+}
+
 /* ---------- Programs hub cards ---------- */
 .hub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.6rem; }
 .hub-card { display: flex; flex-direction: column; background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); text-decoration: none; color: var(--text); transition: transform .15s ease, box-shadow .15s ease; }
