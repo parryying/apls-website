@@ -26,9 +26,20 @@
   var lock = document.getElementById('tour-lock');
 
   function buildCalendly() {
+    // Pre-fill the family's name + email from the inquiry form (if captured),
+    // so they don't have to type them again in Calendly.
+    var finalUrl = url;
+    var prefill = window.APLS_INQUIRY_PREFILL;
+    if (prefill && (prefill.name || prefill.email)) {
+      var params = [];
+      if (prefill.name) params.push('name=' + encodeURIComponent(prefill.name));
+      if (prefill.email) params.push('email=' + encodeURIComponent(prefill.email));
+      finalUrl += (finalUrl.indexOf('?') === -1 ? '?' : '&') + params.join('&');
+    }
+
     var widget = document.createElement('div');
     widget.className = 'calendly-inline-widget';
-    widget.setAttribute('data-url', url);
+    widget.setAttribute('data-url', finalUrl);
     widget.style.minWidth = '320px';
     widget.style.height = '700px';
     box.replaceWith(widget);

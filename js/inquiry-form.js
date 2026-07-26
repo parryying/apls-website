@@ -67,12 +67,44 @@
     // gate the tour calendar. Tell tour-booking.js to lock it until submit.
     window.APLS_INQUIRY_ACTIVE = true;
 
-    // When the family submits the inquiry, unlock the tour calendar.
+    // When the family submits the inquiry, capture their name + email from the
+    // Tally submission and unlock the tour calendar (pre-filling Calendly).
     window.addEventListener('message', function (e) {
       var data = e && e.data;
-      if (typeof data === 'string' && data.indexOf('Tally.FormSubmitted') !== -1) {
-        document.dispatchEvent(new CustomEvent('apls:inquiry-submitted'));
+      if (typeof data !== 'string' || data.indexOf('Tally.FormSubmitted') === -1) return;
+
+      var prefill = {};
+      try {
+        var payload = JSON.parse(data).payload || {};
+        var fields = payload.fields || [];
+        var first = '', last = '', full = '', email = '';
+
+        fields.forEach(function (f) {
+          var title = (f.title || '').toLowerCase();
+          var val = f.answer && (f.answer.value != null ? f.answer.value : f.answer.raw);
+          if (val == null || val === '') return;
+          if (Array.isArray(val)) val = val.join(', ');
+
+          if (f.type === 'INPUT_EMAIL' || title.indexOf('email') !== -1) {
+            email = val;
+          } else if (title.indexOf('first name') !== -1 && title.indexOf('child') === -1) {
+            first = val;
+          } else if (title.indexOf('last name') !== -1 && title.indexOf('child') === -1) {
+            last = val;
+          } else if (title === 'name' || (title.indexOf('parent') !== -1 && title.indexOf('name') !== -1)) {
+            full = val;
+          }
+        });
+
+        var name = (full || (first + ' ' + last)).trim();
+        if (name) prefill.name = name;
+        if (email) prefill.email = email;
+      } catch (err) {
+        // If parsing ever fails, just proceed without pre-fill.
       }
+
+      window.APLS_INQUIRY_PREFILL = prefill;
+      document.dispatchEvent(new CustomEvent('apls:inquiry-submitted', { detail: prefill }));
     });
   }
 })();
