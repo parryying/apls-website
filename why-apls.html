@@ -186,11 +186,13 @@
         Parents often tell us the teachers are the reason they stay. They're experienced, warm, and
         remarkably loyal — the same caring face greeting your child, year after year.
       </p>
-      <!-- ✏️ EDIT: replace with 2–3 real teacher profiles — name, language, and years with APLS -->
-      <div class="cards cols-3">
-        <div class="card teacher-card"><div class="avatar">👩‍🏫</div><h3>Teacher name</h3><p>Chinese · with APLS for ## years</p></div>
-        <div class="card teacher-card"><div class="avatar">👨‍🏫</div><h3>Teacher name</h3><p>Japanese · with APLS for ## years</p></div>
-        <div class="card teacher-card"><div class="avatar">👩‍🏫</div><h3>Teacher name</h3><p>Preschool · with APLS for ## years</p></div>
+      <!-- ✏️ EDIT: teacher profiles are managed in ONE place — data/teachers.js.
+           Add, edit, or remove teachers there (name, role, years, bio, photo) and
+           this section rebuilds automatically. The cards below are a fallback only. -->
+      <div id="teachers-root" class="cards cols-3">
+        <div class="card teacher-card"><div class="avatar">👩‍🏫</div><h3>Teacher name</h3><p class="teacher-meta">Chinese</p></div>
+        <div class="card teacher-card"><div class="avatar">👨‍🏫</div><h3>Teacher name</h3><p class="teacher-meta">Japanese</p></div>
+        <div class="card teacher-card"><div class="avatar">👩‍🏫</div><h3>Teacher name</h3><p class="teacher-meta">Preschool</p></div>
       </div>
     </div>
   </section>
@@ -308,5 +310,7 @@
     </div>
   </footer>
 
+  <script src="data/teachers.js"></script>
+  <script src="js/apls-render.js"></script>
 </body>
 </html>

@@ -111,8 +111,46 @@
     if (data.footnote) root.appendChild(el("p", "muted", data.footnote));
   }
 
+  /* ---------- Teachers ---------- */
+  function renderTeachers() {
+    var root = document.getElementById("teachers-root");
+    if (!root || typeof window.APLS_TEACHERS === "undefined") return;
+    var list = window.APLS_TEACHERS;
+    if (!list || !list.length) return;
+    root.innerHTML = "";
+
+    list.forEach(function (t) {
+      var card = el("div", "card teacher-card");
+
+      if (t.photo) {
+        var img = document.createElement("img");
+        img.className = "avatar-photo";
+        img.src = t.photo;
+        img.alt = t.name || "APLS teacher";
+        img.loading = "lazy";
+        card.appendChild(img);
+      } else {
+        card.appendChild(el("div", "avatar", t.icon || "\uD83D\uDC69\u200D\uD83C\uDFEB"));
+      }
+
+      if (t.name) card.appendChild(el("h3", null, t.name));
+
+      var meta = [];
+      if (t.role) meta.push(t.role);
+      if (t.years !== undefined && t.years !== null && String(t.years).trim() !== "") {
+        meta.push("with APLS for " + t.years + " years");
+      }
+      if (meta.length) card.appendChild(el("p", "teacher-meta", meta.join(" \u00b7 ")));
+
+      if (t.bio) card.appendChild(el("p", "teacher-bio", t.bio));
+
+      root.appendChild(card);
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     renderTuition();
     renderCalendar();
+    renderTeachers();
   });
 })();
