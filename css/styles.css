@@ -310,6 +310,9 @@ a.program h3 { color: var(--navy); }
 
 .contact-map { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); aspect-ratio: 16 / 7; }
 .contact-map iframe { display: block; width: 100%; height: 100%; }
+.map-reviews-link { text-align: center; margin: 1rem 0 0; }
+.map-reviews-link a { font-weight: 700; color: var(--red); text-decoration: none; }
+.map-reviews-link a:hover { text-decoration: underline; }
 @media (max-width: 640px) { .contact-map { aspect-ratio: 4 / 3; } }
 
 /* Homepage enrollment + tour cards */
