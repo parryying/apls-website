@@ -265,6 +265,12 @@ a.program h3 { color: var(--navy); }
 .tour-lock { background: var(--light); border: 2px dashed var(--muted); border-radius: var(--radius); padding: 1.6rem 1.4rem; margin: 0 0 1.2rem; color: var(--muted); text-align: center; }
 .tour-calendar { position: relative; }
 .tour-calendar.is-locked .calendly-inline-widget { pointer-events: none; }
+.tour-avail { background: var(--white); border: 1px solid #e6e0d6; border-left: 4px solid var(--blue); border-radius: 12px; padding: 1rem 1.2rem; margin: 0 0 1.1rem; box-shadow: var(--shadow); }
+.tour-avail p { margin: 0; color: var(--text); font-size: .98rem; }
+.tour-avail-times { margin-bottom: .5rem !important; }
+.tour-avail-times strong, .tour-avail-legend strong { color: var(--navy); }
+.tour-avail-legend { display: flex; align-items: flex-start; gap: .55rem; color: var(--muted); }
+.tour-avail-dot { flex: 0 0 auto; width: 1.15rem; height: 1.15rem; border-radius: 50%; background: #d9e8f5; border: 1px solid #a9cdea; margin-top: .1rem; }
 .tour-lock-badge { position: absolute; inset: 0; z-index: 2; cursor: not-allowed; display: flex; justify-content: center; align-items: flex-start; padding-top: 1rem; }
 .tour-lock-badge .msg { display: inline-flex; align-items: center; gap: .5rem; max-width: 90%; background: var(--navy); color: #fff; font-weight: 700; font-size: .95rem; padding: .6rem 1.15rem; border-radius: 999px; box-shadow: var(--shadow); text-align: center; }
 .inquiry-done { display: flex; flex-direction: column; gap: .3rem; align-items: center; text-align: center; background: #eaf7ee; border: 2px solid #2e7d46; border-radius: var(--radius); padding: 1.2rem 1.4rem; margin: 0 0 1.2rem; }
