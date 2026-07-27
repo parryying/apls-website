@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Enroll at APLS | APLS Bellevue</title>
-  <meta name="description" content="Enroll at Asia Pacific Language School in Bellevue — year-round, rolling enrollment for Chinese &amp; Japanese preschool, dual-language K–1st, camps, and more. Schedule a tour, review the process, tuition, and forms." />
+  <title>Schedule a Tour | APLS Bellevue</title>
+  <meta name="description" content="Book a warm, no-pressure tour at Asia Pacific Language School in Bellevue — meet our teachers, see the classrooms, and find the right Chinese or Japanese program for your child. Year-round, rolling enrollment." />
   <!-- ✏️ EDIT: update to the final live domain if different from apls.org -->
-  <link rel="canonical" href="https://www.apls.org/enrollment.html" />
+  <link rel="canonical" href="https://www.apls.org/tour.html" />
 
-  <meta property="og:title" content="Enroll at APLS | APLS Bellevue" />
-  <meta property="og:description" content="Enroll year-round at APLS in Bellevue — schedule a tour, review the process, tuition, and forms." />
+  <meta property="og:title" content="Schedule a Tour | APLS Bellevue" />
+  <meta property="og:description" content="Book a warm, no-pressure tour and enroll year-round at APLS in Bellevue." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.apls.org/enrollment.html" />
+  <meta property="og:url" content="https://www.apls.org/tour.html" />
   <meta property="og:site_name" content="Asia Pacific Language School" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:image" content="https://www.apls.org/images/hero-classroom.jpg" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Enroll at APLS | APLS Bellevue" />
-  <meta name="twitter:description" content="Enroll year-round at APLS in Bellevue — schedule a tour, review the process, tuition, and forms." />
+  <meta name="twitter:title" content="Schedule a Tour | APLS Bellevue" />
+  <meta name="twitter:description" content="Book a warm, no-pressure tour and enroll year-round at APLS in Bellevue." />
   <meta name="twitter:image" content="https://www.apls.org/images/hero-classroom.jpg" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -72,7 +72,7 @@
         </span>
         <a href="gallery.html">Gallery</a>
         <span class="nav-programs">
-          <a href="enrollment.html" aria-current="page">Enrollment</a>
+          <a href="enrollment.html">Enrollment</a>
           <span class="submenu">
             <a href="enrollment-process.html">Enrollment Process</a>
             <a href="tuition.html">Tuition</a>
@@ -81,7 +81,7 @@
           </span>
         </span>
         <a href="contact.html">Contact</a>
-        <a href="tour.html" class="btn btn-primary btn-nav">Schedule a Tour</a>
+        <a href="tour.html" class="btn btn-primary btn-nav" aria-current="page">Schedule a Tour</a>
       </nav>
     </div>
   </header>
@@ -89,33 +89,75 @@
   <!-- ============ PAGE HERO ============ -->
   <section class="page-hero">
     <div class="container">
-      <p class="eyebrow">Enrollment · Year-round</p>
-      <h1>Enroll at APLS</h1>
+      <p class="eyebrow">Visit APLS · Year-round</p>
+      <h1>Come see APLS — schedule a tour</h1>
       <p>
-        We welcome new families all year, with rolling enrollment. Start by booking a warm,
-        no-pressure tour — then explore everything you need to enroll, from the process and tuition
-        to forms and our school calendar.
+        The best way to know if APLS is right for your family is to visit. Come meet our teachers,
+        see the classrooms, and ask us anything — no pressure, no obligation. We welcome new families
+        all year, with rolling enrollment.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ SCHEDULE A TOUR ============ -->
+  <section id="tour" class="section">
+    <div class="container prose">
+      <h2>Schedule a tour</h2>
+      <p>
+        Tours are by appointment and take about 30 minutes. You'll see a class in session, meet the
+        teachers, and get all your questions answered. Just tell us a little about your family first,
+        then pick a time that works for you — or give us a call, we'd love to meet you.
+      </p>
+
+      <p class="tour-step-label"><span class="tour-step-num">1</span> Tell us about your family</p>
+
+      <!-- ✏️ EDIT: paste your inquiry-form link between the quotes in data-tally-url below.
+           Recommended: build a free form at https://tally.so with these fields —
+             • Parent name          • Email               • Phone
+             • Child's first name    • Child's age / DOB    • Desired start date
+             • Program interest (Chinese / Japanese; preschool / after-school / etc.)
+             • Where did you hear about us?
+           Then copy the form's share link (e.g. https://tally.so/r/XXXXXX) and paste it below.
+           The form appears here automatically once a real link is added. -->
+      <div id="inquiry-form" class="booking-placeholder" data-tally-url="https://tally.so/r/5Bg6EN">
+        <strong>Inquiry form will appear here.</strong>
+        <span>Once APLS's form link is added, families fill this out first, then their tour times unlock below.</span>
+      </div>
+
+      <p class="tour-step-label" id="tour-step-2"><span class="tour-step-num">2</span> Pick your tour time</p>
+
+      <!-- ✏️ EDIT: paste your Calendly scheduling link between the quotes in data-calendly-url below
+           (for example: https://calendly.com/apls-tours/school-tour).
+           The moment a real link is added, the live booking calendar appears here automatically.
+           NOTE: when an inquiry form (above) is also active, this calendar stays locked until the
+           family submits the form — so every tour request captures the family's details first.
+           Leave it as PASTE_CALENDLY_LINK_HERE to keep showing the placeholder. -->
+      <div id="tour-booking" class="booking-placeholder" data-calendly-url="https://calendly.com/parry-ying/apls-campus-tour">
+        <strong>Tour booking calendar will appear here.</strong>
+        <span>Once APLS's Calendly link is added, families can pick a time right on this page.</span>
+      </div>
+      <p id="tour-lock" class="tour-lock" hidden>🔒 Please complete the form above first — your available tour times will appear here right after you send it.</p>
+
+      <p class="booking-fallback">
+        Prefer to talk to a person? Call
+        <!-- ✏️ EDIT: phone numbers -->
+        <a href="tel:+14257474172">425-747-4172</a> or
+        <a href="tel:+14256411703">425-641-1703</a>, or email
+        <a href="mailto:apls@apls.org">apls@apls.org</a> to set up a visit.
       </p>
       <div class="tour-actions">
-        <a href="tour.html" class="btn btn-primary btn-lg">Schedule a Tour</a>
-        <!-- ✏️ EDIT: main phone number -->
-        <a href="tel:+14257474172" class="btn btn-ghost btn-lg">Call 425-747-4172</a>
+        <a href="tel:+14257474172" class="btn btn-primary">Call us</a>
+        <a href="mailto:apls@apls.org" class="btn btn-ghost">Email us</a>
       </div>
     </div>
   </section>
 
-  <!-- ============ ENROLLMENT SUB-PAGES ============ -->
+  <!-- ============ MORE ENROLLMENT INFO ============ -->
   <section class="section section-alt">
     <div class="container">
-      <h2 class="section-title">Everything you need to enroll</h2>
-      <p class="section-lead">Start with a tour, then explore the details.</p>
+      <h2 class="section-title">Planning your enrollment?</h2>
+      <p class="section-lead">While you're here, explore the details.</p>
       <div class="enroll-cards">
-        <a class="enroll-card enroll-card-feature" href="tour.html">
-          <span class="enroll-icon" aria-hidden="true">📅</span>
-          <h3>Schedule a Tour</h3>
-          <p>Book a 30-minute visit — meet the teachers and see a class in session.</p>
-          <span class="go">Book now →</span>
-        </a>
         <a class="enroll-card" href="enrollment-process.html">
           <span class="enroll-icon" aria-hidden="true">📋</span>
           <h3>Enrollment Process</h3>
@@ -135,7 +177,7 @@
           <span class="go">Open →</span>
         </a>
         <a class="enroll-card" href="calendar.html">
-          <span class="enroll-icon" aria-hidden="true">🗓️</span>
+          <span class="enroll-icon" aria-hidden="true">📅</span>
           <h3>School Calendar</h3>
           <p>Key dates, holidays, and the current school-year calendar.</p>
           <span class="go">Open →</span>
@@ -182,13 +224,13 @@
   <section class="cta-band">
     <div class="container cta-inner">
       <div>
-        <h2>Ready to visit?</h2>
-        <p>Book a warm, no-pressure tour — we'd love to show you around.</p>
+        <h2>Questions before you visit?</h2>
+        <p>We're happy to help you find the right fit — just give us a call.</p>
       </div>
       <div class="cta-actions">
-        <a href="tour.html" class="btn btn-primary btn-lg">Schedule a Tour</a>
         <!-- ✏️ EDIT: main phone number -->
-        <a href="tel:+14257474172" class="btn btn-ghost btn-lg on-dark">Call 425-747-4172</a>
+        <a href="tel:+14257474172" class="btn btn-primary btn-lg">Call 425-747-4172</a>
+        <a href="enrollment.html" class="btn btn-ghost btn-lg on-dark">Enrollment info</a>
       </div>
     </div>
   </section>
@@ -222,5 +264,8 @@
       </div>
     </div>
   </footer>
+
+  <script src="js/inquiry-form.js"></script>
+  <script src="js/tour-booking.js"></script>
 </body>
 </html>
