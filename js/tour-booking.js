@@ -61,7 +61,10 @@
       if (lock) lock.hidden = true;
       box.hidden = false;
       buildCalendly();
-      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Scroll to the Step 2 heading (not just the calendar) so the family
+      // clearly sees where they are in the flow.
+      var target = document.getElementById('tour-step-2') || box;
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, { once: true });
     return;
   }

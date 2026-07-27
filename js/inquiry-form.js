@@ -34,6 +34,7 @@
   if (!/^https?:\/\//i.test(url) || /PASTE_TALLY_FORM_LINK_HERE/i.test(url)) return;
 
   var iframe = document.createElement('iframe');
+  iframe.id = 'inquiry-iframe';
   iframe.title = 'APLS inquiry form';
   iframe.width = '100%';
   iframe.style.border = '0';
@@ -101,6 +102,21 @@
         if (email) prefill.email = email;
       } catch (err) {
         // If parsing ever fails, just proceed without pre-fill.
+      }
+
+      // Collapse the tall inquiry form into a compact confirmation so there's
+      // no big blank space left behind — then Step 2 becomes the clear next
+      // thing on screen (tour-booking.js reveals + scrolls to it).
+      var current = document.getElementById('inquiry-iframe');
+      if (current) {
+        var done = document.createElement('div');
+        done.className = 'inquiry-done';
+        var firstName = (prefill.name || '').split(' ')[0];
+        done.innerHTML =
+          '<strong>\u2713 Thanks' + (firstName ? ', ' + firstName : '') +
+          '! We\u2019ve got your info.</strong>' +
+          '<span>Now pick your tour time below \u2193</span>';
+        current.replaceWith(done);
       }
 
       window.APLS_INQUIRY_PREFILL = prefill;
