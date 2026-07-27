@@ -212,6 +212,8 @@ a.program h3 { color: var(--navy); }
 .story-row-text > :first-child { margin-top: 0; }
 .story-row-text > :last-child { margin-bottom: 0; }
 .story-row-text .story-highlight { margin-top: 1.2rem; }
+/* prose that continues below a story row, kept in the same section */
+.story-follow { margin-top: clamp(2rem, 4vw, 3rem); }
 @media (max-width: 760px) {
   .story-row { grid-template-columns: 1fr; }
   .story-row.reverse .story-row-media { order: 0; }
