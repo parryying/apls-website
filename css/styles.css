@@ -237,7 +237,7 @@ a.program h3 { color: var(--navy); }
 .enroll-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; }
 .enroll-card { display: flex; flex-direction: column; background: var(--white); border-radius: var(--radius); padding: 1.5rem 1.6rem; box-shadow: var(--shadow); text-decoration: none; color: var(--text); border-top: 4px solid var(--blue); transition: transform .15s ease, box-shadow .15s ease; }
 .enroll-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(59,90,74,0.16); }
-.enroll-card-feature { border-top-color: var(--red); background: var(--peach); }
+.enroll-card-feature { border-top-color: var(--red); }
 .enroll-card-feature .go { color: var(--red); }
 .enroll-icon { font-size: 2rem; line-height: 1; margin: 0 0 .6rem; }
 .enroll-card h3 { margin: 0 0 .3rem; color: var(--navy); }
