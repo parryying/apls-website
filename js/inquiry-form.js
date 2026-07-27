@@ -113,9 +113,9 @@
         done.className = 'inquiry-done';
         var firstName = (prefill.name || '').split(' ')[0];
         done.innerHTML =
-          '<strong>\u2713 Thanks' + (firstName ? ', ' + firstName : '') +
-          '! We\u2019ve got your info.</strong>' +
-          '<span>Now pick your tour time below \u2193</span>';
+          '<strong>\u2713 Form submitted' +
+          (firstName ? ' \u2014 thanks, ' + firstName + '!' : '!') +
+          '</strong>';
         current.replaceWith(done);
       }
 

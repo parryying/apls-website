@@ -61,10 +61,15 @@
       if (lock) lock.hidden = true;
       box.hidden = false;
       buildCalendly();
-      // Scroll to the Step 2 heading (not just the calendar) so the family
-      // clearly sees where they are in the flow.
-      var target = document.getElementById('tour-step-2') || box;
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Scroll so the "form submitted" confirmation AND the Step 2 heading are
+      // both visible (not just the calendar) — offset for the sticky header so
+      // nothing hides behind it.
+      var target = document.querySelector('.inquiry-done') ||
+        document.getElementById('tour-step-2') || box;
+      var header = document.querySelector('header');
+      var offset = (header ? header.getBoundingClientRect().height : 0) + 16;
+      var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+      window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
     }, { once: true });
     return;
   }
