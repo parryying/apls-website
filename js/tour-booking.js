@@ -25,7 +25,7 @@
 
   var lock = document.getElementById('tour-lock');
 
-  function buildCalendly() {
+  function calendlyUrl() {
     // Pre-fill the family's name + email from the inquiry form (if captured),
     // so they don't have to type them again in Calendly.
     var finalUrl = url;
@@ -36,44 +36,69 @@
       if (prefill.email) params.push('email=' + encodeURIComponent(prefill.email));
       finalUrl += (finalUrl.indexOf('?') === -1 ? '?' : '&') + params.join('&');
     }
-
-    var widget = document.createElement('div');
-    widget.className = 'calendly-inline-widget';
-    widget.setAttribute('data-url', finalUrl);
-    widget.style.minWidth = '320px';
-    widget.style.height = '700px';
-    box.replaceWith(widget);
-
-    // Load Calendly's embed script once.
-    var s = document.createElement('script');
-    s.src = 'https://assets.calendly.com/assets/external/widget.js';
-    s.async = true;
-    document.body.appendChild(s);
+    return finalUrl;
   }
 
+  // Build the live calendar in place of the placeholder. It shows real
+  // availability right away so families can preview open times; when an inquiry
+  // form is gating it, the calendar is displayed but not clickable until submit.
+  var host = document.createElement('div');
+  host.className = 'tour-calendar';
+
+  var widget = document.createElement('div');
+  widget.className = 'calendly-inline-widget';
+  widget.setAttribute('data-url', calendlyUrl());
+  widget.style.minWidth = '320px';
+  widget.style.height = '700px';
+  host.appendChild(widget);
+
+  box.replaceWith(host);
+
+  // Load Calendly's embed script once.
+  var s = document.createElement('script');
+  s.src = 'https://assets.calendly.com/assets/external/widget.js';
+  s.async = true;
+  document.body.appendChild(s);
+
   // If a submit-detectable inquiry form is active, the inquiry is mandatory:
-  // keep the calendar locked until the family submits the form.
+  // show the calendar as a locked preview until the family submits the form.
   if (window.APLS_INQUIRY_ACTIVE) {
-    box.hidden = true;
-    if (lock) lock.hidden = false;
+    host.classList.add('is-locked');
+    if (lock) lock.hidden = true;
+
+    // A transparent overlay lets families see real openings but blocks picking,
+    // with a clear message telling them to submit the form first.
+    var badge = document.createElement('div');
+    badge.className = 'tour-lock-badge';
+    badge.innerHTML = '<span class="msg">🔒 Fill out the quick form above to pick a time —' +
+      ' these are real openings.</span>';
+    host.appendChild(badge);
 
     document.addEventListener('apls:inquiry-submitted', function () {
       if (lock) lock.hidden = true;
-      box.hidden = false;
-      buildCalendly();
+      host.classList.remove('is-locked');
+      if (badge) badge.remove();
+
+      // Re-initialise so the family's name/email pre-fill into Calendly. If the
+      // embed script hasn't loaded yet, we leave the already-shown calendar as
+      // is (still fully usable, just without pre-fill).
+      var prefill = window.APLS_INQUIRY_PREFILL;
+      if (prefill && (prefill.name || prefill.email) &&
+          window.Calendly && window.Calendly.initInlineWidget) {
+        widget.innerHTML = '';
+        window.Calendly.initInlineWidget({ url: calendlyUrl(), parentElement: widget });
+      }
+
       // Scroll so the "form submitted" confirmation AND the Step 2 heading are
       // both visible (not just the calendar) — offset for the sticky header so
       // nothing hides behind it.
       var target = document.querySelector('.inquiry-done') ||
-        document.getElementById('tour-step-2') || box;
+        document.getElementById('tour-step-2') || host;
       var header = document.querySelector('header');
       var offset = (header ? header.getBoundingClientRect().height : 0) + 16;
       var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
       window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
     }, { once: true });
-    return;
   }
-
-  // No inquiry form to gate behind — show the calendar directly.
-  buildCalendly();
 })();
+

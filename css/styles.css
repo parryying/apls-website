@@ -263,6 +263,10 @@ a.program h3 { color: var(--navy); }
 .tour-step-num { display: inline-flex; align-items: center; justify-content: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--red); color: #fff; font-size: .95rem; flex: 0 0 auto; }
 .tour-step-note { color: var(--muted); font-size: .96rem; margin: -.3rem 0 1rem; }
 .tour-lock { background: var(--light); border: 2px dashed var(--muted); border-radius: var(--radius); padding: 1.6rem 1.4rem; margin: 0 0 1.2rem; color: var(--muted); text-align: center; }
+.tour-calendar { position: relative; }
+.tour-calendar.is-locked .calendly-inline-widget { pointer-events: none; }
+.tour-lock-badge { position: absolute; inset: 0; z-index: 2; cursor: not-allowed; display: flex; justify-content: center; align-items: flex-start; padding-top: 1rem; }
+.tour-lock-badge .msg { display: inline-flex; align-items: center; gap: .5rem; max-width: 90%; background: var(--navy); color: #fff; font-weight: 700; font-size: .95rem; padding: .6rem 1.15rem; border-radius: 999px; box-shadow: var(--shadow); text-align: center; }
 .inquiry-done { display: flex; flex-direction: column; gap: .3rem; align-items: center; text-align: center; background: #eaf7ee; border: 2px solid #2e7d46; border-radius: var(--radius); padding: 1.2rem 1.4rem; margin: 0 0 1.2rem; }
 .inquiry-done strong { color: #1f5a32; font-size: 1.05rem; }
 .inquiry-done span { color: var(--muted); font-size: .95rem; }
