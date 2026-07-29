@@ -11,7 +11,7 @@
    ============================================================ */
 window.APLS_TUITION = {
   heading: "Preschool monthly tuition",
-  note: "Choose a half-day morning session (9:00\u00a0a.m.\u201312:00\u00a0p.m.) or a whole-day program (8:00\u00a0a.m.\u20136:00\u00a0p.m.), 2 to 5 days per week.",
+  note: "Choose a half-day morning session (9:00\u00a0a.m.\u201312:00\u00a0p.m.) or a whole-day program (8:00\u00a0a.m.\u20135:30\u00a0p.m., closing at 6\u00a0p.m.), 2 to 5 days per week.",
 
   // Monthly tuition table.
   columns: ["Days per week", "Half day (AM) \u00b7 monthly", "Whole day \u00b7 monthly"],
@@ -22,24 +22,40 @@ window.APLS_TUITION = {
     ["2 days", "$650",   "$1,250"]
   ],
 
+  // Additional tuition tables shown below the preschool table.
+  moreTables: [
+    {
+      heading: "Kindergarten & 1st Grade",
+      columns: ["Program", "Tuition"],
+      rows: [
+        ["Whole Day (9am\u20133pm)", "$2,000/month"],
+        ["Extended Care", "$2,150/month"]
+      ]
+    }
+  ],
+
   // Registration and other fees. "label" is shown in bold.
   feesHeading: "Registration & other fees",
   fees: [
     {
-      label: "Registration fee & deposit \u2014 $175 per child.",
-      text: " A $75 non-refundable registration fee plus a $100 deposit that holds your child's spot and is applied toward the first month's tuition. Due when the Enrollment Application Form is signed. The deposit is refundable if enrollment is cancelled."
+      label: "Registration fee & deposit \u2014 $200 per child.",
+      text: " A $100 non-refundable registration fee plus a $100 deposit that holds your child's spot and is applied toward the first month's tuition. Due when the Enrollment Application Form is signed. The deposit is refundable if enrollment is cancelled."
     },
     {
-      label: "Annual material fee \u2014 $75 half-day / $100 whole-day.",
-      text: " Covers textbooks and art supplies; the whole-day program also includes sleeping sheets."
+      label: "Material fee \u2014 $10 per month or $100 per school year.",
+      text: " Covers textbooks and art supplies."
     },
     {
-      label: "Extra care \u2014 $15 per hour",
-      text: " (one-hour minimum) for registered students."
+      label: "Extended care \u2014 $18 per hour",
+      text: " (one-hour minimum, 5:30\u20136:00\u00a0p.m.) for registered students."
     },
     {
-      label: "Overtime \u2014 $35 per 30-minute interval",
-      text: " if a child is not picked up by the scheduled time. This fee is billed with the next scheduled payment."
+      label: "Optional lunch \u2014 $5.50 per lunch or $110 per month.",
+      text: " A prepared lunch for children who'd prefer not to bring their own."
+    },
+    {
+      label: "Late pickup \u2014 $50",
+      text: " if a child is not picked up by 6:00\u00a0p.m."
     },
     {
       label: "Non-potty-trained children.",

@@ -109,6 +109,7 @@ a:hover { text-decoration: underline; }
 .hero { background: linear-gradient(160deg, var(--peach) 0%, var(--cream) 55%, #EFF4EA 100%); padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
 .hero-inner { display: grid; grid-template-columns: 1.1fr .9fr; gap: 2.5rem; align-items: center; }
 .eyebrow { color: var(--blue); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: .82rem; margin-bottom: .6rem; }
+.hero-tagline { font-size: 1.28rem; font-weight: 700; color: var(--navy, #1f3a5f); max-width: 46ch; margin: .2rem 0 1rem; line-height: 1.35; }
 .hero-sub { font-size: 1.12rem; color: var(--muted); max-width: 56ch; }
 .hero-clarify { font-size: .96rem; color: var(--muted); max-width: 42ch; margin: .6rem 0 0; }
 .hero-actions { display: flex; gap: .8rem; flex-wrap: wrap; margin: 1.4rem 0 1rem; }
@@ -176,6 +177,7 @@ a:hover { text-decoration: underline; }
 .feature { display: flex; gap: .8rem; align-items: flex-start; text-align: left; }
 .feature-mark { font-size: 1.5rem; line-height: 1.2; flex: none; }
 .feature strong { display: block; color: var(--navy); font-size: 1.02rem; margin-bottom: .15rem; }
+.feature p strong { display: inline; color: inherit; font-size: inherit; margin: 0; }
 .feature p { color: var(--muted); margin: 0; font-size: .95rem; }
 @media (max-width: 700px) { .feature-list { grid-template-columns: 1fr; } }
 

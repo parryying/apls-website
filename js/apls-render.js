@@ -26,24 +26,36 @@
     if (data.heading) root.appendChild(el("h2", null, data.heading));
     if (data.note) root.appendChild(el("p", null, data.note));
 
-    // Table
-    var table = el("table", "schedule-table tuition-table");
-    var thead = el("thead");
-    var headRow = el("tr");
-    (data.columns || []).forEach(function (col) {
-      headRow.appendChild(el("th", null, col));
-    });
-    thead.appendChild(headRow);
-    table.appendChild(thead);
+    // Build a tuition table from { columns, rows }.
+    function buildTable(columns, rows) {
+      var table = el("table", "schedule-table tuition-table");
+      var thead = el("thead");
+      var headRow = el("tr");
+      (columns || []).forEach(function (col) {
+        headRow.appendChild(el("th", null, col));
+      });
+      thead.appendChild(headRow);
+      table.appendChild(thead);
 
-    var tbody = el("tbody");
-    (data.rows || []).forEach(function (row) {
-      var tr = el("tr");
-      row.forEach(function (cell) { tr.appendChild(el("td", null, cell)); });
-      tbody.appendChild(tr);
+      var tbody = el("tbody");
+      (rows || []).forEach(function (row) {
+        var tr = el("tr");
+        row.forEach(function (cell) { tr.appendChild(el("td", null, cell)); });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      return table;
+    }
+
+    // Main table
+    root.appendChild(buildTable(data.columns, data.rows));
+
+    // Additional tables (e.g., Kindergarten & 1st Grade)
+    (data.moreTables || []).forEach(function (t) {
+      if (t.heading) root.appendChild(el("h2", null, t.heading));
+      if (t.note) root.appendChild(el("p", null, t.note));
+      root.appendChild(buildTable(t.columns, t.rows));
     });
-    table.appendChild(tbody);
-    root.appendChild(table);
 
     // Fees
     if (data.fees && data.fees.length) {
