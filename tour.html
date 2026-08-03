@@ -146,15 +146,25 @@
         </p>
       </div>
 
-      <!-- ✏️ EDIT: paste your Calendly scheduling link between the quotes in data-calendly-url below
-           (for example: https://calendly.com/apls-tours/school-tour).
-           The moment a real link is added, the live booking calendar appears here automatically.
-           NOTE: when an inquiry form (above) is also active, this calendar stays locked until the
-           family submits the form — so every tour request captures the family's details first.
-           Leave it as PASTE_CALENDLY_LINK_HERE to keep showing the placeholder. -->
-      <div id="tour-booking" class="booking-placeholder" data-calendly-url="https://calendly.com/parry-ying/apls-campus-tour">
+      <!-- ✏️ EDIT: booking calendar. Two free options — use ONE:
+
+           GROUP TOURS (recommended): Cal.com lets several families book the SAME
+           slot for free. Make a free "Campus Tour" event at https://cal.com, turn
+           ON "Offer seats" (set how many families per slot), then paste the link's
+           "name/event" part into data-cal-link below (e.g. apls/campus-tour).
+
+           1-ON-1 TOURS: Calendly — paste a full link into data-calendly-url
+           (e.g. https://calendly.com/apls-tours/school-tour).
+
+           The moment a real link is added, the live booking calendar appears here
+           automatically. If both are filled in, Cal.com is used. When an inquiry
+           form (above) is also active, the calendar stays locked until the family
+           submits the form — so every tour request captures their details first. -->
+      <div id="tour-booking" class="booking-placeholder"
+           data-cal-link="parry-ying-d3xapo/apls-school-tour-1-hour"
+           data-calendly-url="https://calendly.com/parry-ying/apls-campus-tour">
         <strong>Tour booking calendar will appear here.</strong>
-        <span>Once APLS's Calendly link is added, families can pick a time right on this page.</span>
+        <span>Once APLS's booking link is added, families can pick a time right on this page.</span>
       </div>
 
       <p class="booking-fallback">
