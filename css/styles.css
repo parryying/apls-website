@@ -520,9 +520,9 @@ a.program h3 { color: var(--navy); }
   .utility-inner { gap: 1rem; font-size: .82rem; }
   .brand-text small { display: none; }
 
-  /* Hero CTAs: equal width, single row */
-  .hero-actions { flex-wrap: nowrap; gap: .6rem; }
-  .hero-actions .btn { flex: 1 1 0; min-width: 0; text-align: center; white-space: nowrap; padding-left: .8em; padding-right: .8em; }
+  /* Hero CTAs: stack full-width so labels never overflow the button */
+  .hero-actions { flex-direction: column; align-items: stretch; gap: .6rem; }
+  .hero-actions .btn { width: 100%; text-align: center; }
 
   /* Tour actions: stack equal width */
   .tour-actions { flex-direction: column; align-items: stretch; }
