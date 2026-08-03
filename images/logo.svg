@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Asia Pacific Language School logo">
+  <title>Asia Pacific Language School</title>
+  <desc>Two leaves growing from a single root beneath a rising sun — two languages nurtured with joy from one school.</desc>
+
+  <defs>
+    <linearGradient id="apls-leafL" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#2E8296"/>
+      <stop offset="1" stop-color="#3FA0B4"/>
+    </linearGradient>
+    <linearGradient id="apls-leafR" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#5C9A48"/>
+      <stop offset="1" stop-color="#7DBB62"/>
+    </linearGradient>
+    <radialGradient id="apls-sun" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#F8D07A"/>
+      <stop offset="1" stop-color="#E5714E"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Soft badge -->
+  <circle cx="60" cy="60" r="56" fill="#FBF6EC"/>
+  <circle cx="60" cy="60" r="56" fill="none" stroke="#6FA85A" stroke-opacity="0.35" stroke-width="3"/>
+
+  <!-- Rising Pacific sun -->
+  <circle cx="60" cy="30" r="10.5" fill="url(#apls-sun)"/>
+
+  <!-- Root / cradle -->
+  <path d="M40 96 Q60 108 80 96" fill="none" stroke="#3B5A4A" stroke-width="4.5" stroke-linecap="round"/>
+
+  <!-- Stem -->
+  <path d="M60 96 C 60 84, 59 76, 60 64" fill="none" stroke="#3B5A4A" stroke-width="4.5" stroke-linecap="round"/>
+
+  <!-- Left leaf (one language) -->
+  <path d="M60 70 C 42 70, 30 58, 30 42 C 48 44, 60 54, 60 70 Z" fill="url(#apls-leafL)"/>
+  <path d="M56 66 C 47 60, 40 54, 34 47" fill="none" stroke="#FBF6EC" stroke-opacity="0.55" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Right leaf (the other language) -->
+  <path d="M60 66 C 78 66, 90 54, 90 38 C 72 40, 60 50, 60 66 Z" fill="url(#apls-leafR)"/>
+  <path d="M64 62 C 73 56, 80 50, 86 43" fill="none" stroke="#FBF6EC" stroke-opacity="0.55" stroke-width="2" stroke-linecap="round"/>
+</svg>
