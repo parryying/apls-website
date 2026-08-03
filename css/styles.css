@@ -93,7 +93,9 @@ a:hover { text-decoration: underline; }
 .btn {
   display: inline-block;
   font-weight: 700;
-  padding: .7em 1.4em;
+  /* ≥18.7px bold keeps white-on-coral buttons in the WCAG "large text" tier (needs 3:1) */
+  font-size: 1.2rem;
+  padding: .65em 1.35em;
   border-radius: 999px;
   cursor: pointer;
   border: 2px solid transparent;
@@ -101,7 +103,7 @@ a:hover { text-decoration: underline; }
   text-decoration: none;
 }
 .btn:hover { text-decoration: none; transform: translateY(-1px); }
-.btn-lg { font-size: 1.05rem; padding: .8em 1.7em; }
+.btn-lg { font-size: 1.3rem; padding: .75em 1.6em; }
 .btn-primary { background: var(--red); color: #fff; box-shadow: var(--shadow); }
 .btn-primary:hover { background: var(--coral-d); }
 .btn-ghost { background: transparent; color: var(--navy); border-color: var(--navy); }
