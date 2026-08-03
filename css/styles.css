@@ -277,6 +277,9 @@ a.program h3 { color: var(--navy); }
 .tour-step-label { display: flex; align-items: center; gap: .6rem; font-weight: 700; font-size: 1.1rem; color: var(--navy); margin: 1.8rem 0 .7rem; }
 .tour-step-num { display: inline-flex; align-items: center; justify-content: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--red); color: #fff; font-size: .95rem; flex: 0 0 auto; }
 .tour-step-note { color: var(--muted); font-size: .96rem; margin: -.3rem 0 1rem; }
+/* Tighten the top of the tour page so families reach the form quickly. */
+#tour { padding-top: clamp(1rem, 2vw, 1.4rem); }
+#tour .tour-step-label:first-child { margin-top: 0; }
 .tour-lock { background: var(--light); border: 2px dashed var(--muted); border-radius: var(--radius); padding: 1.6rem 1.4rem; margin: 0 0 1.2rem; color: var(--muted); text-align: center; }
 .tour-calendar { position: relative; }
 .tour-calendar.is-locked .calendly-inline-widget { pointer-events: none; }
