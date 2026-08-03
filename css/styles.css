@@ -188,6 +188,9 @@ a:hover { text-decoration: underline; }
 /* ---------- Sections ---------- */
 .section { padding: clamp(2.5rem, 5vw, 4rem) 0; }
 .section-alt { background: var(--light); }
+/* "Our story" flows straight into "Why APLS" (both plain cream) — collapse the
+   doubled padding so the seam reads as one connected block, not an empty band. */
+#our-story { padding-bottom: 0; }
 .section-title { text-align: center; margin: 0 0 .6rem; }
 .section-title.light { color: var(--white); }
 .section-lead { text-align: center; color: var(--muted); max-width: 60ch; margin: 0 auto 2rem; font-size: 1.08rem; }
