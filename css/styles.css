@@ -242,6 +242,7 @@ a:hover { text-decoration: underline; }
 /* ---------- Programs ---------- */
 .program-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
 .program { background: var(--white); border-radius: var(--radius); padding: 1.5rem; border-top: 4px solid var(--red); box-shadow: var(--shadow); }
+.program-media { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; margin: 0 0 1.1rem; }
 .program:nth-child(4n+2) { border-top-color: var(--blue); }
 .program:nth-child(4n+3) { border-top-color: var(--green); }
 .program:nth-child(4n+4) { border-top-color: var(--gold); }
