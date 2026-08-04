@@ -122,10 +122,10 @@ a:hover { text-decoration: underline; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; gap: 1rem; }
 .brand { display: flex; align-items: center; gap: .7rem; }
 .brand:hover { text-decoration: none; }
-.brand-logo { height: 46px; width: auto; }
-.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
-.brand-text strong { color: var(--navy); font-size: 1.05rem; }
-.brand-text small { color: var(--muted); font-size: .78rem; }
+.brand-logo { height: 52px; width: auto; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-text strong { color: var(--navy); font-size: 1.4rem; font-weight: 800; letter-spacing: -0.01em; }
+.brand-text small { color: var(--muted); font-size: .82rem; }
 
 .site-nav { display: flex; align-items: center; gap: 1.4rem; }
 .site-nav a { color: var(--navy); font-weight: 700; }
@@ -524,6 +524,8 @@ a.program h3 { color: var(--navy); }
   .cards.cols-3, .cards.cols-2 { grid-template-columns: 1fr; }
   .utility-inner { gap: 1rem; font-size: .82rem; }
   .brand-text small { display: none; }
+  .brand-text strong { font-size: 1.15rem; }
+  .brand-logo { height: 44px; }
 
   /* Hero CTAs: stack full-width so labels never overflow the button */
   .hero-actions { flex-direction: column; align-items: stretch; gap: .6rem; }
