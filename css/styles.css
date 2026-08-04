@@ -167,7 +167,7 @@ a:hover { text-decoration: underline; }
 }
 .hero-illustration { width: 100%; height: auto; border-radius: var(--radius); box-shadow: var(--shadow); display: block; }
 .hero-slideshow { position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; background: #fff; }
-.hero-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 1s ease-in-out; }
+.hero-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s ease-in-out; }
 .hero-slide.is-active { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } }
 
