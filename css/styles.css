@@ -166,6 +166,10 @@ a:hover { text-decoration: underline; }
   display: flex; align-items: center; justify-content: center; color: var(--muted); font-weight: 700; text-align: center; padding: 1rem; box-shadow: var(--shadow);
 }
 .hero-illustration { width: 100%; height: auto; border-radius: var(--radius); box-shadow: var(--shadow); display: block; }
+.hero-slideshow { position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; background: #fff; }
+.hero-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 1s ease-in-out; }
+.hero-slide.is-active { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } }
 
 /* ---------- Page hero (subpages) ---------- */
 .page-hero { background: linear-gradient(160deg, var(--peach) 0%, var(--cream) 60%, #EFF4EA 100%); padding: clamp(2.2rem, 5vw, 3.6rem) 0; text-align: center; }
