@@ -190,6 +190,10 @@ a:hover { text-decoration: underline; }
 }
 .story-highlight p { margin: 0; font-size: 1.12rem; font-style: italic; color: var(--text); }
 
+/* ---------- Video ---------- */
+.video-wrap { max-width: 900px; margin: 0 auto; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); background: #000; }
+.video-wrap video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+
 /* ---------- Sections ---------- */
 .section { padding: clamp(2.5rem, 5vw, 4rem) 0; }
 .section-alt { background: var(--light); }
@@ -483,6 +487,22 @@ a.program h3 { color: var(--navy); }
 .photo-card figcaption {
   padding: .7rem 1rem; font-weight: 700; color: var(--text); text-align: center;
 }
+.video-thumb { transition: transform .15s ease, box-shadow .15s ease; }
+.video-thumb:hover, .video-thumb:focus-within { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(59, 90, 74, .16); }
+.video-thumb a { display: block; text-decoration: none; color: var(--text); }
+.video-thumb-media { position: relative; display: block; }
+.video-thumb-media img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.video-thumb-play {
+  position: absolute; inset: 0; margin: auto;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(229, 113, 78, .92); box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+  display: flex; align-items: center; justify-content: center;
+}
+.video-thumb-play::before {
+  content: ""; border-style: solid; border-width: 11px 0 11px 18px;
+  border-color: transparent transparent transparent #fff; margin-left: 4px;
+}
+.video-thumb-caption { display: block; padding: .7rem 1rem; font-weight: 700; color: var(--text); text-align: center; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
@@ -527,7 +547,7 @@ a.program h3 { color: var(--navy); }
   .cards.cols-3, .cards.cols-2 { grid-template-columns: 1fr; }
   .utility-inner { gap: 1rem; font-size: .82rem; }
   .brand-text small { display: none; }
-  .brand-text strong { font-size: 1.05rem; white-space: normal; line-height: 1.05; }
+  .brand-text strong { font-size: 1.45rem; white-space: normal; line-height: 1.1; }
   .brand-logo { height: 42px; }
   /* Free up room for the name; the hero already has a prominent CTA */
   .header-cta { display: none; }
