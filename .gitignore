@@ -13,3 +13,6 @@ node_modules/
 
 # Temporary image staging / candidate photos
 images/_cand/
+
+# Oversized raw source video (exceeds GitHub 100MB limit); web version is virtual-tour.mp4
+videos/1080p.mov

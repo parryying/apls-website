@@ -156,7 +156,8 @@ a:hover { text-decoration: underline; }
 .hero-inner { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 2.5rem; align-items: center; }
 .hero-text, .hero-image { min-width: 0; }
 .eyebrow { color: var(--blue); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: .82rem; margin-bottom: .6rem; }
-.hero-tagline { font-size: 1.28rem; font-weight: 700; color: var(--navy, #1f3a5f); max-width: 46ch; margin: .2rem 0 1rem; line-height: 1.35; }
+.hero-tagline { font-size: 1.28rem; font-weight: 700; color: var(--text); max-width: 46ch; margin: .2rem 0 1rem; line-height: 1.35; }
+.hero-tagline-accent { color: var(--blue); }
 .hero-sub { font-size: 1.12rem; color: var(--text); max-width: 56ch; }
 .hero-clarify { font-size: .96rem; color: var(--muted); max-width: 42ch; margin: .6rem 0 0; }
 .hero-actions { display: flex; gap: .8rem; flex-wrap: wrap; margin: 1.4rem 0 1rem; }
