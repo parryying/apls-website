@@ -473,6 +473,31 @@ a.program h3 { color: var(--navy); }
   aspect-ratio: 1 / 1; width: 100%; border-radius: var(--radius); object-fit: cover;
   background: var(--light); box-shadow: var(--shadow); display: block;
 }
+
+/* ---------- Gallery carousel (home) ---------- */
+.gallery-carousel { position: relative; }
+.gallery-track {
+  display: flex; gap: 1rem; overflow-x: auto;
+  padding: .5rem 0; -ms-overflow-style: none; scrollbar-width: none;
+}
+.gallery-track::-webkit-scrollbar { display: none; }
+.gallery-track .gallery-tile {
+  flex: 0 0 calc((100% - 3rem) / 4);
+}
+.gallery-track:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: var(--radius); }
+.carousel-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 48px; height: 48px; border: none; border-radius: 50%; cursor: pointer;
+  background: var(--red); color: #fff; box-shadow: 0 4px 14px rgba(0, 0, 0, .22);
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s ease, transform .15s ease, opacity .15s ease;
+}
+.carousel-arrow:hover { background: var(--coral-d); }
+.carousel-arrow:active { transform: translateY(-50%) scale(.94); }
+.carousel-arrow:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+.carousel-prev { left: -12px; }
+.carousel-next { right: -12px; }
+.carousel-arrow[hidden] { display: none; }
 .section-cta { text-align: center; margin: 1.6rem 0 0; }
 
 /* ---------- Photo gallery (gallery.html) ---------- */
@@ -504,12 +529,49 @@ a.program h3 { color: var(--navy); }
 }
 .video-thumb-caption { display: block; padding: .7rem 1rem; font-weight: 700; color: var(--text); text-align: center; }
 
+/* Clickable gallery photos */
+.photo-card:not(.video-thumb) img { cursor: zoom-in; transition: transform .15s ease; }
+.photo-card:not(.video-thumb):hover img { transform: scale(1.02); }
+
+/* ---------- Lightbox ---------- */
+.lightbox {
+  position: fixed; inset: 0; z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+  padding: 3vh 4vw;
+  background: rgba(20, 28, 24, .92);
+}
+.lightbox.is-open { display: flex; }
+.lightbox-figure { margin: 0; max-width: 100%; max-height: 100%; display: flex; flex-direction: column; align-items: center; }
+.lightbox-img {
+  max-width: 100%; max-height: 84vh; width: auto; height: auto;
+  border-radius: var(--radius); box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+  object-fit: contain;
+}
+.lightbox-caption { margin-top: 1rem; color: #fff; font-weight: 700; text-align: center; }
+.lightbox-close, .lightbox-prev, .lightbox-next {
+  position: absolute; background: rgba(255, 255, 255, .14); color: #fff;
+  border: none; cursor: pointer; border-radius: 50%;
+  width: 48px; height: 48px; font-size: 1.6rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s ease;
+}
+.lightbox-close:hover, .lightbox-prev:hover, .lightbox-next:hover { background: rgba(255, 255, 255, .3); }
+.lightbox-close { top: 2vh; right: 3vw; }
+.lightbox-prev { left: 2vw; top: 50%; transform: translateY(-50%); }
+.lightbox-next { right: 2vw; top: 50%; transform: translateY(-50%); }
+@media (max-width: 600px) {
+  .lightbox-prev { left: 1vw; }
+  .lightbox-next { right: 1vw; }
+  .lightbox-close { top: 1vh; right: 2vw; }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .cards { grid-template-columns: repeat(2, 1fr); }
   .cards.cols-3 { grid-template-columns: repeat(2, 1fr); }
   .program-grid { grid-template-columns: repeat(2, 1fr); }
   .gallery-strip { grid-template-columns: repeat(2, 1fr); }
+  .gallery-track .gallery-tile { flex-basis: calc((100% - 1rem) / 2); }
   .photo-gallery { grid-template-columns: repeat(2, 1fr); }
   .stats-inner { grid-template-columns: repeat(2, 1fr); }
   .hero-inner { grid-template-columns: minmax(0, 1fr); }
@@ -545,6 +607,9 @@ a.program h3 { color: var(--navy); }
 @media (max-width: 560px) {
   .cards, .program-grid { grid-template-columns: 1fr; }
   .cards.cols-3, .cards.cols-2 { grid-template-columns: 1fr; }
+  .gallery-track .gallery-tile { flex-basis: 82%; }
+  .carousel-prev { left: 6px; }
+  .carousel-next { right: 6px; }
   .utility-inner { gap: .5rem 1rem; font-size: .82rem; justify-content: center; }
   .brand-text small { display: none; }
   .brand-text strong { font-size: 1.45rem; white-space: normal; line-height: 1.1; }
