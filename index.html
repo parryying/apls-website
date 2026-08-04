@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=2" />
+  <link rel="stylesheet" href="css/styles.css?v=3" />
 
   <!-- ============ LocalBusiness structured data (helps Google show address, hours, phone) ============ -->
   <!-- ✏️ EDIT: confirm openingHours, geo coordinates, and the live domain before launch -->
@@ -338,25 +338,11 @@
     <div class="container">
       <h2 class="section-title">A peek inside APLS</h2>
       <p class="section-lead">Warm classrooms, hands-on activities, and cultural celebrations throughout the year.</p>
-      <div class="gallery-carousel">
-        <button class="carousel-arrow carousel-prev" type="button" aria-label="Previous photos" aria-controls="gallery-track">
-          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="gallery-track" id="gallery-track" tabindex="0" role="group" aria-label="Photos from around APLS">
-          <img src="images/photo-calligraphy.jpg" alt="APLS student practicing Chinese and Japanese calligraphy with brush and ink" class="gallery-tile" loading="lazy" />
-          <img src="images/apls-painting.jpg" alt="Preschoolers painting during an APLS arts activity" class="gallery-tile" loading="lazy" />
-          <img src="images/apls-classroom-activity.jpg" alt="APLS students in traditional dress celebrating Lunar New Year" class="gallery-tile" loading="lazy" />
-          <img src="images/apls-japanese-lesson.jpg" alt="APLS preschoolers during a Japanese lesson" class="gallery-tile" loading="lazy" />
-          <img src="images/apls-monkey-king.jpg" alt="APLS students during a Monkey King story activity" class="gallery-tile" loading="lazy" />
-          <img src="images/apls-music-instruments.jpg" alt="APLS students playing Chinese musical instruments" class="gallery-tile" loading="lazy" />
-          <img src="images/photo-fall-festival.jpg" alt="APLS students and families enjoying the fall festival" class="gallery-tile" loading="lazy" />
-          <img src="images/photo-graduation.jpg" alt="APLS students at their graduation ceremony" class="gallery-tile" loading="lazy" />
-          <img src="images/apls-writing-1.jpg" alt="APLS student practicing writing at her desk" class="gallery-tile" loading="lazy" />
-          <img src="images/photo-outdoor.jpg" alt="Children enjoying an outdoor activity at APLS" class="gallery-tile" loading="lazy" />
-        </div>
-        <button class="carousel-arrow carousel-next" type="button" aria-label="More photos" aria-controls="gallery-track">
-          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+      <div class="gallery-strip">
+        <img src="images/photo-calligraphy.jpg" alt="APLS student practicing Chinese and Japanese calligraphy with brush and ink" class="gallery-tile" loading="lazy" />
+        <img src="images/apls-painting.jpg" alt="Preschoolers painting during an APLS arts activity" class="gallery-tile" loading="lazy" />
+        <img src="images/apls-classroom-activity.jpg" alt="APLS students in traditional dress celebrating Lunar New Year" class="gallery-tile" loading="lazy" />
+        <img src="images/apls-japanese-lesson.jpg" alt="APLS preschoolers during a Japanese lesson" class="gallery-tile" loading="lazy" />
       </div>
       <p class="section-cta"><a href="gallery.html" class="btn btn-ghost btn-lg">See the photo gallery</a></p>
     </div>
@@ -424,53 +410,6 @@
         i = (i + 1) % slides.length;
         slides[i].classList.add('is-active');
       }, 4000);
-    })();
-
-    // "A peek inside APLS" photo carousel — arrow navigation
-    (function () {
-      var track = document.getElementById('gallery-track');
-      if (!track) return;
-      var prev = document.querySelector('.carousel-prev');
-      var next = document.querySelector('.carousel-next');
-      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var anim = null;
-
-      function step() {
-        var tile = track.querySelector('.gallery-tile');
-        var gap = parseFloat(getComputedStyle(track).columnGap) || 16;
-        var tileW = tile ? tile.getBoundingClientRect().width + gap : track.clientWidth;
-        // Scroll by whole visible tiles, at least one
-        return Math.max(tileW, Math.floor(track.clientWidth / tileW) * tileW);
-      }
-      function maxScroll() { return track.scrollWidth - track.clientWidth; }
-      function update() {
-        if (prev) prev.hidden = track.scrollLeft <= 1;
-        if (next) next.hidden = track.scrollLeft >= maxScroll() - 1;
-      }
-      // Manual smooth scroll (native smooth is unreliable in some embedded browsers)
-      function scrollToLeft(target) {
-        target = Math.max(0, Math.min(target, maxScroll()));
-        if (reduce) { track.scrollLeft = target; update(); return; }
-        if (anim) cancelAnimationFrame(anim);
-        var startX = track.scrollLeft;
-        var dist = target - startX;
-        var startT = null;
-        var dur = 350;
-        function frame(t) {
-          if (startT === null) startT = t;
-          var p = Math.min(1, (t - startT) / dur);
-          var e = 1 - Math.pow(1 - p, 3); // easeOutCubic
-          track.scrollLeft = startX + dist * e;
-          if (p < 1) { anim = requestAnimationFrame(frame); }
-          else { anim = null; update(); }
-        }
-        anim = requestAnimationFrame(frame);
-      }
-      if (prev) prev.addEventListener('click', function () { scrollToLeft(track.scrollLeft - step()); });
-      if (next) next.addEventListener('click', function () { scrollToLeft(track.scrollLeft + step()); });
-      track.addEventListener('scroll', update, { passive: true });
-      window.addEventListener('resize', update);
-      update();
     })();
   </script>
 
