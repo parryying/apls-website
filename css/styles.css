@@ -567,7 +567,10 @@ a.program h3 { color: var(--navy); }
     background: var(--white); box-shadow: 0 8px 20px rgba(31,58,95,.12); padding: .5rem 0;
   }
   .site-nav a { padding: .8rem 20px; }
-  .btn-nav { display: none; }
+  .site-nav .btn-nav {
+    display: block; margin: .5rem 20px; padding: .65em 1.1em;
+    color: #fff; text-align: center;
+  }
   .header-cta { display: inline-block; margin-left: auto; margin-right: .55rem; padding: .5em .95em; font-size: .85rem; white-space: nowrap; }
   .nav-toggle:checked ~ .site-nav { display: flex; }
   .header-inner { position: relative; }
@@ -584,11 +587,17 @@ a.program h3 { color: var(--navy); }
   .cards, .program-grid { grid-template-columns: 1fr; }
   .cards.cols-3, .cards.cols-2 { grid-template-columns: 1fr; }
   .utility-inner { gap: .5rem 1rem; font-size: .82rem; justify-content: center; }
+  .header-inner { gap: .35rem; }
+  .brand { min-width: 0; gap: .45rem; }
   .brand-text small { display: none; }
-  .brand-text strong { font-size: 1.45rem; white-space: normal; line-height: 1.1; }
-  .brand-logo { height: 42px; }
-  /* Free up room for the name; the hero already has a prominent CTA */
-  .header-cta { display: none; }
+  .brand-text strong { font-size: 1.15rem; white-space: normal; line-height: 1.1; }
+  .brand-logo { height: 38px; }
+  .header-cta {
+    display: inline-block; position: static;
+    margin: 0 .15rem 0 auto; padding: .45rem .75rem;
+    font-size: 0; text-align: center;
+  }
+  .header-cta::after { content: "Tour"; font-size: .85rem; }
 
   /* Hero CTAs: stack full-width so labels never overflow the button */
   .hero-actions { flex-direction: column; align-items: stretch; gap: .6rem; }
