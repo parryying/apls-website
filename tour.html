@@ -15,12 +15,12 @@
   <meta property="og:url" content="https://www.apls.org/tour.html" />
   <meta property="og:site_name" content="Asia Pacific Language School" />
   <meta property="og:locale" content="en_US" />
-  <meta property="og:image" content="https://www.apls.org/images/hero-classroom.jpg" />
+  <meta property="og:image" content="https://www.apls.org/images/hero-classroom.webp" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Schedule a Tour | APLS Bellevue" />
   <meta name="twitter:description" content="Book a warm, no-pressure tour and enroll year-round at APLS in Bellevue." />
-  <meta name="twitter:image" content="https://www.apls.org/images/hero-classroom.jpg" />
+  <meta name="twitter:image" content="https://www.apls.org/images/hero-classroom.webp" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,7 +38,7 @@
       { "@type": "Question", "name": "What ages do you serve?", "acceptedAnswer": { "@type": "Answer", "text": "From age 2½ in preschool through high-school age for AP prep, depending on the program." } },
       { "@type": "Question", "name": "Is APLS accredited and licensed?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. APLS is an accredited private school licensed by the Washington State Office of Superintendent of Public Instruction, and our learning center is a licensed childcare center. We are an independent non-profit." } },
       { "@type": "Question", "name": "When can we enroll?", "acceptedAnswer": { "@type": "Answer", "text": "We offer year-round, rolling enrollment. Reach out any time and we'll help you find a start date that works." } },
-      { "@type": "Question", "name": "What are your operating hours?", "acceptedAnswer": { "@type": "Answer", "text": "We are open Monday–Friday, 8:00 a.m.–5:30 p.m., closing at 6 p.m. Individual program hours vary." } }
+      { "@type": "Question", "name": "What are your operating hours?", "acceptedAnswer": { "@type": "Answer", "text": "Program hours are Monday–Friday, 8:00 a.m.–5:30 p.m. Extended care is available until 6:00 p.m. Individual program hours vary." } }
     ]
   }
   </script>
@@ -69,12 +69,11 @@
 
       <a href="tour.html" class="btn btn-primary header-cta">Schedule a Tour</a>
 
-      <input type="checkbox" id="nav-toggle" class="nav-toggle" />
-      <label for="nav-toggle" class="nav-toggle-label" aria-label="Open menu">
-        <span></span><span></span><span></span>
-      </label>
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+        <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
 
-      <nav class="site-nav" aria-label="Main navigation">
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation">
         <a href="index.html">Home</a>
         <a href="why-apls.html">Why APLS</a>
         <span class="nav-programs">
@@ -198,7 +197,7 @@
         book your in-person visit above.
       </p>
       <div class="video-wrap">
-        <video controls preload="none" playsinline poster="images/virtual-tour-poster.jpg">
+        <video controls preload="none" playsinline poster="images/virtual-tour-poster.webp">
           <source src="videos/virtual-tour.mp4" type="video/mp4" />
           Your browser can't play this video.
           <a href="videos/virtual-tour.mp4">Download the virtual tour</a> instead.
@@ -269,7 +268,7 @@
         <details>
           <summary>What are your operating hours?</summary>
           <!-- ✏️ EDIT: confirm hours -->
-          <p>We are open Monday–Friday, 8:00 a.m.–5:30 p.m., closing at 6 p.m. Individual program hours vary.</p>
+          <p>Program hours are Monday–Friday, 8:00 a.m.–5:30 p.m. Extended care is available until 6:00 p.m. Individual program hours vary.</p>
         </details>
       </div>
     </div>
@@ -296,7 +295,7 @@
       <div class="footer-col">
         <strong>Asia Pacific Language School</strong>
         <p><a href="https://maps.app.goo.gl/M1rjURfzHz67xjtdA" target="_blank" rel="noopener">14042 NE 8th Street, 1st Floor<br />Bellevue, WA</a></p>
-        <p>Mon&ndash;Fri, 8:00 a.m. &ndash; 5:30 p.m., closing at 6 p.m.</p>
+        <p>Program hours: Mon&ndash;Fri, 8:00 a.m.&ndash;5:30 p.m. Extended care available until 6:00 p.m.</p>
         <p><a href="tel:+14257474172">425-747-4172</a><br /><a href="mailto:apls@apls.org">apls@apls.org</a></p>
         <p><a href="https://www.instagram.com/aplsfamilies/" target="_blank" rel="noopener">Instagram @aplsfamilies</a></p>
       </div>
@@ -322,5 +321,6 @@
 
   <script src="js/inquiry-form.js"></script>
   <script src="js/tour-booking.js"></script>
+  <script src="js/mobile-nav.js"></script>
 </body>
 </html>

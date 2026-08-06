@@ -15,13 +15,13 @@
   <meta property="og:url" content="https://www.apls.org/japanese.html" />
   <meta property="og:site_name" content="Asia Pacific Language School" />
   <meta property="og:locale" content="ja_JP" />
-  <meta property="og:image" content="https://www.apls.org/images/hero-classroom.jpg" />
+  <meta property="og:image" content="https://www.apls.org/images/hero-classroom.webp" />
 
   <!-- Twitter card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="日本語案内 — アジア・パシフィック・ランゲージ・スクール（APLS）" />
   <meta name="twitter:description" content="ワシントン州ベルビューで1995年より、日本語・中国語のイマージョン教育を行う非営利のスクールです。" />
-  <meta name="twitter:image" content="https://www.apls.org/images/hero-classroom.jpg" />
+  <meta name="twitter:image" content="https://www.apls.org/images/hero-classroom.webp" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -55,12 +55,11 @@
 
       <a href="tour.html" class="btn btn-primary header-cta">Schedule a Tour</a>
 
-      <input type="checkbox" id="nav-toggle" class="nav-toggle" />
-      <label for="nav-toggle" class="nav-toggle-label" aria-label="Open menu">
-        <span></span><span></span><span></span>
-      </label>
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="メニューを開く" data-open-label="メニューを開く" data-close-label="メニューを閉じる">
+        <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
 
-      <nav class="site-nav" aria-label="Main navigation">
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation">
         <a href="index.html">Home</a>
         <a href="why-apls.html">Why APLS</a>
         <span class="nav-programs">
@@ -140,11 +139,11 @@
         </div>
         <div class="card">
           <h3>アフタースクール</h3>
-          <p>日本語・中国語クラス、ケアサービス、通学校までのお迎えサービス</p>
+          <p>5歳〜11歳対象の日本語・中国語クラス（水曜日）</p>
         </div>
         <div class="card">
           <h3>その他</h3>
-          <p>サマーキャンプ、土曜クラス、ティーンエイジャー（個別・APテスト準備指導など）</p>
+          <p>サマーキャンプ、土曜クラス、全年齢対象の個別レッスン、APテスト準備指導など</p>
         </div>
       </div>
     </div>
@@ -161,7 +160,7 @@
       <table class="schedule-table">
         <tbody>
           <tr><td>対象年齢</td><td>2歳半〜6歳</td></tr>
-          <tr><td>運営時間（全日）</td><td>8:00am – 5:30pm（午後6時 閉園）</td></tr>
+          <tr><td>プログラム時間（全日）</td><td>8:00am – 5:30pm（延長保育は午後6時まで）</td></tr>
           <tr><td>午前・半日</td><td>9:00am – 12:00pm</td></tr>
           <tr><td>午後・半日</td><td>12:45pm – 3:45pm</td></tr>
           <tr><td>曜日</td><td>月〜金（週2日以上から選択可）</td></tr>
@@ -186,32 +185,28 @@
       <table class="schedule-table">
         <tbody>
           <tr><td>対象年齢</td><td>5歳〜11歳</td></tr>
-          <tr><td>時間</td><td>4:00pm – 6:00pm（水曜日のみ 2:00pm から）</td></tr>
-          <tr><td>曜日</td><td>日本語クラス：月＆水曜日 / 火＆木曜日（水曜のキンダーは2:00pmから）<br />中国語クラス：詳細はお問い合わせください</td></tr>
+          <tr><td>時間</td><td>2:00pm – 3:30pm、または 4:00pm – 5:30pm</td></tr>
+          <tr><td>曜日</td><td>水曜日</td></tr>
           <tr><td>言語</td><td>日本語・中国語いずれか</td></tr>
           <tr><td>場所</td><td>Asia Pacific Language School</td></tr>
-          <tr><td>お迎え</td><td>通学されている学校までのお迎えサービスあり（有料）</td></tr>
         </tbody>
       </table>
 
-      <!-- After-school care -->
-      <h3>アフタースクール・ケア</h3>
-      <ul class="prog-highlights">
-        <li>現地校の宿題のお手伝い</li>
-        <li>日本語補習校の宿題のお手伝い</li>
-        <li>日本語学習教室（お子様の年齢・レベルに合わせて実施）</li>
-        <li>お迎えサービス（ご希望の方はお問い合わせください）</li>
-      </ul>
+      <!-- Saturday school -->
+      <h3>土曜クラス</h3>
       <table class="schedule-table">
         <tbody>
-          <tr><td>対象年齢</td><td>現地校に通う小学生</td></tr>
-          <tr><td>時間</td><td>3:30pm – 6:00pm</td></tr>
-          <tr><td>曜日</td><td>月曜日〜金曜日</td></tr>
+          <tr><td>対象年齢</td><td>5歳〜11歳</td></tr>
+          <tr><td>時間</td><td>9:30am – 11:00am</td></tr>
+          <tr><td>曜日</td><td>土曜日</td></tr>
+          <tr><td>言語</td><td>日本語・中国語いずれか</td></tr>
           <tr><td>場所</td><td>Asia Pacific Language School</td></tr>
-          <tr><td>お迎え</td><td>通学されている学校までのお迎えサービスあり（有料）</td></tr>
         </tbody>
       </table>
-      <p style="color:var(--muted);">※お迎え・スクールバス対象校は学期により異なります。上記以外のお迎えをご希望の方もご相談ください。</p>
+
+      <!-- Private lessons -->
+      <h3>個別レッスン</h3>
+      <p>全年齢を対象に、日本語・中国語の個別レッスンを毎日8:00am〜6:00pmに実施しています。</p>
 
       <!-- Kindergarten -->
       <h3>キンダーガーテンクラス</h3>
@@ -270,7 +265,7 @@
       <div class="footer-col">
         <strong>Asia Pacific Language School</strong>
         <p><a href="https://maps.app.goo.gl/M1rjURfzHz67xjtdA" target="_blank" rel="noopener">14042 NE 8th Street, 1st Floor<br />Bellevue, WA</a></p>
-        <p>運営時間：月〜金、午前8:00 〜 午後5:30（午後6時 閉園）</p>
+        <p>プログラム時間：月〜金、午前8:00 〜 午後5:30。延長保育は午後6:00までご利用いただけます。</p>
         <p><a href="tel:+14257474172">425-747-4172</a><br /><a href="mailto:apls@apls.org">apls@apls.org</a></p>
         <p><a href="https://www.instagram.com/aplsfamilies/" target="_blank" rel="noopener">Instagram @aplsfamilies</a></p>
       </div>
@@ -293,5 +288,6 @@
   </footer>
 
   <script src="js/apls-render.js"></script>
+  <script src="js/mobile-nav.js"></script>
 </body>
 </html>

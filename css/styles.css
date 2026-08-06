@@ -147,8 +147,11 @@ a:hover { text-decoration: underline; }
 .submenu a:hover { background: var(--cream); color: var(--blue); }
 .submenu a[aria-current="page"] { color: var(--coral-text); }
 
-/* Mobile nav (CSS-only, checkbox hack) */
-.nav-toggle, .nav-toggle-label { display: none; }
+/* Mobile navigation */
+.nav-toggle {
+  display: none; border: 0; background: transparent; color: var(--navy);
+  font: inherit;
+}
 
 /* ---------- Hero ---------- */
 .hero { background: linear-gradient(160deg, var(--peach) 0%, var(--cream) 55%, #EFF4EA 100%); padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
@@ -559,8 +562,8 @@ a.program h3 { color: var(--navy); }
    never crowds the nav links on mid-width screens */
 @media (max-width: 1100px) {
   /* mobile nav */
-  .nav-toggle-label { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
-  .nav-toggle-label span { width: 26px; height: 3px; background: var(--navy); border-radius: 2px; }
+  .nav-toggle { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
+  .nav-toggle span { width: 26px; height: 3px; background: currentColor; border-radius: 2px; }
   .site-nav {
     display: none; position: absolute; top: 100%; left: 0; right: 0;
     flex-direction: column; align-items: stretch; gap: 0;
@@ -572,7 +575,7 @@ a.program h3 { color: var(--navy); }
     color: #fff; text-align: center;
   }
   .header-cta { display: inline-block; margin-left: auto; margin-right: .55rem; padding: .5em .95em; font-size: .85rem; white-space: nowrap; }
-  .nav-toggle:checked ~ .site-nav { display: flex; }
+  .site-nav.is-open { display: flex; }
   .header-inner { position: relative; }
 
   /* Collapse submenus on mobile — top-level Programs/Enrollment links lead to full lists */

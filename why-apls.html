@@ -16,13 +16,13 @@
   <meta property="og:url" content="https://www.apls.org/why-apls.html" />
   <meta property="og:site_name" content="Asia Pacific Language School" />
   <meta property="og:locale" content="en_US" />
-  <meta property="og:image" content="https://www.apls.org/images/hero-classroom.jpg" />
+  <meta property="og:image" content="https://www.apls.org/images/hero-classroom.webp" />
 
   <!-- Twitter card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Why APLS — Accredited Chinese & Japanese School in Bellevue" />
   <meta name="twitter:description" content="Accredited. Non-profit. Both Chinese and Japanese. Warm and affordable. Since 1995." />
-  <meta name="twitter:image" content="https://www.apls.org/images/hero-classroom.jpg" />
+  <meta name="twitter:image" content="https://www.apls.org/images/hero-classroom.webp" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -57,12 +57,11 @@
 
       <a href="tour.html" class="btn btn-primary header-cta">Schedule a Tour</a>
 
-      <input type="checkbox" id="nav-toggle" class="nav-toggle" />
-      <label for="nav-toggle" class="nav-toggle-label" aria-label="Open menu">
-        <span></span><span></span><span></span>
-      </label>
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+        <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
 
-      <nav class="site-nav" aria-label="Main navigation">
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation">
         <a href="index.html">Home</a>
         <a href="why-apls.html" aria-current="page">Why APLS</a>
         <span class="nav-programs">
@@ -112,10 +111,9 @@
       <div class="story-rows">
         <!-- Row 1 -->
         <div class="story-row">
-          <!-- ✏️ EDIT: replace this placeholder with a real APLS photo (children learning in class) -->
           <figure class="story-row-media">
-            <img src="images/story-play.jpg" alt="A joyful APLS girl playing with her friends, arms wide open" />
-            <figcaption>Stock photo — to be replaced with a real APLS photo.</figcaption>
+            <img src="images/apls-classroom-activity.webp" alt="APLS students and teachers in traditional dress celebrating Lunar New Year" loading="lazy" />
+            <figcaption>Celebrating Lunar New Year together at APLS.</figcaption>
           </figure>
           <div class="story-row-text">
             <p>
@@ -136,12 +134,9 @@
 
         <!-- Row 2 (image on the right) -->
         <div class="story-row reverse">
-          <!-- ✏️ EDIT: replace this placeholder with a real, emotional APLS photo — e.g. a child
-               mid-activity with a teacher, or a graduate holding a younger sibling's hand.
-               One warm, genuine face moves families more than any paragraph. (Needs a signed media release.) -->
           <figure class="story-row-media">
-            <img src="images/story-culture.jpg" alt="Young APLS children playing and learning together in class" />
-            <figcaption>Stock photo — to be replaced with a real APLS family photo.</figcaption>
+            <img src="images/photo-graduation.webp" alt="A group of APLS preschool graduates in red caps and gowns holding their diplomas" loading="lazy" />
+            <figcaption>Celebrating an APLS preschool graduation.</figcaption>
           </figure>
           <div class="story-row-text">
             <p>
@@ -211,7 +206,7 @@
         <li class="feature">
           <span class="feature-mark">🧑‍🏫</span>
           <!-- ✏️ EDIT: replace [X] with a real figure from Sharon, e.g. "10+ years" -->
-          <div><strong>Dedicated teachers who stay</strong><p>In a field known for turnover, many of our teachers have been with APLS for over <strong>[X] years</strong> — so your child is known, year after year.</p></div>
+          <div><strong>Dedicated teachers who stay</strong><p>In a field known for turnover, many of our teachers have been with APLS for over <strong>10 years</strong> — so your child is known, year after year.</p></div>
         </li>
         <li class="feature">
           <span class="feature-mark">🧑‍🤝‍🧑</span>
@@ -334,7 +329,7 @@
       <div class="footer-col">
         <strong>Asia Pacific Language School</strong>
         <p><a href="https://maps.app.goo.gl/M1rjURfzHz67xjtdA" target="_blank" rel="noopener">14042 NE 8th Street, 1st Floor<br />Bellevue, WA</a></p>
-        <p>Mon&ndash;Fri, 8:00 a.m. &ndash; 5:30 p.m., closing at 6 p.m.</p>
+        <p>Program hours: Mon&ndash;Fri, 8:00 a.m.&ndash;5:30 p.m. Extended care available until 6:00 p.m.</p>
         <p><a href="tel:+14257474172">425-747-4172</a><br /><a href="mailto:apls@apls.org">apls@apls.org</a></p>
         <p><a href="https://www.instagram.com/aplsfamilies/" target="_blank" rel="noopener">Instagram @aplsfamilies</a></p>
       </div>
@@ -359,5 +354,6 @@
   </footer>
 
   <script src="js/apls-render.js"></script>
+  <script src="js/mobile-nav.js"></script>
 </body>
 </html>

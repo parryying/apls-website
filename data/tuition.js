@@ -11,7 +11,7 @@
    ============================================================ */
 window.APLS_TUITION = {
   heading: "Preschool monthly tuition",
-  note: "Choose a half-day morning session (9:00\u00a0a.m.\u201312:00\u00a0p.m.) or a whole-day program (8:00\u00a0a.m.\u20135:30\u00a0p.m., closing at 6\u00a0p.m.), 2 to 5 days per week.",
+  note: "Choose a half-day morning session (9:00\u00a0a.m.\u201312:00\u00a0p.m.) or a whole-day program (8:00\u00a0a.m.\u20135:30\u00a0p.m.), 2 to 5 days per week. Extended care is available until 6:00\u00a0p.m.",
 
   // Monthly tuition table.
   columns: ["Days per week", "Half day (AM) \u00b7 monthly", "Whole day \u00b7 monthly"],
