@@ -590,13 +590,15 @@ a.program h3 { color: var(--navy); }
   .cards, .program-grid { grid-template-columns: 1fr; }
   .cards.cols-3, .cards.cols-2 { grid-template-columns: 1fr; }
   .utility-inner { gap: .5rem 1rem; font-size: .82rem; justify-content: center; }
-  .header-inner { gap: .35rem; }
-  .brand { min-width: 0; gap: .45rem; }
+  .header-inner { gap: .35rem; padding-inline: 12px; }
+  .brand { flex: 1 1 auto; min-width: 0; gap: .45rem; overflow: hidden; }
+  .brand-text { min-width: 0; }
   .brand-text small { display: none; }
   .brand-text strong { font-size: 1.15rem; white-space: normal; line-height: 1.1; }
-  .brand-logo { height: 38px; }
+  .brand-logo { flex: 0 0 auto; height: 38px; }
+  .nav-toggle { flex: 0 0 auto; }
   .header-cta {
-    display: inline-block; position: static;
+    display: inline-block; position: static; flex: 0 0 auto;
     margin: 0 .15rem 0 auto; padding: .45rem .75rem;
     font-size: 0; text-align: center;
   }

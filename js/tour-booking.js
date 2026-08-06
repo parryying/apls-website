@@ -32,8 +32,6 @@
   var box = document.getElementById('tour-booking');
   if (!box) return;
 
-  var lock = document.getElementById('tour-lock');
-
   var calLink = (box.getAttribute('data-cal-link') || '').trim();
   var calendlyUrl = (box.getAttribute('data-calendly-url') || '').trim();
 
@@ -44,13 +42,6 @@
   var isCalendly = /^https:\/\/calendly\.com\/.+/i.test(calendlyUrl);
 
   if (!isCal && !isCalendly) return; // keep the placeholder
-
-  // Pull the family's name + email from the inquiry form (if captured) so they
-  // don't have to type them again in the scheduler.
-  function prefill() {
-    var p = window.APLS_INQUIRY_PREFILL;
-    return (p && (p.name || p.email)) ? p : null;
-  }
 
   // Build the live calendar in place of the placeholder.
   var host = document.createElement('div');
@@ -99,11 +90,6 @@
 
     function draw() {
       var config = { layout: 'month_view' };
-      var pf = prefill();
-      if (pf) {
-        if (pf.name) config.name = pf.name;
-        if (pf.email) config.email = pf.email;
-      }
       widget.innerHTML = '';
       window.Cal.ns[ns]('inline', {
         elementOrSelector: '#' + widget.id,
@@ -118,20 +104,8 @@
   }
 
   function renderCalendly() {
-    function calendlyWithPrefill() {
-      var url = calendlyUrl;
-      var pf = prefill();
-      if (pf) {
-        var params = [];
-        if (pf.name) params.push('name=' + encodeURIComponent(pf.name));
-        if (pf.email) params.push('email=' + encodeURIComponent(pf.email));
-        url += (url.indexOf('?') === -1 ? '?' : '&') + params.join('&');
-      }
-      return url;
-    }
-
     widget.className = 'calendly-inline-widget';
-    widget.setAttribute('data-url', calendlyWithPrefill());
+    widget.setAttribute('data-url', calendlyUrl);
     widget.style.minWidth = '320px';
     widget.style.height = '700px';
 
@@ -143,48 +117,18 @@
     function redraw() {
       if (window.Calendly && window.Calendly.initInlineWidget) {
         widget.innerHTML = '';
-        window.Calendly.initInlineWidget({ url: calendlyWithPrefill(), parentElement: widget });
+        window.Calendly.initInlineWidget({ url: calendlyUrl, parentElement: widget });
       }
     }
     return { redraw: redraw };
   }
 
-  var scheduler = isCal ? renderCal() : renderCalendly();
-
-  // --- Inquiry-form gating (unchanged behaviour) --------------------------
-
-  // If a submit-detectable inquiry form is active, the inquiry is mandatory:
-  // show the calendar as a locked preview until the family submits the form.
-  if (window.APLS_INQUIRY_ACTIVE) {
-    host.classList.add('is-locked');
-    if (lock) lock.hidden = true;
-
-    // A transparent overlay lets families see real openings but blocks picking,
-    // with a clear message telling them to submit the form first.
-    var badge = document.createElement('div');
-    badge.className = 'tour-lock-badge';
-    badge.innerHTML = '<span class="msg">🔒 Fill out the quick form above to pick a time —' +
-      ' these are real openings.</span>';
-    host.appendChild(badge);
-
-    document.addEventListener('apls:inquiry-submitted', function () {
-      if (lock) lock.hidden = true;
-      host.classList.remove('is-locked');
-      if (badge) badge.remove();
-
-      // Re-initialise so the family's name/email pre-fill into the scheduler.
-      if (prefill()) scheduler.redraw();
-
-      // Scroll so the "form submitted" confirmation AND the Step 2 heading are
-      // both visible (not just the calendar) — offset for the sticky header so
-      // nothing hides behind it.
-      var target = document.querySelector('.inquiry-done') ||
-        document.getElementById('tour-step-2') || host;
-      var header = document.querySelector('header');
-      var offset = (header ? header.getBoundingClientRect().height : 0) + 16;
-      var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-      window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
-    }, { once: true });
+  function renderScheduler() {
+    if (isCal) renderCal();
+    else renderCalendly();
   }
+
+  if (document.readyState === 'complete') renderScheduler();
+  else window.addEventListener('load', renderScheduler, { once: true });
 })();
 

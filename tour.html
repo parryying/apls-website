@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=3" />
+  <link rel="stylesheet" href="css/styles.css?v=4" />
 
   <!-- ============ FAQ structured data (helps Google & AI Overviews) ============ -->
   <script type="application/ld+json">
@@ -117,40 +117,12 @@
   <!-- ============ SCHEDULE A TOUR ============ -->
   <section id="tour" class="section">
     <div class="container prose">
-      <p class="tour-step-label"><span class="tour-step-num">1</span> Tell us about your family</p>
+      <p class="tour-step-label">Choose your tour time</p>
       <p class="tour-step-note">
-        Takes a minute — your tour times unlock the moment you submit. Prefer to talk?
+        Select an available time and share a few details to book your visit. You'll receive a
+        confirmation from Cal.com when your tour is scheduled. Prefer to talk?
         <a href="tel:+14257474172">Give us a call</a>.
       </p>
-
-      <!-- ✏️ EDIT: paste your inquiry-form link between the quotes in data-tally-url below.
-           Recommended: build a free form at https://tally.so with these fields —
-             • Parent name          • Email               • Phone
-             • Child's first name    • Child's age / DOB    • Desired start date
-             • Program interest (Chinese / Japanese; preschool / after-school / etc.)
-             • Where did you hear about us?
-           Then copy the form's share link (e.g. https://tally.so/r/XXXXXX) and paste it below.
-           The form appears here automatically once a real link is added. -->
-      <div id="inquiry-form" class="booking-placeholder" data-tally-url="https://tally.so/r/5Bg6EN">
-        <strong>Inquiry form will appear here.</strong>
-        <span>Once APLS's form link is added, families fill this out first, then their tour times unlock below.</span>
-      </div>
-
-      <p class="tour-step-label" id="tour-step-2"><span class="tour-step-num">2</span> Pick your tour time</p>
-
-      <!-- ✏️ EDIT: confirm the days/times APLS offers tours, so families know what to expect
-           before they submit the form. Keep it short — a couple of typical windows is plenty. -->
-      <div class="tour-avail">
-        <p class="tour-avail-times">
-          <strong>When tours run:</strong> Monday–Friday, with 1-hour tours at
-          9:30&nbsp;am and 11:00&nbsp;am.
-        </p>
-        <p class="tour-avail-legend">
-          <span class="tour-avail-dot"></span>
-          On the calendar below, <strong>highlighted dates</strong> have open tour times. Submit the
-          quick form above and you'll be able to click a date to pick your exact time.
-        </p>
-      </div>
 
       <!-- ✏️ EDIT: booking calendar. Two free options — use ONE:
 
@@ -163,9 +135,7 @@
            (e.g. https://calendly.com/apls-tours/school-tour).
 
            The moment a real link is added, the live booking calendar appears here
-           automatically. If both are filled in, Cal.com is used. When an inquiry
-           form (above) is also active, the calendar stays locked until the family
-           submits the form — so every tour request captures their details first. -->
+           automatically. If both are filled in, Cal.com is used. -->
       <div id="tour-booking" class="booking-placeholder"
            data-cal-link="parry-ying-d3xapo/apls-school-tour-1-hour"
            data-calendly-url="https://calendly.com/parry-ying/apls-campus-tour">
@@ -319,7 +289,6 @@
     </div>
   </footer>
 
-  <script src="js/inquiry-form.js"></script>
   <script src="js/tour-booking.js"></script>
   <script src="js/mobile-nav.js"></script>
 </body>
