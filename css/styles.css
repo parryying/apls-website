@@ -256,6 +256,10 @@ a.program:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(59,9
 a.program h3 { color: var(--navy); }
 .program-more { display: inline-block; margin-top: .9rem; color: var(--coral-text); font-weight: 800; }
 
+.home-proof-cards .card { text-align: left; }
+.home-proof-cards .card-icon { margin-bottom: .35rem; }
+.home-proof-cards .card h3 { margin-bottom: .45rem; }
+
 /* ---------- Program detail sections (programs.html) ---------- */
 .jumpbar { background: var(--white); border-bottom: 1px solid #e7ddc9; }
 .jumpbar-inner { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; padding: .8rem 0; }
