@@ -271,6 +271,11 @@ a.program h3 { color: var(--navy); }
 .schedule-table thead th { background: var(--navy); color: #fff; }
 .schedule-table tbody td:first-child { font-weight: 700; color: var(--navy); white-space: nowrap; width: 1%; }
 .schedule-table tbody tr:nth-child(even) { background: var(--light); }
+@media (max-width: 560px) {
+  .preschool-sample-table { table-layout: fixed; font-size: .86rem; }
+  .preschool-sample-table th, .preschool-sample-table td { padding: .45rem .4rem; overflow-wrap: anywhere; }
+  .preschool-sample-table tbody td:first-child { width: auto; white-space: normal; }
+}
 .prog-downloads { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; margin: 0 0 1.4rem; padding: 0; }
 .prog-downloads a { font-weight: 700; color: var(--blue); text-decoration: none; font-size: .98rem; }
 .prog-downloads a:hover { text-decoration: underline; }
