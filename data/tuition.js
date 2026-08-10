@@ -42,6 +42,15 @@ window.APLS_TUITION = {
       ]
     },
     {
+      heading: "Summer Camp",
+      note: "A $75 new-student application fee applies (waived for 2026 registrations completed before May 1). Early drop-off and late pick-up are available upon request for an additional charge. Siblings receive a 5% discount.",
+      columns: ["Program", "Hours", "Tuition"],
+      rows: [
+        ["Half day", "9:00 a.m.\u201312:00 p.m.", "$325/week"],
+        ["Full day", "9:00 a.m.\u20133:00 p.m.", "$500/week"]
+      ]
+    },
+    {
       heading: "Saturday School",
       note: "A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $25/hour.",
       columns: ["Enrollment option", "Calculation", "Tuition"],
@@ -49,15 +58,6 @@ window.APLS_TUITION = {
         ["Winter Quarter (Jan.\u2013Mar.)", "12 classes \u00d7 $55", "$660"],
         ["Spring Quarter (Apr.\u2013Jun.)", "10 classes \u00d7 $55", "$550"],
         ["Winter & Spring", "22 classes \u00d7 $55", "$1,210"]
-      ]
-    },
-    {
-      heading: "Summer Camp",
-      note: "A $75 new-student application fee applies (waived for 2026 registrations completed before May 1). Early drop-off and late pick-up are available upon request for an additional charge. Siblings receive a 5% discount.",
-      columns: ["Program", "Hours", "Tuition"],
-      rows: [
-        ["Half day", "9:00 a.m.\u201312:00 p.m.", "$325/week"],
-        ["Full day", "9:00 a.m.\u20133:00 p.m.", "$500/week"]
       ]
     }
   ],
@@ -81,12 +81,12 @@ window.APLS_TUITION = {
       note: "2026 Winter and Spring rates are $55 per class. A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $15/hour."
     },
     "saturday-school": {
-      table: 2,
+      table: 3,
       heading: "Saturday School tuition",
       note: "2026 Winter and Spring rates for Saturday School. A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $25/hour."
     },
     "summer-camp": {
-      table: 3,
+      table: 2,
       heading: "Summer Camp tuition",
       note: "Weekly 2026 tuition. A $75 new-student application fee applies (waived for registrations completed before May 1). Early drop-off and late pick-up are available upon request for an additional charge. Siblings receive a 5% discount."
     },
