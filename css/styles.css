@@ -146,6 +146,8 @@ a:hover { text-decoration: underline; }
 .submenu a { padding: .55rem 1.2rem; font-weight: 700; white-space: nowrap; color: var(--navy); }
 .submenu a:hover { background: var(--cream); color: var(--blue); }
 .submenu a[aria-current="page"] { color: var(--coral-text); }
+.submenu a.nav-current-neutral[aria-current="page"] { color: var(--navy); }
+.submenu a.nav-current-neutral[aria-current="page"]:hover { color: var(--blue); }
 
 /* Mobile navigation */
 .nav-toggle {
