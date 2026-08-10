@@ -16,6 +16,27 @@
     return node;
   }
 
+  // Build a tuition table from { columns, rows }.
+  function buildTuitionTable(columns, rows) {
+    var table = el("table", "schedule-table tuition-table");
+    var thead = el("thead");
+    var headRow = el("tr");
+    (columns || []).forEach(function (col) {
+      headRow.appendChild(el("th", null, col));
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    var tbody = el("tbody");
+    (rows || []).forEach(function (row) {
+      var tr = el("tr");
+      row.forEach(function (cell) { tr.appendChild(el("td", null, cell)); });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    return table;
+  }
+
   /* ---------- Tuition ---------- */
   function renderTuition() {
     var root = document.getElementById("tuition-root");
@@ -26,35 +47,14 @@
     if (data.heading) root.appendChild(el("h2", null, data.heading));
     if (data.note) root.appendChild(el("p", null, data.note));
 
-    // Build a tuition table from { columns, rows }.
-    function buildTable(columns, rows) {
-      var table = el("table", "schedule-table tuition-table");
-      var thead = el("thead");
-      var headRow = el("tr");
-      (columns || []).forEach(function (col) {
-        headRow.appendChild(el("th", null, col));
-      });
-      thead.appendChild(headRow);
-      table.appendChild(thead);
-
-      var tbody = el("tbody");
-      (rows || []).forEach(function (row) {
-        var tr = el("tr");
-        row.forEach(function (cell) { tr.appendChild(el("td", null, cell)); });
-        tbody.appendChild(tr);
-      });
-      table.appendChild(tbody);
-      return table;
-    }
-
     // Main table
-    root.appendChild(buildTable(data.columns, data.rows));
+    root.appendChild(buildTuitionTable(data.columns, data.rows));
 
     // Additional tables (e.g., Kindergarten & 1st Grade)
     (data.moreTables || []).forEach(function (t) {
       if (t.heading) root.appendChild(el("h2", null, t.heading));
       if (t.note) root.appendChild(el("p", null, t.note));
-      root.appendChild(buildTable(t.columns, t.rows));
+      root.appendChild(buildTuitionTable(t.columns, t.rows));
     });
 
     // Fees
@@ -69,6 +69,39 @@
       });
       root.appendChild(ul);
     }
+  }
+
+  function renderProgramTuition() {
+    var roots = document.querySelectorAll("[data-tuition-program]");
+    if (!roots.length || typeof window.APLS_TUITION === "undefined") return;
+    var data = window.APLS_TUITION;
+    roots.forEach(function (root) {
+      var config = (data.programPages || {})[root.getAttribute("data-tuition-program")];
+      if (!config) return;
+
+      root.innerHTML = "";
+      root.appendChild(el("h2", null, config.heading || "Tuition"));
+      if (config.note) root.appendChild(el("p", "program-tuition-note", config.note));
+
+      var tableData;
+      if (config.table === "main") {
+        tableData = data;
+      } else if (typeof config.table === "number") {
+        tableData = (data.moreTables || [])[config.table];
+      }
+      if (tableData) root.appendChild(buildTuitionTable(tableData.columns, tableData.rows));
+
+      var actions = el("div", "program-tuition-actions");
+      if (!tableData) {
+        var contactLink = el("a", "btn btn-primary", "Ask about current tuition");
+        contactLink.href = "contact.html";
+        actions.appendChild(contactLink);
+      }
+      var detailsLink = el("a", tableData ? "btn btn-ghost" : "text-link", "View full tuition & fees");
+      detailsLink.href = "tuition.html";
+      actions.appendChild(detailsLink);
+      root.appendChild(actions);
+    });
   }
 
   /* ---------- Calendar ---------- */
@@ -162,6 +195,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     renderTuition();
+    renderProgramTuition();
     renderCalendar();
     renderTeachers();
   });

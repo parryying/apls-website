@@ -283,6 +283,24 @@ a.program h3 { color: var(--navy); }
 .prog-downloads { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; margin: 0 0 1.4rem; padding: 0; }
 .prog-downloads a { font-weight: 700; color: var(--blue); text-decoration: none; font-size: .98rem; }
 .prog-downloads a:hover { text-decoration: underline; }
+.program-jumpbar { position: sticky; top: 76px; z-index: 20; }
+.program-subsection { scroll-margin-top: 150px; }
+.program-subsection + .program-subsection { margin-top: 3rem; padding-top: 3rem; border-top: 1px solid #e7ddc9; }
+.program-tuition { margin: 2rem 0 1.5rem; padding: 1.5rem 0; border-block: 1px solid #e7ddc9; }
+.program-tuition h2 { margin-top: 0; }
+.program-tuition-note { color: var(--muted); }
+.program-tuition .tuition-table { max-width: 760px; }
+.program-tuition-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem 1rem; }
+.program-tuition-actions .text-link { color: var(--blue); font-weight: 700; }
+@media (max-width: 560px) {
+  .program-tuition .tuition-table, #tuition-root .tuition-table { table-layout: fixed; font-size: .9rem; }
+  .program-tuition .tuition-table th, .program-tuition .tuition-table td,
+  #tuition-root .tuition-table th, #tuition-root .tuition-table td { padding: .5rem .45rem; white-space: normal; overflow-wrap: anywhere; }
+  .program-tuition .tuition-table tbody td:first-child,
+  #tuition-root .tuition-table tbody td:first-child { width: auto; white-space: normal; overflow-wrap: anywhere; }
+  .program-tuition-actions { align-items: stretch; flex-direction: column; }
+  .program-tuition-actions .btn { width: 100%; text-align: center; }
+}
 
 /* ---------- Program subpage hero figure ---------- */
 .program-figure { max-width: 900px; margin: 0 auto 2.4rem; padding: 0 1rem; }
@@ -319,11 +337,14 @@ a.program h3 { color: var(--navy); }
 .program-filter:hover { border-color: var(--blue); color: var(--blue); }
 .program-filter.is-active { background: var(--navy); border-color: var(--navy); color: var(--white); }
 .filter-status { color: var(--muted); font-size: .85rem; margin: 0 0 .9rem; }
-.hub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
-.hub-card { display: flex; flex-direction: column; background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); text-decoration: none; color: var(--text); transition: transform .15s ease, box-shadow .15s ease; }
+.hub-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; gap: 1.4rem; }
+.hub-card { display: flex; flex-direction: column; height: 100%; background: var(--white); border-radius: var(--radius); border-top: 4px solid var(--red); overflow: hidden; box-shadow: var(--shadow); text-decoration: none; color: var(--text); transition: transform .15s ease, box-shadow .15s ease; }
+.hub-card:nth-child(4n+2) { border-top-color: var(--blue); }
+.hub-card:nth-child(4n+3) { border-top-color: var(--green); }
+.hub-card:nth-child(4n+4) { border-top-color: var(--gold); }
 .hub-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(59,90,74,0.16); }
 .hub-card[hidden] { display: none; }
-.hub-card img { width: 100%; height: auto; min-height: 0; aspect-ratio: 3 / 2; object-fit: contain; display: block; background: var(--light); }
+.hub-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: var(--light); }
 .hub-body { padding: 1rem 1.15rem 1.2rem; display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .hub-body h3 { margin: 0 0 .15rem; }
 .hub-ages { color: var(--blue); font-weight: 700; font-size: .9rem; margin: 0 0 .5rem; }
@@ -342,7 +363,6 @@ a.program h3 { color: var(--navy); }
 @media (max-width: 800px) {
   .programs-toolbar { align-items: flex-start; flex-direction: column; }
   .program-filters { justify-content: flex-start; }
-  .hub-card img { aspect-ratio: 2 / 1; }
 }
 @media (max-width: 640px) {
   .hub-grid { grid-template-columns: 1fr; }
@@ -463,7 +483,12 @@ a.program h3 { color: var(--navy); }
 .prog-meta .langs { display: inline-block; border: 1.5px solid var(--blue); color: var(--blue); font-size: .82rem; font-weight: 700; padding: .2em .8em; border-radius: 999px; }
 .prog-highlights { margin: 0 0 1.4rem; padding-left: 1.2rem; }
 .prog-highlights li { font-size: 1.05rem; margin-bottom: .4rem; }
+.camp-theme-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .25rem 2rem; }
 .program-detail .btn { display: inline-block; }
+
+@media (max-width: 560px) {
+  .camp-theme-list { grid-template-columns: 1fr; }
+}
 
 /* ---------- Navy / testimonials ---------- */
 .section-navy { background: var(--navy); }
