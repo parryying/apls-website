@@ -31,8 +31,70 @@ window.APLS_TUITION = {
         ["Whole Day (9am\u20133pm)", "$2,000/month"],
         ["Extended Care", "$2,150/month"]
       ]
+    },
+    {
+      heading: "After-School",
+      note: "A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $15/hour.",
+      columns: ["Enrollment option", "Total tuition", "Monthly payment"],
+      rows: [
+        ["Monday & Wednesday", "$2,310 (42 classes)", "$462 (Jan.\u2013May)"],
+        ["Wednesday only", "$1,210 (22 classes)", "$242 (Jan.\u2013May)"]
+      ]
+    },
+    {
+      heading: "Summer Camp",
+      note: "A $75 new-student application fee applies (waived for 2026 registrations completed before May 1). Early drop-off and late pick-up are available upon request for an additional charge. Siblings receive a 5% discount.",
+      columns: ["Program", "Hours", "Tuition"],
+      rows: [
+        ["Half day", "9:00 a.m.\u201312:00 p.m.", "$325/week"],
+        ["Full day", "9:00 a.m.\u20133:00 p.m.", "$500/week"]
+      ]
+    },
+    {
+      heading: "Saturday School",
+      note: "A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $25/hour.",
+      columns: ["Enrollment option", "Calculation", "Tuition"],
+      rows: [
+        ["Winter Quarter (Jan.\u2013Mar.)", "12 classes \u00d7 $55", "$660"],
+        ["Spring Quarter (Apr.\u2013Jun.)", "10 classes \u00d7 $55", "$550"],
+        ["Winter & Spring", "22 classes \u00d7 $55", "$1,210"]
+      ]
     }
   ],
+
+  // Compact tuition summaries rendered on individual program pages.
+  // Use "main" for the preschool table or a zero-based moreTables index.
+  programPages: {
+    preschool: {
+      table: "main",
+      heading: "Preschool tuition",
+      note: "Monthly tuition based on the number of days your child attends."
+    },
+    kindergarten: {
+      table: 0,
+      heading: "Kindergarten & 1st Grade tuition",
+      note: "Monthly tuition for the whole-day program."
+    },
+    "after-school": {
+      table: 1,
+      heading: "After-School tuition",
+      note: "2026 Winter and Spring rates are $55 per class. A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $15/hour."
+    },
+    "saturday-school": {
+      table: 3,
+      heading: "Saturday School tuition",
+      note: "2026 Winter and Spring rates for Saturday School. A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $25/hour."
+    },
+    "summer-camp": {
+      table: 2,
+      heading: "Summer Camp tuition",
+      note: "Weekly 2026 tuition. A $75 new-student application fee applies (waived for registrations completed before May 1). Early drop-off and late pick-up are available upon request for an additional charge. Siblings receive a 5% discount."
+    },
+    "ap-prep": {
+      heading: "AP Prep tuition",
+      note: "Rates vary by course format and term. Contact APLS for the current class rate."
+    }
+  },
 
   // Registration and other fees. "label" is shown in bold.
   feesHeading: "Registration & other fees",

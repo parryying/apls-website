@@ -22,6 +22,21 @@ apls-website/
 Content meant to be updated is marked in the HTML with `<!-- ✏️ EDIT: ... -->`
 comments.
 
+### Time-limited enrollment badges
+
+Every **Now enrolling** badge for a program with fixed start/end dates must include
+`data-enrollment-end="YYYY-MM-DD"`, using that program's final day. The shared
+`js/enrollment-status.js` script keeps the badge visible through the final day and
+removes it automatically the next day.
+
+When dates are updated for a future year, update `data-enrollment-end` everywhere
+that program's badge appears. Do not publish a fixed-date program badge without an
+end date.
+
+```html
+<span class="badge-open" data-enrollment-end="2027-08-20">Now enrolling</span>
+```
+
 ## Deploying
 
 This folder is the complete, portable website. To publish, upload the contents
