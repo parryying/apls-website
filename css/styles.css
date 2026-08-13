@@ -193,7 +193,9 @@ a:hover { text-decoration: underline; }
   background: var(--peach);
   border-radius: 0 var(--radius) var(--radius) 0;
 }
-.story-highlight p { margin: 0; font-size: 1.12rem; font-style: italic; color: var(--text); }
+.story-highlight h3 { margin: 0 0 .45rem; font-size: 1.18rem; }
+.story-highlight p { margin: 0; font-size: 1rem; color: var(--text); }
+.story-highlight p + p { margin-top: .55rem; font-weight: 700; }
 
 /* ---------- Video ---------- */
 .video-wrap { max-width: 900px; margin: 0 auto; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); background: #000; }
