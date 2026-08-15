@@ -93,13 +93,14 @@
 
       var actions = el("div", "program-tuition-actions");
       if (!tableData) {
-        var contactLink = el("a", "btn btn-primary", "Ask about current tuition");
+        var contactLink = el("a", "btn btn-primary", "Contact for tuition");
         contactLink.href = "contact.html";
         actions.appendChild(contactLink);
+      } else {
+        var detailsLink = el("a", "btn btn-ghost", "View full tuition & fees");
+        detailsLink.href = "tuition.html";
+        actions.appendChild(detailsLink);
       }
-      var detailsLink = el("a", tableData ? "btn btn-ghost" : "text-link", "View full tuition & fees");
-      detailsLink.href = "tuition.html";
-      actions.appendChild(detailsLink);
       root.appendChild(actions);
     });
   }

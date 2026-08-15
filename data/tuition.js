@@ -34,11 +34,11 @@ window.APLS_TUITION = {
     },
     {
       heading: "After-School",
-      note: "A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $15/hour.",
+      note: "A $100 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $18/hour.",
       columns: ["Enrollment option", "Total tuition", "Monthly payment"],
       rows: [
-        ["Monday & Wednesday", "$2,310 (42 classes)", "$462 (Jan.\u2013May)"],
-        ["Wednesday only", "$1,210 (22 classes)", "$242 (Jan.\u2013May)"]
+        ["Monday & Wednesday", "$1,485 (27 classes)", "$450 (Sept.\u2013Nov.), $135 (Dec.)"],
+        ["Wednesday only", "$770 (14 classes)", "$220 (Sept.\u2013Nov.), $110 (Dec.)"]
       ]
     },
     {
@@ -52,12 +52,10 @@ window.APLS_TUITION = {
     },
     {
       heading: "Saturday School",
-      note: "A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $25/hour.",
-      columns: ["Enrollment option", "Calculation", "Tuition"],
+      note: "A $100 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. No before- or after-school care is offered. A $50 late-pickup fee applies.",
+      columns: ["Enrollment option", "Total tuition", "Monthly payment"],
       rows: [
-        ["Winter Quarter (Jan.\u2013Mar.)", "12 classes \u00d7 $55", "$660"],
-        ["Spring Quarter (Apr.\u2013Jun.)", "10 classes \u00d7 $55", "$550"],
-        ["Winter & Spring", "22 classes \u00d7 $55", "$1,210"]
+        ["Fall Quarter (Sept.\u2013Dec.)", "$715 (13 classes)", "$220 (Sept.\u2013Nov.), $55 (Dec.)"]
       ]
     }
   ],
@@ -78,12 +76,12 @@ window.APLS_TUITION = {
     "after-school": {
       table: 1,
       heading: "After-School tuition",
-      note: "2026 Winter and Spring rates are $55 per class. A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $15/hour."
+      note: "Fall 2026 tuition is $55 per class. A $100 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $18/hour."
     },
     "saturday-school": {
       table: 3,
       heading: "Saturday School tuition",
-      note: "2026 Winter and Spring rates for Saturday School. A $75 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $25/hour."
+      note: "Fall 2026 tuition is $55 per class. A $100 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. No before- or after-school care is offered. A $50 late-pickup fee applies."
     },
     "summer-camp": {
       table: 2,
@@ -91,8 +89,7 @@ window.APLS_TUITION = {
       note: "Weekly 2026 tuition. A $75 new-student application fee applies (waived for registrations completed before May 1). Early drop-off and late pick-up are available upon request for an additional charge. Siblings receive a 5% discount."
     },
     "ap-prep": {
-      heading: "AP Prep tuition",
-      note: "Rates vary by course format and term. Contact APLS for the current class rate."
+      heading: "AP Prep tuition"
     }
   },
 
