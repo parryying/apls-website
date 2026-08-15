@@ -43,7 +43,7 @@ window.APLS_TUITION = {
     },
     {
       heading: "Summer Camp",
-      note: "A $75 new-student application fee applies (waived for 2026 registrations completed before May 1).",
+      note: "A $100 new-student application fee applies (waived for 2026 registrations completed before May 1).",
       columns: ["Program", "Hours", "Tuition"],
       rows: [
         ["Half day", "9:00 a.m.\u201312:00 p.m.", "$325/week"],
@@ -87,7 +87,7 @@ window.APLS_TUITION = {
     "summer-camp": {
       table: 2,
       heading: "Summer Camp tuition",
-      note: "Weekly 2026 tuition. A $75 new-student application fee applies (waived for registrations completed before May 1). Siblings receive a 5% discount."
+      note: "Weekly 2026 tuition. A $100 new-student application fee applies (waived for registrations completed before May 1). Siblings receive a 5% discount."
     },
     "ap-prep": {
       heading: "AP Prep tuition"
