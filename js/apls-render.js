@@ -37,6 +37,18 @@
     return table;
   }
 
+  // Build the bulleted fee list from an array of { label, text }.
+  function buildFeeList(fees) {
+    var ul = el("ul", "fee-list");
+    fees.forEach(function (fee) {
+      var li = el("li");
+      li.appendChild(el("strong", null, fee.label));
+      if (fee.text) li.appendChild(document.createTextNode(fee.text));
+      ul.appendChild(li);
+    });
+    return ul;
+  }
+
   /* ---------- Tuition ---------- */
   function renderTuition() {
     var root = document.getElementById("tuition-root");
@@ -60,14 +72,7 @@
     // Fees
     if (data.fees && data.fees.length) {
       if (data.feesHeading) root.appendChild(el("h2", null, data.feesHeading));
-      var ul = el("ul", "fee-list");
-      data.fees.forEach(function (fee) {
-        var li = el("li");
-        li.appendChild(el("strong", null, fee.label));
-        if (fee.text) li.appendChild(document.createTextNode(fee.text));
-        ul.appendChild(li);
-      });
-      root.appendChild(ul);
+      root.appendChild(buildFeeList(data.fees));
     }
   }
 
@@ -76,7 +81,8 @@
     if (!roots.length || typeof window.APLS_TUITION === "undefined") return;
     var data = window.APLS_TUITION;
     roots.forEach(function (root) {
-      var config = (data.programPages || {})[root.getAttribute("data-tuition-program")];
+      var programKey = root.getAttribute("data-tuition-program");
+      var config = (data.programPages || {})[programKey];
       if (!config) return;
 
       root.innerHTML = "";
@@ -90,6 +96,14 @@
         tableData = (data.moreTables || [])[config.table];
       }
       if (tableData) root.appendChild(buildTuitionTable(tableData.columns, tableData.rows));
+
+      var fees = (data.fees || []).filter(function (fee) {
+        return (fee.appliesTo || []).indexOf(programKey) !== -1;
+      });
+      if (fees.length) {
+        root.appendChild(el("h2", null, data.feesHeading || "Registration & other fees"));
+        root.appendChild(buildFeeList(fees));
+      }
 
       var actions = el("div", "program-tuition-actions");
       if (!tableData) {

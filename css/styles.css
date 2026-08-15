@@ -279,6 +279,10 @@ a.program h3 { color: var(--navy); }
 .schedule-table thead th { background: var(--navy); color: #fff; }
 .schedule-table tbody td:first-child { font-weight: 700; color: var(--navy); white-space: nowrap; width: 1%; }
 .schedule-table tbody tr:nth-child(even) { background: var(--light); }
+/* First column is shrink-to-fit above, so keep its header on one line to set the width. */
+@media (min-width: 561px) {
+  .tuition-table thead th:first-child { white-space: nowrap; }
+}
 @media (max-width: 560px) {
   .preschool-sample-table { table-layout: fixed; font-size: .86rem; }
   .preschool-sample-table th, .preschool-sample-table td { padding: .45rem .4rem; overflow-wrap: anywhere; }
