@@ -134,20 +134,28 @@ a:hover { text-decoration: underline; }
 
 /* Programs dropdown submenu */
 .nav-programs { position: relative; display: inline-flex; align-items: center; padding: 6px 0; }
-.nav-programs > a::after { content: " \25BE"; font-size: .75em; }
+.nav-programs > a::after {
+  content: ""; display: inline-block; position: relative; top: -2px;
+  width: .55rem; height: .55rem; margin-left: .55rem;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(45deg); transition: transform .15s ease;
+}
 .submenu { display: none; }
-.nav-programs:hover .submenu, .nav-programs:focus-within .submenu {
-  display: flex; flex-direction: column;
-  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-  min-width: 240px; background: var(--white);
-  box-shadow: 0 12px 28px rgba(31,58,95,.16); border-radius: 12px;
-  padding: .4rem 0; z-index: 60;
+@media (min-width: 1101px) {
+  .nav-programs:hover .submenu, .nav-programs:focus-within .submenu {
+    display: flex; flex-direction: column;
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    min-width: 240px; background: var(--white);
+    box-shadow: 0 12px 28px rgba(31,58,95,.16); border-radius: 12px;
+    padding: .4rem 0; z-index: 60;
+  }
 }
 .submenu a { padding: .55rem 1.2rem; font-weight: 700; white-space: nowrap; color: var(--navy); }
 .submenu a:hover { background: var(--cream); color: var(--blue); }
 .submenu a[aria-current="page"] { color: var(--coral-text); }
 .submenu a.nav-current-neutral[aria-current="page"] { color: var(--navy); }
 .submenu a.nav-current-neutral[aria-current="page"]:hover { color: var(--blue); }
+.submenu-overview { display: none; }
 
 /* Mobile navigation */
 .nav-toggle {
@@ -656,6 +664,7 @@ a.program h3 { color: var(--navy); }
   .site-nav {
     display: none; position: absolute; top: 100%; left: 0; right: 0;
     flex-direction: column; align-items: stretch; gap: 0;
+    max-height: calc(100vh - 70px); overflow-y: auto; overscroll-behavior: contain;
     background: var(--white); box-shadow: 0 8px 20px rgba(31,58,95,.12); padding: .5rem 0;
   }
   .site-nav a { padding: .8rem 20px; }
@@ -667,12 +676,25 @@ a.program h3 { color: var(--navy); }
   .site-nav.is-open { display: flex; }
   .header-inner { position: relative; }
 
-  /* Collapse submenus on mobile — top-level Programs/Enrollment links lead to full lists */
+  /* Expand Programs/Enrollment in place so mobile users can choose a destination. */
   .nav-programs { display: flex; flex-direction: column; align-items: stretch; padding: 0; }
-  .nav-programs > a { padding: .8rem 20px; }
-  /* Triangle signals there are subpages under this item */
-  .nav-programs > a::after { display: inline; content: " \25BE"; font-size: .75em; color: var(--muted); }
+  .nav-programs > a { display: flex; align-items: center; justify-content: space-between; padding: .8rem 20px; }
+  .nav-programs > a::after {
+    flex: 0 0 auto; margin-left: 1rem; color: var(--muted);
+  }
+  .nav-programs.is-open > a::after { top: 2px; transform: rotate(225deg); }
   .submenu { display: none; }
+  .nav-programs.is-open > .submenu {
+    display: flex; flex-direction: column; position: static;
+    min-width: 0; padding: .25rem 0 .45rem; transform: none;
+    border-radius: 0; background: var(--cream); box-shadow: none;
+  }
+  .nav-programs.is-open > .submenu a {
+    display: block; padding: .65rem 20px .65rem 38px; white-space: normal;
+  }
+  .nav-programs.is-open > .submenu .submenu-overview {
+    display: block; color: var(--blue); border-bottom: 1px solid #e7dbc7;
+  }
 }
 
 @media (max-width: 560px) {
