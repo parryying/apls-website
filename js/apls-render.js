@@ -105,17 +105,13 @@
         root.appendChild(buildFeeList(fees));
       }
 
-      var actions = el("div", "program-tuition-actions");
       if (!tableData) {
+        var actions = el("div", "program-tuition-actions");
         var contactLink = el("a", "btn btn-primary", "Contact for tuition");
         contactLink.href = "contact.html";
         actions.appendChild(contactLink);
-      } else {
-        var detailsLink = el("a", "btn btn-ghost", "View full tuition & fees");
-        detailsLink.href = "tuition.html";
-        actions.appendChild(detailsLink);
+        root.appendChild(actions);
       }
-      root.appendChild(actions);
     });
   }
 
