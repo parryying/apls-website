@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=4" />
+  <link rel="stylesheet" href="css/styles.css?v=6" />
 
   <!-- ============ LocalBusiness structured data (helps Google show address, hours, phone) ============ -->
   <!-- ✏️ EDIT: confirm openingHours, geo coordinates, and the live domain before launch -->
@@ -328,11 +328,15 @@
     <div class="container">
       <h2 class="section-title">A peek inside APLS</h2>
       <p class="section-lead">Warm classrooms, hands-on activities, and cultural celebrations throughout the year.</p>
-      <div class="gallery-strip">
-        <img src="images/photo-calligraphy.webp" alt="APLS student practicing Chinese and Japanese calligraphy with brush and ink" class="gallery-tile" width="640" height="480" decoding="async" />
-        <img src="images/apls-painting.webp" alt="Preschoolers painting during an APLS arts activity" class="gallery-tile" width="640" height="480" decoding="async" />
-        <img src="images/apls-classroom-activity.webp" alt="APLS students in traditional dress celebrating Lunar New Year" class="gallery-tile" width="640" height="480" decoding="async" />
-        <img src="images/apls-japanese-lesson.webp" alt="APLS preschoolers during a Japanese lesson" class="gallery-tile" width="640" height="480" decoding="async" />
+      <div class="gallery-carousel">
+        <button type="button" class="gallery-arrow gallery-arrow-prev" aria-label="Previous photo" data-gallery-prev>&#8592;</button>
+        <div class="gallery-strip" role="region" aria-label="APLS photo highlights; swipe horizontally or use the arrow buttons to see more">
+          <img src="images/photo-calligraphy.webp" alt="APLS student practicing Chinese and Japanese calligraphy with brush and ink" class="gallery-tile" width="640" height="480" decoding="async" />
+          <img src="images/apls-painting.webp" alt="Preschoolers painting during an APLS arts activity" class="gallery-tile" width="640" height="480" decoding="async" />
+          <img src="images/apls-classroom-activity.webp" alt="APLS students in traditional dress celebrating Lunar New Year" class="gallery-tile" width="640" height="480" decoding="async" />
+          <img src="images/apls-japanese-lesson.webp" alt="APLS preschoolers during a Japanese lesson" class="gallery-tile" width="640" height="480" decoding="async" />
+        </div>
+        <button type="button" class="gallery-arrow gallery-arrow-next" aria-label="Next photo" data-gallery-next>&#8594;</button>
       </div>
       <p class="section-cta"><a href="gallery.html" class="btn btn-ghost btn-lg">See the photo gallery</a></p>
     </div>
@@ -397,6 +401,38 @@
         i = (i + 1) % slides.length;
         slides[i].classList.add('is-active');
       }, 4000);
+    })();
+
+    // Mobile gallery arrows supplement touch swiping.
+    (function () {
+      var carousel = document.querySelector('.gallery-carousel');
+      if (!carousel) return;
+
+      var strip = carousel.querySelector('.gallery-strip');
+      var previous = carousel.querySelector('[data-gallery-prev]');
+      var next = carousel.querySelector('[data-gallery-next]');
+
+      function updateArrows() {
+        var maxScroll = strip.scrollWidth - strip.clientWidth;
+        previous.disabled = strip.scrollLeft <= 2;
+        next.disabled = strip.scrollLeft >= maxScroll - 2;
+      }
+
+      function scrollGallery(direction) {
+        var tile = strip.querySelector('.gallery-tile');
+        var gap = parseFloat(getComputedStyle(strip).gap) || 0;
+        var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        strip.scrollBy({
+          left: direction * (tile.getBoundingClientRect().width + gap),
+          behavior: reducedMotion ? 'auto' : 'smooth'
+        });
+      }
+
+      previous.addEventListener('click', function () { scrollGallery(-1); });
+      next.addEventListener('click', function () { scrollGallery(1); });
+      strip.addEventListener('scroll', updateArrows, { passive: true });
+      window.addEventListener('resize', updateArrows);
+      updateArrows();
     })();
   </script>
   <script src="js/enrollment-status.js"></script>
