@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=9" />
+  <link rel="stylesheet" href="css/styles.css?v=10" />
 
   <!-- ============ LocalBusiness structured data (helps Google show address, hours, phone) ============ -->
   <!-- ✏️ EDIT: confirm openingHours, geo coordinates, and the live domain before launch -->
@@ -75,6 +75,13 @@
 <body>
 
   <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <dialog class="open-house-dialog" data-open-house-dialog aria-label="APLS Open House announcement">
+    <div class="open-house-popup">
+      <button type="button" class="open-house-close" data-open-house-close aria-label="Close Open House announcement">&times;</button>
+      <img src="images/apls-open-house-2026.png" alt="APLS Open House on Saturday, August 22, 2026, from 10:00 a.m. to 1:00 p.m. at 14042 NE 8th Street, 1st Floor, Bellevue, Washington 98007." width="1023" height="1537" />
+    </div>
+  </dialog>
 
   <!-- ============ TOP UTILITY BAR ============ -->
   <div class="utility-bar">
@@ -437,6 +444,7 @@
   </script>
   <script src="js/enrollment-status.js"></script>
   <script src="js/mobile-nav.js?v=2"></script>
+  <script src="js/open-house-popup.js?v=1"></script>
 
 </body>
 </html>

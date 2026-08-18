@@ -642,6 +642,27 @@ a.program h3 { color: var(--navy); }
   .lightbox-close { top: 1vh; right: 2vw; }
 }
 
+/* ---------- Open House popup ---------- */
+.open-house-dialog {
+  width: min(92vw, 58vh, 620px); max-width: none; max-height: 92vh;
+  padding: 0; border: 0; border-radius: 8px; overflow: visible;
+  background: transparent; box-shadow: 0 24px 70px rgba(20, 28, 24, .38);
+}
+.open-house-dialog::backdrop { background: rgba(20, 28, 24, .76); }
+.open-house-popup { position: relative; }
+.open-house-popup img {
+  display: block; width: 100%; height: auto; border-radius: 8px;
+}
+.open-house-close {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; padding: 0; border: 2px solid rgba(59, 90, 74, .18); border-radius: 50%;
+  background: rgba(255, 255, 255, .96); color: var(--navy); box-shadow: 0 4px 16px rgba(20, 28, 24, .22);
+  font: inherit; font-size: 2rem; font-weight: 700; line-height: 1; cursor: pointer;
+}
+.open-house-close:hover { background: var(--white); color: var(--coral-text); }
+body.open-house-popup-open { overflow: hidden; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .cards { grid-template-columns: repeat(2, 1fr); }
