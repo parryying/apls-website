@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="../images/apls-logo.png" type="image/png" />
+  <title>APLS Content Studio - Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="../data/tuition.js"></script>
+  <script src="../data/calendar.js"></script>
+  <script src="../data/teachers.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#editor">Skip to editor</a>
+
+  <header class="studio-header">
+    <div class="studio-brand">
+      <img src="../images/apls-logo.png" alt="" width="44" height="44" />
+      <span>
+        <strong>APLS Content Studio</strong>
+        <small>Preview workspace</small>
+      </span>
+    </div>
+    <div class="header-actions">
+      <span class="save-status" id="save-status" role="status">Source data loaded</span>
+      <button class="button button-secondary" type="button" id="reset-button">Reset draft</button>
+      <button class="button button-secondary" type="button" id="save-button">Save draft</button>
+      <button class="button button-primary" type="button" id="export-button">Export data file</button>
+    </div>
+  </header>
+
+  <div class="studio-shell">
+    <nav class="studio-nav" aria-label="Content sections">
+      <p class="nav-label">Workspace</p>
+      <button class="nav-item is-active" type="button" data-section="overview" aria-current="page">
+        <span class="nav-icon" aria-hidden="true">01</span>
+        Overview
+      </button>
+      <p class="nav-label">Website data</p>
+      <button class="nav-item" type="button" data-section="tuition">
+        <span class="nav-icon" aria-hidden="true">02</span>
+        Tuition
+      </button>
+      <button class="nav-item" type="button" data-section="calendar">
+        <span class="nav-icon" aria-hidden="true">03</span>
+        Calendar
+      </button>
+      <button class="nav-item" type="button" data-section="teachers">
+        <span class="nav-icon" aria-hidden="true">04</span>
+        Teachers
+      </button>
+      <div class="nav-note">
+        <strong>Preview only</strong>
+        <p>Drafts stay in this browser until you export and replace the matching file.</p>
+      </div>
+      <a class="site-link" href="../index.html" target="_blank" rel="noopener">Open staging website</a>
+    </nav>
+
+    <main class="editor" id="editor" tabindex="-1">
+      <div class="editor-heading">
+        <div>
+          <p class="eyebrow">Content manager</p>
+          <h1 id="section-title">Website overview</h1>
+          <p id="section-description">Choose a content area, make changes, and review the result before exporting.</p>
+        </div>
+        <span class="draft-pill" id="draft-pill">No unsaved changes</span>
+      </div>
+      <div id="editor-content"></div>
+    </main>
+
+    <aside class="preview-panel" aria-label="Live preview">
+      <div class="preview-heading">
+        <div>
+          <p class="eyebrow">Live preview</p>
+          <h2 id="preview-title">Content summary</h2>
+        </div>
+        <span class="preview-dot" aria-hidden="true"></span>
+      </div>
+      <div class="preview-canvas" id="preview-canvas"></div>
+    </aside>
+  </div>
+
+  <dialog class="export-dialog" id="export-dialog">
+    <div class="dialog-heading">
+      <div>
+        <p class="eyebrow">Export</p>
+        <h2>Download website data</h2>
+      </div>
+      <button class="icon-button" type="button" id="close-export" aria-label="Close export dialog">&times;</button>
+    </div>
+    <p>Download a replacement file, then add it to the website's <code>data</code> folder. Exporting does not publish changes.</p>
+    <div class="export-options">
+      <button type="button" class="export-option" data-export="tuition">
+        <strong>tuition.js</strong>
+        <span>Prices, program notes, and fees</span>
+      </button>
+      <button type="button" class="export-option" data-export="calendar">
+        <strong>calendar.js</strong>
+        <span>School years, months, events, and PDFs</span>
+      </button>
+      <button type="button" class="export-option" data-export="teachers">
+        <strong>teachers.js</strong>
+        <span>Teacher names, roles, bios, and photos</span>
+      </button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

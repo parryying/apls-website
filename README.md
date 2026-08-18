@@ -47,6 +47,24 @@ does not use an LLM, external API, database, or visitor tracking.
 - Interface behavior lives in `js/chatbox.js` and styles live in `css/styles.css`.
 - Questions without a reliable match direct visitors to the Contact page.
 
+### CMS preview
+
+Open `cms/index.html` to use the browser-based content editor for tuition,
+calendar, and teacher data. The editor provides live previews and stores drafts
+in the current browser.
+
+The Calendar editor uses one spreadsheet-style row per event. Enter real start
+and end dates; the CMS calculates weekday labels, groups events by month, and
+flags incomplete, duplicate, out-of-range, or reversed dates before export. Its
+live month-grid preview shows events on their actual dates, including multi-day
+ranges. Numbered markers correspond to a complete monthly agenda with full event
+names, date ranges, categories, and notes; selecting either returns focus to its
+spreadsheet row.
+
+The CMS preview does not publish directly. Use **Export data file** to download
+the updated `tuition.js`, `calendar.js`, or `teachers.js`, then replace the
+matching file in `data/` and deploy the website normally.
+
 ## Deploying
 
 This folder is the complete, portable website. To publish, upload the contents
