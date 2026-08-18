@@ -37,6 +37,16 @@ end date.
 <span class="badge-open" data-enrollment-end="2027-08-20">Now enrolling</span>
 ```
 
+### Quick-answer chatbox
+
+The site-wide **Ask APLS** widget is a client-side, rule-based FAQ chatbox. It
+does not use an LLM, external API, database, or visitor tracking.
+
+- Edit approved answers and matching phrases in `data/chat-knowledge.js`.
+- Edit prices only in `data/tuition.js`; chat tuition answers read that file.
+- Interface behavior lives in `js/chatbox.js` and styles live in `css/styles.css`.
+- Questions without a reliable match direct visitors to the Contact page.
+
 ## Deploying
 
 This folder is the complete, portable website. To publish, upload the contents
