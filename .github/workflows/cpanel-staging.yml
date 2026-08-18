@@ -1,0 +1,49 @@
+name: Deploy cPanel Staging
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cpanel-staging
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: cpanel-staging
+      url: https://www.apls.org/_newsite/
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ vars.CPANEL_HOST }}
+          REMOTE_PORT: ${{ vars.CPANEL_PORT }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/apls-cpanel-deploy
+          chmod 600 ~/.ssh/apls-cpanel-deploy
+          ssh-keyscan -p "$REMOTE_PORT" -H "$REMOTE_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy staging site
+        env:
+          REMOTE_HOST: ${{ vars.CPANEL_HOST }}
+          REMOTE_PORT: ${{ vars.CPANEL_PORT }}
+          REMOTE_USERNAME: ${{ vars.CPANEL_USERNAME }}
+          REMOTE_TARGET: ${{ vars.CPANEL_STAGING_PATH }}
+        run: |
+          rsync -rlvz --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='audit-prelaunch-*/' \
+            --exclude='logo-concepts.html' \
+            --exclude='social-card-preview*' \
+            --exclude='README.md' \
+            -e "ssh -i ~/.ssh/apls-cpanel-deploy -p $REMOTE_PORT" \
+            ./ "$REMOTE_USERNAME@$REMOTE_HOST:$REMOTE_TARGET"
