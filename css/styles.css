@@ -141,7 +141,7 @@ a:hover { text-decoration: underline; }
   transform: rotate(45deg); transition: transform .15s ease;
 }
 .submenu { display: none; }
-@media (min-width: 1101px) {
+@media (min-width: 1221px) {
   .nav-programs:hover .submenu, .nav-programs:focus-within .submenu {
     display: flex; flex-direction: column;
     position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
@@ -663,6 +663,31 @@ a.program h3 { color: var(--navy); }
 .open-house-close:hover { background: var(--white); color: var(--coral-text); }
 body.open-house-popup-open { overflow: hidden; }
 
+/* ---------- Events & announcements ---------- */
+.event-feature {
+  display: grid; grid-template-columns: minmax(0, .85fr) minmax(320px, 1.15fr);
+  gap: clamp(2rem, 5vw, 4.5rem); align-items: start;
+}
+.event-details { padding-top: clamp(.25rem, 2vw, 1.5rem); }
+.event-details h2 { margin: 0 0 .65rem; font-size: clamp(1.7rem, 3vw, 2.35rem); }
+.event-date { color: var(--navy); font-size: 1.15rem; }
+.event-facts { margin: 1.5rem 0; border-top: 1px solid #dfd2bc; }
+.event-facts div { display: grid; grid-template-columns: 5rem 1fr; gap: .8rem; padding: .8rem 0; border-bottom: 1px solid #dfd2bc; }
+.event-facts dt { color: var(--navy); font-weight: 800; }
+.event-facts dd { margin: 0; }
+.event-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.event-flyer { width: min(100%, 620px); margin: 0 auto; text-align: center; }
+.event-flyer a { display: block; }
+.event-flyer img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: var(--shadow); }
+.event-flyer figcaption { margin-top: .65rem; color: var(--muted); font-size: .88rem; }
+
+@media (max-width: 760px) {
+  .event-feature { grid-template-columns: 1fr; gap: 2rem; }
+  .event-details { padding-top: 0; }
+  .event-actions { flex-direction: column; }
+  .event-actions .btn { width: 100%; text-align: center; }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .cards { grid-template-columns: repeat(2, 1fr); }
@@ -678,7 +703,7 @@ body.open-house-popup-open { overflow: hidden; }
 
 /* Header collapses to a hamburger menu earlier so the enlarged school name
    never crowds the nav links on mid-width screens */
-@media (max-width: 1100px) {
+@media (max-width: 1220px) {
   /* mobile nav */
   .nav-toggle { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
   .nav-toggle span { width: 26px; height: 3px; background: currentColor; border-radius: 2px; }

@@ -10,7 +10,7 @@
     if (!nav) return;
     var openLabel = toggle.getAttribute("data-open-label") || "Open menu";
     var closeLabel = toggle.getAttribute("data-close-label") || "Close menu";
-    var mobileQuery = window.matchMedia("(max-width: 1100px)");
+    var mobileQuery = window.matchMedia("(max-width: 1220px)");
     var groups = Array.prototype.slice.call(nav.querySelectorAll(".nav-programs"));
 
     function setSubmenuOpen(group, isOpen) {

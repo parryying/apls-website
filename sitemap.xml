@@ -56,6 +56,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://www.apls.org/events.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.apls.org/faq.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
