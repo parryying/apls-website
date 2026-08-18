@@ -59,6 +59,7 @@ jobs:
             set sftp:connect-program 'ssh -a -x -i ~/.ssh/apls-cpanel-deploy -o StrictHostKeyChecking=yes';
             set net:max-retries 2;
             set net:timeout 20;
+            open -u '$REMOTE_USERNAME,' 'sftp://$REMOTE_HOST:$REMOTE_PORT';
             mirror --reverse --delete --verbose '$RUNNER_TEMP/apls-site/' '$REMOTE_TARGET';
             bye
-          " "sftp://$REMOTE_USERNAME@$REMOTE_HOST:$REMOTE_PORT"
+          "
