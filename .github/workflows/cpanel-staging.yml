@@ -31,6 +31,23 @@ jobs:
           chmod 600 ~/.ssh/apls-cpanel-deploy
           ssh-keyscan -p "$REMOTE_PORT" -H "$REMOTE_HOST" >> ~/.ssh/known_hosts
 
+      - name: Prepare site files
+        run: |
+          mkdir -p "$RUNNER_TEMP/apls-site"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/apls-site"
+          rm -rf \
+            "$RUNNER_TEMP/apls-site/.github" \
+            "$RUNNER_TEMP/apls-site/audit-prelaunch-2026-08-17" \
+            "$RUNNER_TEMP/apls-site/logo-concepts.html" \
+            "$RUNNER_TEMP/apls-site/social-card-preview.html" \
+            "$RUNNER_TEMP/apls-site/social-card-preview.png" \
+            "$RUNNER_TEMP/apls-site/README.md"
+
+      - name: Install SFTP mirror tool
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
       - name: Deploy staging site
         env:
           REMOTE_HOST: ${{ vars.CPANEL_HOST }}
@@ -38,12 +55,10 @@ jobs:
           REMOTE_USERNAME: ${{ vars.CPANEL_USERNAME }}
           REMOTE_TARGET: ${{ vars.CPANEL_STAGING_PATH }}
         run: |
-          rsync -rlvz --delete \
-            --exclude='.git/' \
-            --exclude='.github/' \
-            --exclude='audit-prelaunch-*/' \
-            --exclude='logo-concepts.html' \
-            --exclude='social-card-preview*' \
-            --exclude='README.md' \
-            -e "ssh -i ~/.ssh/apls-cpanel-deploy -p $REMOTE_PORT" \
-            ./ "$REMOTE_USERNAME@$REMOTE_HOST:$REMOTE_TARGET"
+          lftp -e "
+            set sftp:connect-program 'ssh -a -x -i ~/.ssh/apls-cpanel-deploy -o StrictHostKeyChecking=yes';
+            set net:max-retries 2;
+            set net:timeout 20;
+            mirror --reverse --delete --verbose '$RUNNER_TEMP/apls-site/' '$REMOTE_TARGET';
+            bye
+          " "sftp://$REMOTE_USERNAME@$REMOTE_HOST:$REMOTE_PORT"
