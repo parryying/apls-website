@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: cpanel-staging
+  group: cpanel-staging-sftp
   cancel-in-progress: true
 
 jobs:
