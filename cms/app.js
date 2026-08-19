@@ -19,6 +19,12 @@
     ["camp", "Camp"],
     ["program-date", "Program date"]
   ];
+  var CALENDAR_PREVIEW_COLORS = {
+    "school-closed": "School closed",
+    "school-event": "School events",
+    "childcare-program": "Childcare & programs",
+    "school-boundary": "First / last day of school"
+  };
   var SECTION_COPY = {
     overview: ["Website overview", "Choose a content area, make changes, and review the result before exporting.", "Content summary"],
     tuition: ["Programs and tuition", "Choose one program and update its enrollment details, schedule, and tuition in one place.", "Program preview"],
@@ -1253,6 +1259,15 @@
     });
   }
 
+  function calendarPreviewColor(row) {
+    var name = String(row.event || "");
+    if (/^(first|last) day of (?:the )?(?:\d{4}[\u2013-]\d{4} )?school (?:year|in \d{4})/i.test(name)) return "school-boundary";
+    if (/^(?:first|last) day of (?:the )?(?:After-School program|Saturday School)$/i.test(name)) return "none";
+    if (row.category === "school-closed") return "school-closed";
+    if (row.category === "childcare" || row.category === "camp" || row.category === "program-date") return "childcare-program";
+    return "school-event";
+  }
+
   function renderCalendarPreview() {
     var rows = state.calendarRows.filter(function (row, index) {
       return Number(row.yearIndex) === selectedCalendarYear && !calendarRowIssues(row, index).length;
@@ -1302,7 +1317,7 @@
       calendarEventsForDate(rows, date).forEach(function (row) {
         var eventIndex = state.calendarRows.indexOf(row);
         var agendaNumber = monthRows.indexOf(row) + 1;
-        var eventButton = node("button", "calendar-preview-event preview-category-" + (row.category || "school-event"), agendaNumber);
+        var eventButton = node("button", "calendar-preview-event calendar-color-" + calendarPreviewColor(row), agendaNumber);
         eventButton.type = "button";
         eventButton.dataset.action = "focus-calendar-row";
         eventButton.dataset.index = eventIndex;
@@ -1315,14 +1330,12 @@
     while (grid.children.length % 7) grid.appendChild(node("div", "calendar-preview-day is-outside"));
     wrapper.appendChild(grid);
 
-    var usedCategories = CALENDAR_CATEGORIES.filter(function (category) {
-      return rows.some(function (row) { return row.category === category[0]; });
-    });
     var legend = node("div", "calendar-preview-legend");
-    usedCategories.forEach(function (category) {
+    Object.keys(CALENDAR_PREVIEW_COLORS).forEach(function (color) {
+      if (!rows.some(function (row) { return calendarPreviewColor(row) === color; })) return;
       var item = node("span", "");
-      item.appendChild(node("i", "preview-category-" + category[0]));
-      item.appendChild(document.createTextNode(category[1]));
+      item.appendChild(node("i", "calendar-color-" + color));
+      item.appendChild(document.createTextNode(CALENDAR_PREVIEW_COLORS[color]));
       legend.appendChild(item);
     });
     wrapper.appendChild(legend);
@@ -1341,7 +1354,7 @@
       agendaItem.type = "button";
       agendaItem.dataset.action = "focus-calendar-row";
       agendaItem.dataset.index = eventIndex;
-      agendaItem.appendChild(node("span", "calendar-preview-agenda-number preview-category-" + (row.category || "school-event"), agendaIndex + 1));
+      agendaItem.appendChild(node("span", "calendar-preview-agenda-number calendar-color-" + calendarPreviewColor(row), agendaIndex + 1));
       var agendaCopy = node("span", "calendar-preview-agenda-copy");
       agendaCopy.appendChild(node("strong", "", row.event));
       agendaCopy.appendChild(node("span", "", shortDateSummary(row) + " · " + categoryLabel(row.category)));

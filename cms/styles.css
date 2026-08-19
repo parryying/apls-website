@@ -1790,40 +1790,15 @@ h3 {
   filter: brightness(0.96);
 }
 
-.calendar-preview-event.preview-category-school-event,
-.calendar-preview-agenda-number.preview-category-school-event,
-.calendar-preview-legend .preview-category-school-event {
-  border-color: #4d88a0;
-  background: #e3f0f4;
-}
-
-.calendar-preview-event.preview-category-school-closed,
-.calendar-preview-agenda-number.preview-category-school-closed,
-.calendar-preview-legend .preview-category-school-closed {
-  border-color: #c85d4a;
-  background: #f8e6e1;
-}
-
-.calendar-preview-event.preview-category-childcare,
-.calendar-preview-agenda-number.preview-category-childcare,
-.calendar-preview-legend .preview-category-childcare {
-  border-color: #d7a832;
-  background: #fbf1d2;
-}
-
-.calendar-preview-event.preview-category-camp,
-.calendar-preview-agenda-number.preview-category-camp,
-.calendar-preview-legend .preview-category-camp {
-  border-color: #68a45d;
-  background: #e8f3e5;
-}
-
-.calendar-preview-event.preview-category-program-date,
-.calendar-preview-agenda-number.preview-category-program-date,
-.calendar-preview-legend .preview-category-program-date {
-  border-color: #8b72a1;
-  background: #eee8f3;
-}
+.calendar-month-preview .calendar-color-school-closed { border-color: #d6c900; background: #f5f0a8; }
+.calendar-month-preview .calendar-color-school-event { border-color: #f5a623; background: #fbd49a; }
+.calendar-month-preview .calendar-color-childcare-program { border-color: #55a969; background: #b9dfbf; }
+.calendar-month-preview .calendar-color-school-boundary { border-color: #159cc9; background: #b6e4f2; }
+.calendar-month-preview .calendar-color-none { border-color: #b9c3bc; background: #edf0ed; }
+.calendar-preview-legend i.calendar-color-school-closed { background: #d6c900; }
+.calendar-preview-legend i.calendar-color-school-event { background: #f5a623; }
+.calendar-preview-legend i.calendar-color-childcare-program { background: #55a969; }
+.calendar-preview-legend i.calendar-color-school-boundary { background: #159cc9; }
 
 .calendar-preview-legend {
   display: flex;

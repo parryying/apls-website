@@ -607,6 +607,159 @@
     return "school-event";
   }
 
+  var CALENDAR_COLOR_LABELS = {
+    "school-closed": "School closed",
+    "school-event": "School events",
+    "childcare-program": "Childcare & programs",
+    "school-boundary": "First / last day of school"
+  };
+
+  function calendarEventColor(event) {
+    var name = String(event[1] || "");
+    var category = calendarEventCategory(event);
+    if (/^(first|last) day of (?:the )?(?:\d{4}[\u2013-]\d{4} )?school (?:year|in \d{4})/i.test(name)) return "school-boundary";
+    if (/^(?:first|last) day of (?:the )?(?:After-School program|Saturday School)$/i.test(name)) return "none";
+    if (category === "school-closed") return "school-closed";
+    if (category === "childcare" || category === "camp" || category === "program-date") return "childcare-program";
+    return "school-event";
+  }
+
+  function calendarEventDates(event, monthDate) {
+    var metadata = event[2] || {};
+    var start = dateFromValue(metadata.startDate);
+    var end = dateFromValue(metadata.endDate);
+    if (!start) {
+      var days = String(event[0] || "").match(/\b\d{1,2}\b/g) || [];
+      if (days.length) start = new Date(monthDate.getFullYear(), monthDate.getMonth(), Number(days[0]));
+      if (days.length > 1) end = new Date(monthDate.getFullYear(), monthDate.getMonth(), Number(days[1]));
+    }
+    return { start: start, end: end || start };
+  }
+
+  function calendarPreviewEvents(year) {
+    var events = [];
+    (year.months || []).forEach(function (month) {
+      var monthDate = new Date(month.name + " 1");
+      if (isNaN(monthDate.getTime())) return;
+      (month.events || []).forEach(function (event) {
+        var dates = calendarEventDates(event, monthDate);
+        if (!dates.start) return;
+        events.push({
+          source: event,
+          name: event[1],
+          dateLabel: event[0],
+          start: dates.start,
+          end: dates.end,
+          color: calendarEventColor(event)
+        });
+      });
+    });
+    return events.sort(function (left, right) {
+      return left.start - right.start || left.name.localeCompare(right.name);
+    });
+  }
+
+  function calendarEventOccursOn(event, date) {
+    var target = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    return target >= event.start.getTime() && target <= event.end.getTime();
+  }
+
+  function buildCalendarMonthView(year) {
+    var yearMatch = String(year.id || "").match(/^(\d{4})-(\d{4})$/);
+    if (!yearMatch) return null;
+    var months = [];
+    for (var offset = 0; offset < 12; offset += 1) months.push(new Date(Number(yearMatch[1]), 7 + offset, 1));
+    var events = calendarPreviewEvents(year);
+    var selectedMonth = 0;
+    var wrapper = el("section", "public-calendar-preview");
+    wrapper.setAttribute("aria-label", year.label + " monthly calendar");
+    wrapper.appendChild(el("h2", null, "Monthly calendar"));
+    var card = el("div", "public-calendar-card");
+    wrapper.appendChild(card);
+
+    function renderMonth() {
+      var monthDate = months[selectedMonth];
+      var monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+      var monthEvents = events.filter(function (event) {
+        return event.start <= monthEnd && event.end >= monthDate;
+      });
+      card.replaceChildren();
+
+      var toolbar = el("div", "public-calendar-toolbar");
+      var previous = el("button", "public-calendar-nav", "<");
+      previous.type = "button";
+      previous.setAttribute("aria-label", "Previous month");
+      previous.disabled = selectedMonth === 0;
+      previous.addEventListener("click", function () { selectedMonth -= 1; renderMonth(); });
+      toolbar.appendChild(previous);
+      var title = el("div", "public-calendar-title");
+      title.appendChild(el("strong", null, new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(monthDate)));
+      title.appendChild(el("small", null, "Month " + (selectedMonth + 1) + " of 12 \u00b7 Event details below \u2193"));
+      toolbar.appendChild(title);
+      var next = el("button", "public-calendar-nav", ">");
+      next.type = "button";
+      next.setAttribute("aria-label", "Next month");
+      next.disabled = selectedMonth === months.length - 1;
+      next.addEventListener("click", function () { selectedMonth += 1; renderMonth(); });
+      toolbar.appendChild(next);
+      card.appendChild(toolbar);
+
+      var weekdays = el("div", "public-calendar-weekdays");
+      ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(function (weekday) {
+        weekdays.appendChild(el("span", null, weekday));
+      });
+      card.appendChild(weekdays);
+
+      var grid = el("div", "public-calendar-grid");
+      for (var leading = 0; leading < monthDate.getDay(); leading += 1) grid.appendChild(el("div", "public-calendar-day is-outside"));
+      for (var day = 1; day <= monthEnd.getDate(); day += 1) {
+        var date = new Date(monthDate.getFullYear(), monthDate.getMonth(), day);
+        var dayCell = el("div", "public-calendar-day" + (date.getDay() === 0 || date.getDay() === 6 ? " is-weekend" : ""));
+        dayCell.appendChild(el("span", "public-calendar-day-number", day));
+        monthEvents.forEach(function (event, eventIndex) {
+          if (!calendarEventOccursOn(event, date)) return;
+          var marker = el("span", "public-calendar-event calendar-color-" + event.color, eventIndex + 1);
+          marker.title = event.name;
+          marker.setAttribute("aria-label", "Event " + (eventIndex + 1) + ": " + event.name);
+          dayCell.appendChild(marker);
+        });
+        grid.appendChild(dayCell);
+      }
+      while (grid.children.length % 7) grid.appendChild(el("div", "public-calendar-day is-outside"));
+      card.appendChild(grid);
+
+      var legend = el("div", "public-calendar-legend");
+      Object.keys(CALENDAR_COLOR_LABELS).forEach(function (color) {
+        if (!events.some(function (event) { return event.color === color; })) return;
+        var item = el("span");
+        item.appendChild(el("i", "calendar-color-" + color));
+        item.appendChild(document.createTextNode(CALENDAR_COLOR_LABELS[color]));
+        legend.appendChild(item);
+      });
+      card.appendChild(legend);
+
+      var agenda = el("section", "public-calendar-agenda");
+      var heading = el("div", "public-calendar-agenda-heading");
+      heading.appendChild(el("h3", null, "Full monthly details"));
+      heading.appendChild(el("span", null, monthEvents.length + " event" + (monthEvents.length === 1 ? "" : "s")));
+      agenda.appendChild(heading);
+      if (!monthEvents.length) agenda.appendChild(el("p", "muted", "No events are scheduled for this month."));
+      monthEvents.forEach(function (event, eventIndex) {
+        var item = el("div", "public-calendar-agenda-item");
+        item.appendChild(el("span", "public-calendar-agenda-number calendar-color-" + event.color, eventIndex + 1));
+        var copy = el("span", "public-calendar-agenda-copy");
+        copy.appendChild(el("strong", null, event.name));
+        copy.appendChild(el("span", null, event.dateLabel));
+        item.appendChild(copy);
+        agenda.appendChild(item);
+      });
+      card.appendChild(agenda);
+    }
+
+    renderMonth();
+    return wrapper;
+  }
+
   function renderCalendar() {
     var root = document.getElementById("calendar-root");
     if (!root || typeof window.APLS_CALENDAR === "undefined") return;
@@ -626,6 +779,8 @@
         dl.appendChild(a);
       });
       root.appendChild(dl);
+      var monthView = buildCalendarMonthView(years[0]);
+      if (monthView) root.appendChild(monthView);
     }
 
     // One table per school year
