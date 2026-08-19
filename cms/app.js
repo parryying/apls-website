@@ -499,6 +499,25 @@
     return html + "</div></section>";
   }
 
+  function refreshScheduleDependentEditors(programKey) {
+    var program = state.tuition.programs[programKey];
+    var base = "programs." + programKey;
+    var scheduleBuilder = editorContent.querySelector(".schedule-builder");
+    var paymentPlanBuilder = editorContent.querySelector(".payment-plan-builder");
+    if (scheduleBuilder) scheduleBuilder.outerHTML = renderScheduleBuilder(base, program);
+    if (paymentPlanBuilder) paymentPlanBuilder.outerHTML = renderPaymentPlanBuilder(base, program);
+
+    var calculatedValues = [];
+    (program.rows || []).forEach(function (row) {
+      (program.columns || []).forEach(function (column, columnIndex) {
+        if (/total tuition|^tuition$|^monthly payments?$/i.test(String(column).trim())) calculatedValues.push(row[columnIndex] || "Enter dates and a per-class rate");
+      });
+    });
+    editorContent.querySelectorAll(".calculated-cell-output").forEach(function (output, index) {
+      if (calculatedValues[index] !== undefined) output.textContent = calculatedValues[index];
+    });
+  }
+
   function programValidation(programKey) {
     var program = (state.tuition.programs || {})[programKey] || {};
     var errors = [];
@@ -2054,6 +2073,12 @@
       if (customPaymentSeed) {
         state.tuition.programs[paymentModeMatch[1]].paymentPlans[Number(paymentModeMatch[2])].customAmounts = customPaymentSeed.map(String);
       }
+      if (activeSection === "tuition" && input.type === "date") {
+        markDirty();
+        updateTuitionValidationFeedback();
+        renderPreview();
+        return;
+      }
       var schedulePath = "programs." + selectedTuitionProgram + ".";
       var regeneratesSchedule = input.dataset.path === schedulePath + "startDate" || input.dataset.path === schedulePath + "endDate" || input.dataset.path.indexOf(schedulePath + "scheduleRules.") === 0;
       var updatesCalendarStart = input.dataset.path === schedulePath + "calendarStartDate";
@@ -2089,6 +2114,23 @@
   });
 
   editorContent.addEventListener("change", function (event) {
+    var tuitionDateInput = event.target.closest('[data-path][type="date"]');
+    if (tuitionDateInput && activeSection === "tuition") {
+      setPath(state.tuition, tuitionDateInput.dataset.path, tuitionDateInput.value);
+      var schedulePath = "programs." + selectedTuitionProgram + ".";
+      var regeneratesSchedule = tuitionDateInput.dataset.path === schedulePath + "startDate" || tuitionDateInput.dataset.path === schedulePath + "endDate";
+      var updatesCalendarStart = tuitionDateInput.dataset.path === schedulePath + "calendarStartDate";
+      if (usesScheduleBuilder(selectedTuitionProgram) && (regeneratesSchedule || updatesCalendarStart)) {
+        if (regeneratesSchedule) updateGeneratedClassDates(state.tuition.programs[selectedTuitionProgram]);
+        syncProgramCalendar(selectedTuitionProgram);
+        refreshScheduleDependentEditors(selectedTuitionProgram);
+      } else {
+        updateTuitionValidationFeedback();
+      }
+      markDirty();
+      renderPreview();
+      return;
+    }
     var calendarInput = event.target.closest('[data-calendar-field="yearIndex"]');
     if (!calendarInput) return;
     renderEditor();
