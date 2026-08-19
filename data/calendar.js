@@ -34,7 +34,7 @@ window.APLS_CALENDAR = {
         { name: "February 2027", events: [
           ["Feb 5 (Fri)", "Lunar New Year Celebration"],
           ["Feb 15 (Mon)", "School closed for Presidents' Day"],
-          ["Feb 16 (Mon) \u2013 19 (Fri)", "Childcare Week*"]
+          ["Feb 16 (Tue) \u2013 19 (Fri)", "Childcare Week*"]
         ]},
         { name: "March 2027", events: [
           ["Mar 17 (Wed)", "St. Patrick's Day"],
@@ -71,7 +71,7 @@ window.APLS_CALENDAR = {
           ["Nov 27 (Thu) \u2013 28 (Fri)", "Thanksgiving \u2014 school closed"]
         ]},
         { name: "December 2025", events: [
-          ["Dec 20 (Fri)", "2025 preschool year-end party"],
+          ["Dec 20 (Sat)", "2025 preschool year-end party"],
           ["Dec 22 (Mon) \u2013 23 (Tue)", "Childcare*"],
           ["Dec 24 (Wed) \u2013 31 (Wed)", "School closed"]
         ]},
