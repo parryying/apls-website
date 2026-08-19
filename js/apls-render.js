@@ -633,7 +633,10 @@
 
         (month.events || []).forEach(function (ev) {
           var tr = el("tr");
+          var metadata = ev[2] || {};
           tr.className = "calendar-event-row calendar-category-" + calendarEventCategory(ev);
+          if (metadata.startDate) tr.dataset.startDate = metadata.startDate;
+          if (metadata.endDate) tr.dataset.endDate = metadata.endDate;
           tr.appendChild(el("td", null, ev[0]));
           tr.appendChild(el("td", null, ev[1]));
           tbody.appendChild(tr);

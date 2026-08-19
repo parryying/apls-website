@@ -47,7 +47,7 @@ window.APLS_CALENDAR = {
           ["May 31 (Mon)", "School closed for Memorial Day"]
         ]},
         { name: "June 2027", events: [
-          ["Jun 11 (Sat)", "End-of-year celebration & graduation ceremony"],
+          ["Jun 12 (Sat)", "End-of-year celebration & graduation ceremony"],
           ["Jun 14 (Mon) \u2013 18 (Fri)", "Friendship week"],
           ["Jun 18 (Fri)", "Last day of the school year"],
           ["Jun 21 (Mon) \u2013 25 (Fri)", "Childcare week*"]
