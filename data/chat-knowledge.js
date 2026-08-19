@@ -9,7 +9,7 @@
   "use strict";
 
   var tuition = window.APLS_TUITION || {};
-  var tuitionTables = tuition.moreTables || [];
+  var tuitionPrograms = tuition.programs || {};
 
   function formatRows(table) {
     return (table && table.rows || []).map(function (row) {
@@ -58,35 +58,35 @@
         id: "tuition-preschool",
         patterns: ["preschool tuition", "preschool cost", "preschool price", "preschool fees"],
         pendingMatch: ["preschool", "pre school"],
-        answer: tuitionAnswer(tuition, tuition.note),
+        answer: tuitionAnswer(tuitionPrograms.preschool, tuitionPrograms.preschool && tuitionPrograms.preschool.note),
         link: { label: "View complete tuition details", href: "tuition.html" }
       },
       {
         id: "tuition-kindergarten",
         patterns: ["kindergarten tuition", "kindergarten cost", "first grade tuition", "first grade cost"],
         pendingMatch: ["kindergarten", "first grade", "kindergarten and first grade"],
-        answer: tuitionAnswer(tuitionTables[0]),
+        answer: tuitionAnswer(tuitionPrograms.kindergarten, tuitionPrograms.kindergarten && tuitionPrograms.kindergarten.note),
         link: { label: "View complete tuition details", href: "tuition.html" }
       },
       {
         id: "tuition-after-school",
         patterns: ["after school tuition", "after school cost", "after school price", "after school fees"],
         pendingMatch: ["after school", "afterschool"],
-        answer: tuitionAnswer(tuitionTables[1], tuitionTables[1] && tuitionTables[1].note),
+        answer: tuitionAnswer(tuitionPrograms["after-school"], tuitionPrograms["after-school"] && tuitionPrograms["after-school"].note),
         link: { label: "View complete tuition details", href: "tuition.html" }
       },
       {
         id: "tuition-summer",
         patterns: ["summer camp tuition", "summer camp cost", "summer camp price", "camp tuition"],
         pendingMatch: ["summer camp", "camp"],
-        answer: tuitionAnswer(tuitionTables[2], tuitionTables[2] && tuitionTables[2].note),
+        answer: tuitionAnswer(tuitionPrograms["summer-camp"], tuitionPrograms["summer-camp"] && tuitionPrograms["summer-camp"].note),
         link: { label: "View complete tuition details", href: "tuition.html" }
       },
       {
         id: "tuition-saturday",
         patterns: ["saturday school tuition", "saturday school cost", "saturday tuition", "weekend class cost"],
         pendingMatch: ["saturday school", "saturday", "weekend"],
-        answer: tuitionAnswer(tuitionTables[3], tuitionTables[3] && tuitionTables[3].note),
+        answer: tuitionAnswer(tuitionPrograms["saturday-school"], tuitionPrograms["saturday-school"] && tuitionPrograms["saturday-school"].note),
         link: { label: "View complete tuition details", href: "tuition.html" }
       },
       {

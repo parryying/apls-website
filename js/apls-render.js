@@ -56,17 +56,14 @@
     var data = window.APLS_TUITION;
     root.innerHTML = "";
 
-    if (data.heading) root.appendChild(el("h2", null, data.heading));
-    if (data.note) root.appendChild(el("p", null, data.note));
-
-    // Main table
-    root.appendChild(buildTuitionTable(data.columns, data.rows));
-
-    // Additional tables (e.g., Kindergarten & 1st Grade)
-    (data.moreTables || []).forEach(function (t) {
-      if (t.heading) root.appendChild(el("h2", null, t.heading));
-      if (t.note) root.appendChild(el("p", null, t.note));
-      root.appendChild(buildTuitionTable(t.columns, t.rows));
+    (data.programOrder || Object.keys(data.programs || {})).forEach(function (programKey) {
+      var program = (data.programs || {})[programKey];
+      if (!program) return;
+      if (program.heading) root.appendChild(el("h2", null, program.heading));
+      if (program.note) root.appendChild(el("p", null, program.note));
+      if ((program.columns || []).length && (program.rows || []).length) {
+        root.appendChild(buildTuitionTable(program.columns, program.rows));
+      }
     });
 
     // Fees
@@ -82,20 +79,15 @@
     var data = window.APLS_TUITION;
     roots.forEach(function (root) {
       var programKey = root.getAttribute("data-tuition-program");
-      var config = (data.programPages || {})[programKey];
-      if (!config) return;
+      var program = (data.programs || {})[programKey];
+      if (!program) return;
 
       root.innerHTML = "";
-      root.appendChild(el("h2", null, config.heading || "Tuition"));
-      if (config.note) root.appendChild(el("p", "program-tuition-note", config.note));
+      root.appendChild(el("h2", null, program.heading || "Tuition"));
+      if (program.note) root.appendChild(el("p", "program-tuition-note", program.note));
 
-      var tableData;
-      if (config.table === "main") {
-        tableData = data;
-      } else if (typeof config.table === "number") {
-        tableData = (data.moreTables || [])[config.table];
-      }
-      if (tableData) root.appendChild(buildTuitionTable(tableData.columns, tableData.rows));
+      var hasTable = (program.columns || []).length && (program.rows || []).length;
+      if (hasTable) root.appendChild(buildTuitionTable(program.columns, program.rows));
 
       var fees = (data.fees || []).filter(function (fee) {
         return (fee.appliesTo || []).indexOf(programKey) !== -1;
@@ -105,7 +97,7 @@
         root.appendChild(buildFeeList(fees));
       }
 
-      if (!tableData) {
+      if (!hasTable) {
         var actions = el("div", "program-tuition-actions");
         var contactLink = el("a", "btn btn-primary", "Contact for tuition");
         contactLink.href = "contact.html";
@@ -115,12 +107,198 @@
     });
   }
 
+  function renderApplicationLinks() {
+    var links = document.querySelectorAll("[data-application-program]");
+    if (!links.length || typeof window.APLS_TUITION === "undefined") return;
+    var programs = window.APLS_TUITION.programs || {};
+    links.forEach(function (link) {
+      var program = programs[link.getAttribute("data-application-program")];
+      if (!program || !program.applicationUrl) return;
+      link.href = program.applicationUrl;
+      var term = program.term && program.term !== "Year-round" ? " — " + program.term : "";
+      link.textContent = "\uD83D\uDCC4 " + (program.name || "Program") + " application" + term;
+    });
+  }
+
+  function programStatus(program) {
+    if (program.endDate) {
+      var parts = program.endDate.split("-").map(Number);
+      var endDate = new Date(parts[0], parts[1] - 1, parts[2], 23, 59, 59);
+      if (new Date() > endDate) return "Closed";
+    }
+    return program.enrollmentStatus || "";
+  }
+
+  function statusLabel(status) {
+    if (status === "Open") return "Now enrolling";
+    if (status === "Closed") return "Enrollment closed";
+    if (status === "Inquire") return "Inquire for availability";
+    return status;
+  }
+
+  function formattedDate(value) {
+    if (!value) return "";
+    var parts = value.split("-").map(Number);
+    return new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric" }).format(new Date(parts[0], parts[1] - 1, parts[2]));
+  }
+
+  function renderProgramContent() {
+    if (typeof window.APLS_TUITION === "undefined") return;
+    var programs = window.APLS_TUITION.programs || {};
+
+    document.querySelectorAll("[data-program-status]").forEach(function (element) {
+      var program = programs[element.getAttribute("data-program-status")];
+      if (!program) return;
+      var status = programStatus(program);
+      element.textContent = statusLabel(status);
+      element.classList.toggle("badge-open", status === "Open");
+      element.classList.toggle("badge-status", status !== "Open");
+      element.hidden = !status;
+    });
+
+    document.querySelectorAll("[data-program-status-text]").forEach(function (element) {
+      var program = programs[element.getAttribute("data-program-status-text")];
+      if (program) element.textContent = statusLabel(programStatus(program));
+    });
+
+    document.querySelectorAll("[data-program-schedule]").forEach(function (element) {
+      var program = programs[element.getAttribute("data-program-schedule")];
+      if (program && program.schedule) element.textContent = program.schedule;
+    });
+
+    document.querySelectorAll("[data-program-format]").forEach(function (element) {
+      var program = programs[element.getAttribute("data-program-format")];
+      if (program && program.format) element.textContent = program.format;
+    });
+
+    document.querySelectorAll("[data-program-term]").forEach(function (element) {
+      var program = programs[element.getAttribute("data-program-term")];
+      if (program && program.term) element.textContent = program.term;
+    });
+
+    document.querySelectorAll("[data-program-term-heading]").forEach(function (element) {
+      var program = programs[element.getAttribute("data-program-term-heading")];
+      if (program && program.term) element.textContent = program.name + " " + program.term + " schedule";
+    });
+
+    document.querySelectorAll("[data-program-date-range]").forEach(function (element) {
+      var program = programs[element.getAttribute("data-program-date-range")];
+      if (program && program.startDate && program.endDate) {
+        element.textContent = formattedDate(program.startDate) + "\u2013" + formattedDate(program.endDate);
+      }
+    });
+
+    document.querySelectorAll("[data-program-class-count]").forEach(function (element) {
+      var program = programs[element.getAttribute("data-program-class-count")];
+      var optionIndex = Number(element.getAttribute("data-option-index") || 0);
+      var dates = program && (program.classDates || [])[optionIndex];
+      if (dates) element.textContent = dates.length;
+    });
+
+    document.querySelectorAll("[data-program-class-dates]").forEach(function (body) {
+      var program = programs[body.getAttribute("data-program-class-dates")];
+      var optionIndex = Number(body.getAttribute("data-option-index") || 0);
+      var dates = program && (program.classDates || [])[optionIndex];
+      if (!dates || !dates.length) return;
+      var months = [];
+      var byMonth = {};
+      dates.slice().sort().forEach(function (value) {
+        var parts = value.split("-").map(Number);
+        var date = new Date(parts[0], parts[1] - 1, parts[2]);
+        var key = value.slice(0, 7);
+        if (!byMonth[key]) {
+          byMonth[key] = { date: date, days: [] };
+          months.push(byMonth[key]);
+        }
+        byMonth[key].days.push(date.getDate());
+      });
+      body.innerHTML = "";
+      months.forEach(function (month) {
+        var row = el("tr");
+        row.appendChild(el("td", null, new Intl.DateTimeFormat("en-US", { month: "long" }).format(month.date)));
+        var shortMonth = new Intl.DateTimeFormat("en-US", { month: "short" }).format(month.date).replace("Sep", "Sept.").replace(/^(?!Sept\.)((?:Jan|Feb|Mar|Apr|Jun|Jul|Aug|Oct|Nov|Dec))$/, "$1.");
+        row.appendChild(el("td", null, shortMonth + " " + month.days.join(", ")));
+        if (body.closest("table").querySelectorAll("thead th").length > 2) row.appendChild(el("td", null, month.days.length));
+        body.appendChild(row);
+      });
+    });
+  }
+
   /* ---------- Calendar ---------- */
+  function calendarYearForDate(years, value) {
+    var parts = String(value || "").split("-").map(Number);
+    if (parts.length !== 3 || !parts[0]) return null;
+    var startYear = parts[1] >= 8 ? parts[0] : parts[0] - 1;
+    return years.find(function (year) { return year.id === startYear + "-" + (startYear + 1); }) || null;
+  }
+
+  function programCalendarLabel(value) {
+    var parts = value.split("-").map(Number);
+    var date = new Date(parts[0], parts[1] - 1, parts[2]);
+    var month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date).replace("Sep", "Sept.");
+    var weekday = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
+    return month + " " + date.getDate() + " (" + weekday + ")";
+  }
+
+  function calendarWithProgramDates(sourceYears) {
+    var years = JSON.parse(JSON.stringify(sourceYears || []));
+    var programs = (window.APLS_TUITION || {}).programs || {};
+    var definitions = {
+      "after-school": ["First day of the After-School program", "Last day of the After-School program"],
+      "saturday-school": ["First day of Saturday School", "Last day of Saturday School"]
+    };
+    Object.keys(definitions).forEach(function (programKey) {
+      var program = programs[programKey] || {};
+      if (!program.startDate && !program.endDate) return;
+      years.forEach(function (year) {
+        (year.months || []).forEach(function (month) {
+          month.events = (month.events || []).filter(function (event) {
+            return event[1] !== definitions[programKey][0] && event[1] !== definitions[programKey][1];
+          });
+        });
+      });
+      [program.startDate, program.endDate].forEach(function (value, boundaryIndex) {
+        if (!value) return;
+        var year = calendarYearForDate(years, value);
+        if (!year) return;
+        var eventName = definitions[programKey][boundaryIndex];
+        var parts = value.split("-").map(Number);
+        var monthName = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(new Date(parts[0], parts[1] - 1, parts[2]));
+        var month = (year.months || []).find(function (item) { return item.name === monthName; });
+        if (!month) {
+          month = { name: monthName, events: [] };
+          year.months = year.months || [];
+          year.months.push(month);
+        }
+        month.events.push([programCalendarLabel(value), eventName, {
+          startDate: value,
+          endDate: "",
+          category: "program-date",
+          notes: "Managed from Programs & Tuition",
+          managedProgram: programKey,
+          managedBoundary: boundaryIndex === 0 ? "start" : "end"
+        }]);
+        month.events.sort(function (left, right) {
+          var leftDate = left[2] && left[2].startDate;
+          var rightDate = right[2] && right[2].startDate;
+          if (leftDate && rightDate) return leftDate.localeCompare(rightDate);
+          var leftDay = Number((left[0].match(/\d+/) || [999])[0]);
+          var rightDay = Number((right[0].match(/\d+/) || [999])[0]);
+          return leftDay - rightDay;
+        });
+        year.months.sort(function (left, right) {
+          return new Date(left.name + " 1") - new Date(right.name + " 1");
+        });
+      });
+    });
+    return years;
+  }
+
   function renderCalendar() {
     var root = document.getElementById("calendar-root");
     if (!root || typeof window.APLS_CALENDAR === "undefined") return;
     var data = window.APLS_CALENDAR;
-    var years = data.years || [];
+    var years = calendarWithProgramDates(data.years || []);
     root.innerHTML = "";
 
     // Downloads (built from each year's PDF, so PDFs live in one place too)
@@ -207,6 +385,8 @@
   document.addEventListener("DOMContentLoaded", function () {
     renderTuition();
     renderProgramTuition();
+    renderApplicationLinks();
+    renderProgramContent();
     renderCalendar();
     renderTeachers();
   });

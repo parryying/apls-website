@@ -1,49 +1,126 @@
 /* ============================================================
-   ✏️  TUITION — EDIT THIS FILE ONCE A YEAR
+   APLS PROGRAM TUITION
    ------------------------------------------------------------
-   This is the ONE place tuition is stored. Every page that
-   shows tuition reads from here, so you only update it here.
-
-   • Change a price? Edit the numbers below (keep the quotes).
-   • Add/remove a row? Copy a line inside "rows" and edit it.
-   • Add/remove a fee? Copy a { label, text } block in "fees".
-   Save the file and refresh the page — done.
+   Each program owns one tuition record. The Tuition page,
+   program pages, chat answers, and enrollment tools all read
+   that same record. Shared fees are stored separately below.
    ============================================================ */
 window.APLS_TUITION = {
-  heading: "Preschool monthly tuition",
-  note: "Choose a half-day morning session (9:00\u00a0a.m.\u201312:00\u00a0p.m.) or a full-day program (8:00\u00a0a.m.\u20135:30\u00a0p.m.), 2 to 5 days per week. Extended care is available until 6:00\u00a0p.m.",
+  programOrder: ["preschool", "kindergarten", "after-school", "saturday-school", "summer-camp", "ap-prep"],
 
-  // Monthly tuition table.
-  columns: ["Days per week", "Half day (AM)", "Full day (8am\u20135:30pm)"],
-  rows: [
-    ["5 days", "$1,100", "$2,050"],
-    ["4 days", "$950",   "$1,850"],
-    ["3 days", "$850",   "$1,650"],
-    ["2 days", "$650",   "$1,250"]
-  ],
-
-  // Additional tuition tables shown below the preschool table.
-  moreTables: [
-    {
-      heading: "Kindergarten & 1st Grade",
+  programs: {
+    preschool: {
+      name: "Preschool",
+      term: "Year-round",
+      enrollmentStatus: "Open",
+      applicationUrl: "pdfs/Preschool-Application.pdf",
+      startDate: "",
+      endDate: "",
+      schedule: "Monday\u2013Friday \u00b7 Half day 9:00 a.m.\u201312:00 p.m.; full day 8:00 a.m.\u20135:30 p.m.",
+      format: "Full or half day; extended care",
+      careStatus: "available",
+      ratePerClass: "",
+      classDates: [],
+      editorNote: "",
+      heading: "Preschool tuition",
+      note: "Choose a half-day morning session (9:00\u00a0a.m.\u201312:00\u00a0p.m.) or a full-day program (8:00\u00a0a.m.\u20135:30\u00a0p.m.), 2 to 5 days per week.",
+      columns: ["Days per week", "Half day (AM)", "Full day (8am\u20135:30pm)"],
+      rows: [
+        ["5 days", "$1,100", "$2,050"],
+        ["4 days", "$950", "$1,850"],
+        ["3 days", "$850", "$1,650"],
+        ["2 days", "$650", "$1,250"]
+      ]
+    },
+    kindergarten: {
+      name: "Kindergarten & 1st Grade",
+      term: "Year-round",
+      enrollmentStatus: "Open",
+      applicationUrl: "pdfs/Kindergarten-1st-Grade-Application.pdf",
+      startDate: "",
+      endDate: "",
+      schedule: "Monday\u2013Friday \u00b7 9:00 a.m.\u20133:00 p.m.",
+      format: "Full-day school program; extended care available",
+      careStatus: "available",
+      ratePerClass: "",
+      classDates: [],
+      editorNote: "",
+      heading: "Kindergarten & 1st Grade tuition",
+      note: "Monthly tuition for the full-day program.",
       columns: ["Program", "Tuition"],
       rows: [
         ["Full Day (9am\u20133pm)", "$2,000/month"],
         ["Full Day + Extended Care (8am\u20135:30pm)", "$2,150/month"]
       ]
     },
-    {
-      heading: "After-School",
-      note: "Fall 2026 tuition is $55 per class. Classes are enrolled by the quarter \u2014 single classes are not sold separately. A $100 application fee applies for each new student. No make-up classes or payment refunds. Before- and after-school care is $18/hour. We offer pick-up from local elementary schools for $25 per student, per trip.",
+    "after-school": {
+      name: "After-School",
+      term: "Fall 2026",
+      enrollmentStatus: "Open",
+      applicationUrl: "pdfs/Chinese-Japanese%20MW-W%20afterschool%20classes-Fall%202026_Final.pdf",
+      startDate: "2026-09-14",
+      endDate: "2026-12-09",
+      schedule: "Mon. & Wed. \u00b7 2:00\u20133:30 or 4:00\u20135:30 p.m.",
+      format: "90-minute classes; extended care available",
+      careStatus: "available",
+      ratePerClass: "55",
+      scheduleRules: [
+        { intervalWeeks: 1, weekdays: [1, 3] },
+        { intervalWeeks: 1, weekdays: [3] }
+      ],
+      classDates: [
+        ["2026-09-14", "2026-09-16", "2026-09-21", "2026-09-23", "2026-09-28", "2026-09-30", "2026-10-05", "2026-10-07", "2026-10-12", "2026-10-14", "2026-10-19", "2026-10-21", "2026-10-26", "2026-10-28", "2026-11-02", "2026-11-04", "2026-11-09", "2026-11-11", "2026-11-16", "2026-11-18", "2026-11-23", "2026-11-25", "2026-11-30", "2026-12-02", "2026-12-07", "2026-12-09"],
+        ["2026-09-16", "2026-09-23", "2026-09-30", "2026-10-07", "2026-10-14", "2026-10-21", "2026-10-28", "2026-11-04", "2026-11-11", "2026-11-18", "2026-11-25", "2026-12-02", "2026-12-09"]
+      ],
+      editorNote: "September 9 is intentionally excluded because families need time to confirm after-school schedules after public schools begin September 8.",
+      heading: "After-School tuition",
+      note: "Fall 2026 tuition is $55 per class. Classes are enrolled by the quarter \u2014 single classes are not sold separately. No make-up classes or payment refunds. We offer pick-up from local elementary schools for $25 per student, per trip.",
       columns: ["Enrollment option", "Total tuition", "Monthly payment"],
       rows: [
-        ["Monday & Wednesday", "$1,485 (27 classes)", "$450 (Sept.\u2013Nov.), $135 (Dec.)"],
-        ["Wednesday only", "$770 (14 classes)", "$220 (Sept.\u2013Nov.), $110 (Dec.)"]
+        ["Monday & Wednesday", "$1,430 (26 classes)", "$330 (Sept.), $440 (Oct.), $495 (Nov.), $165 (Dec.)"],
+        ["Wednesday only", "$715 (13 classes)", "$165 (Sept.), $220 (Oct.), $220 (Nov.), $110 (Dec.)"]
       ]
     },
-    {
-      heading: "Summer Camp",
-      note: "A $100 new-student application fee applies (waived for 2026 registrations completed before May 1).",
+    "saturday-school": {
+      name: "Saturday School",
+      term: "Fall 2026",
+      enrollmentStatus: "Open",
+      applicationUrl: "pdfs/Sat.%20school%20classes_APLS_Fall%202026.pdf",
+      startDate: "",
+      endDate: "",
+      schedule: "Saturday \u00b7 9:30\u201311:00 a.m.",
+      format: "90-minute classes; no extended care",
+      careStatus: "unavailable",
+      ratePerClass: "55",
+      scheduleRules: [
+        { intervalWeeks: 1, weekdays: [6] }
+      ],
+      classDates: [
+        ["2026-09-19", "2026-09-26", "2026-10-03", "2026-10-10", "2026-10-17", "2026-10-24", "2026-10-31", "2026-11-07", "2026-11-14", "2026-11-21", "2026-11-28", "2026-12-05", "2026-12-12"]
+      ],
+      editorNote: "Confirm before publishing dates or care details: the calendar says September 12, while the program page and PDF say September 19. The PDF advertises $25/hour care, while the website says no extended care.",
+      heading: "Saturday School tuition",
+      note: "Fall 2026 tuition is $55 per class. Classes are enrolled by the quarter \u2014 single classes are not sold separately. No make-up classes or payment refunds. No extended care is offered.",
+      columns: ["Enrollment option", "Total tuition", "Monthly payment"],
+      rows: [
+        ["Fall Quarter (Sept.\u2013Dec.)", "$715 (13 classes)", "$110 (Sept.), $275 (Oct.), $220 (Nov.), $110 (Dec.)"]
+      ]
+    },
+    "summer-camp": {
+      name: "Summer Camp",
+      term: "Summer 2026",
+      enrollmentStatus: "Open",
+      applicationUrl: "pdfs/Summer-Camp-Application-2026.pdf",
+      startDate: "2026-06-29",
+      endDate: "2026-08-21",
+      schedule: "June 29\u2013August 21 \u00b7 Half day 9:00 a.m.\u201312:00 p.m.; full day 9:00 a.m.\u20133:00 p.m.",
+      format: "Weekly camp; extended care",
+      careStatus: "available",
+      ratePerClass: "",
+      classDates: [],
+      editorNote: "",
+      heading: "Summer Camp tuition",
+      note: "Weekly 2026 tuition. The new-student application fee is waived for registrations completed before May 1.",
       columns: ["Program", "Hours", "Tuition"],
       rows: [
         ["Half day", "9:00 a.m.\u201312:00 p.m.", "$325/week"],
@@ -51,57 +128,39 @@ window.APLS_TUITION = {
         ["Full day + extended care", "8:00 a.m.\u20135:30 p.m.", "$600/week"]
       ]
     },
-    {
-      heading: "Saturday School",
-      note: "Fall 2026 tuition is $55 per class. Classes are enrolled by the quarter \u2014 single classes are not sold separately. A $100 application fee applies for each new student. No make-up classes or payment refunds. No extended care is offered. A $50 late-pickup fee applies.",
-      columns: ["Enrollment option", "Total tuition", "Monthly payment"],
-      rows: [
-        ["Fall Quarter (Sept.\u2013Dec.)", "$715 (13 classes)", "$220 (Sept.\u2013Nov.), $55 (Dec.)"]
-      ]
-    }
-  ],
-
-  // Compact tuition summaries rendered on individual program pages.
-  // Use "main" for the preschool table or a zero-based moreTables index.
-  programPages: {
-    preschool: {
-      table: "main",
-      heading: "Preschool tuition",
-      note: "Monthly tuition based on the number of days your child attends."
-    },
-    kindergarten: {
-      table: 0,
-      heading: "Kindergarten & 1st Grade tuition",
-      note: "Monthly tuition for the full-day program."
-    },
-    "after-school": {
-      table: 1,
-      heading: "After-School tuition",
-      note: "Fall 2026 tuition is $55 per class. Classes are enrolled by the quarter \u2014 single classes are not sold separately. A $100 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. Before- and after-school care is $18/hour. We offer pick-up from local elementary schools for $25 per student, per trip."
-    },
-    "saturday-school": {
-      table: 3,
-      heading: "Saturday School tuition",
-      note: "Fall 2026 tuition is $55 per class. Classes are enrolled by the quarter \u2014 single classes are not sold separately. A $100 application fee applies for each new student. Siblings receive a 10% discount. No make-up classes or payment refunds. No extended care is offered. A $50 late-pickup fee applies."
-    },
-    "summer-camp": {
-      table: 2,
-      heading: "Summer Camp tuition",
-      note: "Weekly 2026 tuition. A $100 new-student application fee applies (waived for registrations completed before May 1). Siblings receive a 5% discount."
-    },
     "ap-prep": {
-      heading: "AP Prep tuition"
+      name: "AP Prep",
+      term: "",
+      enrollmentStatus: "Inquire",
+      applicationUrl: "contact.html",
+      startDate: "",
+      endDate: "",
+      schedule: "Arranged with your family.",
+      format: "AP prep and tutoring",
+      careStatus: "not-applicable",
+      ratePerClass: "",
+      classDates: [],
+      editorNote: "",
+      heading: "AP Prep tuition",
+      note: "Please contact APLS for current tuition and class availability.",
+      columns: [],
+      rows: []
     }
   },
 
-  // Registration and other fees. "label" is shown in bold.
+  // Shared fees and policies. "appliesTo" controls which program pages show each item.
   // "appliesTo" lists which program pages show the fee (tuition.html always shows all).
   feesHeading: "Registration & other fees",
   fees: [
     {
       appliesTo: ["preschool", "kindergarten"],
       label: "Registration fee & deposit \u2014 $200 per child (Preschool and Kindergarten & 1st Grade only).",
-      text: " A $100 non-refundable registration fee plus a $100 deposit that holds your child's spot and is applied toward the first month's tuition. Due when the Enrollment Application Form is signed. The deposit is refundable if enrollment is cancelled. After-School, Saturday School, and Summer Camp have no deposit \u2014 they pay only the application fee listed with each program on the Tuition page."
+      text: " A $100 non-refundable registration fee plus a $100 deposit that holds your child's spot and is applied toward the first month's tuition. Due when the Enrollment Application Form is signed. The deposit is refundable if enrollment is cancelled."
+    },
+    {
+      appliesTo: ["after-school", "saturday-school", "summer-camp"],
+      label: "New-student application fee \u2014 $100",
+      text: " for After-School, Saturday School, and Summer Camp. No deposit is required for these programs."
     },
     {
       appliesTo: ["preschool", "kindergarten"],
@@ -129,9 +188,14 @@ window.APLS_TUITION = {
       text: " No additional fee applies. We provide teaching assistants for toileting help. Parents supply pull-ups (no diapers), baby wipes, and plastic bags."
     },
     {
-      appliesTo: ["preschool", "kindergarten", "after-school", "saturday-school", "summer-camp"],
+      appliesTo: ["preschool", "kindergarten", "after-school", "saturday-school"],
       label: "Sibling discount \u2014 10%",
-      text: " for all programs, except Summer Camp, which is 5%."
+      text: " for Preschool, Kindergarten & 1st Grade, After-School, and Saturday School."
+    },
+    {
+      appliesTo: ["summer-camp"],
+      label: "Summer Camp sibling discount \u2014 5%",
+      text: " for siblings enrolled in Summer Camp."
     }
   ]
 };

@@ -49,9 +49,44 @@ does not use an LLM, external API, database, or visitor tracking.
 
 ### CMS preview
 
-Open `cms/index.html` to use the browser-based content editor for tuition,
-calendar, and teacher data. The editor provides live previews and stores drafts
-in the current browser.
+Open `cms/index.html` to use the browser-based content editor for programs,
+tuition, calendar, and teacher data. The editor provides live previews and
+stores drafts in the current browser.
+
+The Programs & Tuition editor has one workspace per program. Each program owns
+one tuition heading, note, and table used by the full Tuition page, its program
+page, and chat answers. It also stores the current term, enrollment status,
+application URL, dates, and schedule summary for future enrollment workflows.
+Application links on the Forms and program pages already read these records.
+
+Shared fees and policies are edited once beneath the program workspace. Use the
+program checkboxes to control where each shared item appears; create a separate
+shared item when a program has a different rate, such as the Summer Camp sibling
+discount.
+
+The program editor runs automatic checks while fields are edited:
+
+- Open, waitlisted, and coming-soon programs require an application URL.
+- End dates cannot precede start dates, and Open programs cannot remain open
+	after their end date.
+- Fixed-term programs are warned when dates are missing.
+- Program dates are compared with matching program events in the Calendar.
+- Extended-care availability must agree with the shared extended-care fee.
+- For per-class programs, scheduled dates are counted and checked for invalid or
+	duplicate dates, dates outside the program range, declared class counts, and
+	tuition totals calculated from the per-class rate.
+
+Automatic errors block tuition export. Warnings remain reviewable and require an
+explicit confirmation before tuition or calendar data can be exported. The
+After-School and Saturday public schedule tables are rendered from the same
+structured class-date lists used by these checks.
+
+After-School and Saturday School start/end dates are owned by their program
+workspaces. Entering either boundary automatically creates or updates locked
+First day and Last day rows in the Calendar workbook. If the target school year
+does not exist, the CMS creates its calendar shell automatically. The public
+Calendar page also overlays these events directly from program data, so replacing
+`tuition.js` is enough for the website calendar to reflect the new boundaries.
 
 The Calendar editor uses one spreadsheet-style row per event. Enter real start
 and end dates; the CMS calculates weekday labels, groups events by month, and
