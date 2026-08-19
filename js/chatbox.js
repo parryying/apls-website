@@ -83,7 +83,9 @@
     launcher.setAttribute("aria-haspopup", "dialog");
     launcher.setAttribute("aria-expanded", "false");
     launcher.setAttribute("aria-controls", "apls-chat-panel");
-    launcher.innerHTML = '<span class="chat-launcher-icon" aria-hidden="true">?</span><span>Ask APLS</span>';
+    launcher.setAttribute("aria-label", "Ask APLS");
+    launcher.title = "Ask APLS";
+    launcher.innerHTML = '<span class="chat-launcher-icon" aria-hidden="true">?</span><span class="chat-launcher-label">Ask APLS</span>';
 
     var panel = el("section", "chat-panel");
     panel.id = "apls-chat-panel";
@@ -129,6 +131,19 @@
     document.body.appendChild(panel);
     document.body.appendChild(launcher);
 
+    var introTimer = null;
+    try {
+      if (window.matchMedia("(max-width: 560px)").matches && !window.localStorage.getItem("apls-chat-launcher-intro-seen")) {
+        launcher.classList.add("is-intro");
+        window.localStorage.setItem("apls-chat-launcher-intro-seen", "true");
+        introTimer = window.setTimeout(function () {
+          launcher.classList.remove("is-intro");
+        }, 5000);
+      }
+    } catch (error) {
+      launcher.classList.remove("is-intro");
+    }
+
     function addChoices(choices) {
       if (!choices || !choices.length) return;
       var wrap = el("div", "chat-choices");
@@ -167,6 +182,8 @@
     }
 
     function openPanel() {
+      if (introTimer) window.clearTimeout(introTimer);
+      launcher.classList.remove("is-intro");
       lastFocused = document.activeElement;
       panel.hidden = false;
       launcher.hidden = true;
