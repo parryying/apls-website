@@ -177,8 +177,8 @@ window.APLS_TUITION = {
     },
     {
       appliesTo: ["preschool", "kindergarten", "after-school", "summer-camp"],
-      label: "Extended care after 5:30\u00a0p.m. \u2014 $18 per hour",
-      text: " (one-hour minimum, until 6:00\u00a0p.m.) for registered students. Available in every program except Saturday School, which offers no extended care."
+      label: "Extended care \u2014 $18 per hour",
+      text: " with a one-hour minimum. For After-School, supervised care and free play are available before or after language classes and on select non-class days; language-class enrollment is not required. For Preschool, Kindergarten & 1st Grade, and Summer Camp, extended care is available after 5:30\u00a0p.m. Care is available until 6:00\u00a0p.m.; Saturday School offers no extended care."
     },
     {
       appliesTo: ["preschool", "kindergarten", "summer-camp"],
