@@ -24,38 +24,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=13" />
+  <link rel="stylesheet" href="css/styles.css?v=14" />
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Event",
-    "name": "APLS Open House",
-    "description": "Tour the school, meet APLS teachers, explore Chinese and Japanese programs, enjoy hands-on activities, and enter a raffle.",
-    "startDate": "2026-08-22T10:00:00-07:00",
-    "endDate": "2026-08-22T13:00:00-07:00",
-    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-    "eventStatus": "https://schema.org/EventScheduled",
-    "image": "https://www.apls.org/images/apls-open-house-2026.png",
-    "location": {
-      "@type": "Place",
-      "name": "Asia Pacific Language School",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "14042 NE 8th Street, 1st Floor",
-        "addressLocality": "Bellevue",
-        "addressRegion": "WA",
-        "postalCode": "98007",
-        "addressCountry": "US"
-      }
-    },
-    "organizer": {
-      "@type": "EducationalOrganization",
-      "name": "Asia Pacific Language School",
-      "url": "https://www.apls.org/"
-    }
-  }
-  </script>
 </head>
 <body>
 
@@ -125,36 +95,12 @@
     </div>
   </section>
 
-  <section class="section">
-    <article class="container event-feature">
-      <div class="event-details">
-        <p class="eyebrow">Upcoming event</p>
-        <h2>APLS Open House</h2>
-        <p class="event-date"><strong>Saturday, August 22, 2026</strong><br />10:00 a.m.–1:00 p.m.</p>
-        <p>Meet our teachers, tour the school, learn about our Chinese and Japanese programs, and enjoy hands-on activities for children. Visitors can also enter our raffle.</p>
-        <dl class="event-facts">
-          <div><dt>When</dt><dd>Saturday, August 22 · 10:00 a.m.–1:00 p.m.</dd></div>
-          <div><dt>Where</dt><dd><a href="https://maps.app.goo.gl/M1rjURfzHz67xjtdA" target="_blank" rel="noopener">14042 NE 8th Street, 1st Floor, Bellevue, WA 98007</a></dd></div>
-          <div><dt>Contact</dt><dd><a href="tel:+14257474172">425-747-4172</a> · <a href="mailto:apls@apls.org">apls@apls.org</a></dd></div>
-        </dl>
-        <div class="event-actions">
-          <a href="https://maps.app.goo.gl/M1rjURfzHz67xjtdA" target="_blank" rel="noopener" class="btn btn-primary">Get Directions</a>
-          <a href="contact.html" class="btn btn-ghost">Contact APLS</a>
-        </div>
-      </div>
-      <figure class="event-flyer">
-        <a href="images/apls-open-house-2026.png" target="_blank" rel="noopener" aria-label="Open the full-size APLS Open House flyer">
-          <img src="images/apls-open-house-2026.png" alt="APLS Open House flyer for Saturday, August 22, 2026, from 10:00 a.m. to 1:00 p.m." width="1023" height="1537" />
-        </a>
-        <figcaption>Select the flyer to view it full size.</figcaption>
-      </figure>
-    </article>
-  </section>
+  <main id="events-root"></main>
 
   <section class="cta-band">
     <div class="container cta-inner">
       <div>
-        <h2>Questions about the Open House?</h2>
+        <h2>Questions about an event?</h2>
         <p>Call or send us a message—we'd be happy to help.</p>
       </div>
       <div class="cta-actions">
@@ -191,6 +137,8 @@
     </div>
   </footer>
 
+  <script src="data/events.js"></script>
+  <script src="js/apls-render.js?v=8"></script>
   <script src="js/mobile-nav.js?v=4"></script>
   <script src="data/tuition.js"></script>
   <script src="data/chat-knowledge.js"></script>

@@ -9,11 +9,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=7" />
   <script src="../data/tuition.js?v=6"></script>
   <script src="../data/calendar.js"></script>
   <script src="../data/teachers.js"></script>
-  <script src="app.js?v=7" defer></script>
+  <script src="../data/gallery.js"></script>
+  <script src="../data/events.js"></script>
+  <script src="app.js?v=9" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#editor">Skip to editor</a>
@@ -53,6 +55,14 @@
       <button class="nav-item" type="button" data-section="teachers">
         <span class="nav-icon" aria-hidden="true">04</span>
         Teachers
+      </button>
+      <button class="nav-item" type="button" data-section="gallery">
+        <span class="nav-icon" aria-hidden="true">05</span>
+        Gallery
+      </button>
+      <button class="nav-item" type="button" data-section="events">
+        <span class="nav-icon" aria-hidden="true">06</span>
+        Events &amp; Announcements
       </button>
       <div class="nav-note">
         <strong>Preview only</strong>
@@ -101,11 +111,19 @@
       </button>
       <button type="button" class="export-option" data-export="calendar">
         <strong>calendar.js</strong>
-        <span>School years, months, events, and PDFs</span>
+        <span>School years, months, events, and printable calendar data</span>
       </button>
       <button type="button" class="export-option" data-export="teachers">
         <strong>teachers.js</strong>
         <span>Teacher names, roles, bios, and photos</span>
+      </button>
+      <button type="button" class="export-option" data-export="gallery">
+        <strong>gallery.js</strong>
+        <span>Curated Instagram post links and gallery introduction</span>
+      </button>
+      <button type="button" class="export-option" data-export="events">
+        <strong>events.js</strong>
+        <span>Events, announcements, flyers, links, and calendar visibility</span>
       </button>
     </div>
   </dialog>

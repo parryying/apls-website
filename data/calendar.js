@@ -1,17 +1,4 @@
-/* ============================================================
-   ✏️  SCHOOL CALENDAR — EDIT THIS FILE ONCE A YEAR
-   ------------------------------------------------------------
-   This is the ONE place the calendar is stored. The calendar
-   page builds itself from the data below.
-
-   • New school year? Copy a whole { ... } block inside "years",
-     put it at the TOP of the list, and edit its dates.
-   • Add an event? Copy a ["date", "event"] line into a month.
-   • Add a month? Copy a { name, events:[...] } block.
-   • Update a PDF? Change the "pdf" file name (put the PDF in
-     the pdfs/ folder first).
-   Save the file and refresh the page — done.
-   ============================================================ */
+/* APLS calendar data - managed and exported from Content Studio. */
 window.APLS_CALENDAR = {
   footnote: "*APLS provides childcare on Bellevue School District Professional Development Days (BSD PDD) and some holidays.",
 
@@ -20,14 +7,12 @@ window.APLS_CALENDAR = {
     {
       label: "2026\u20132027 school year",
       id: "2026-2027",
-      pdf: "pdfs/2026-2027-Calendar.pdf",
-      pdfLabel: "2026\u20132027 school calendar (PDF)",
       months: [
         { name: "September 2026", events: [
           ["Sep 2 (Wed)", "First day of the 2026\u20132027 school year"],
           ["Sep 7 (Mon)", "Labor Day \u2014 school closed"],
           ["Sep 9 (Wed)", "First day of the After-School program"],
-          ["Sep 12 (Sat)", "First day of Saturday School"],
+          ["Sep 19 (Sat)", "First day of Saturday School"],
           ["Sep 25 (Fri)", "Moon Festival Celebration"]
         ]},
         { name: "October 2026", events: [
@@ -72,8 +57,6 @@ window.APLS_CALENDAR = {
     {
       label: "2025\u20132026 school year",
       id: "2025-2026",
-      pdf: "pdfs/2025-2026-Calendar.pdf",
-      pdfLabel: "2025\u20132026 school calendar (PDF)",
       months: [
         { name: "September 2025", events: [
           ["Sep 2 (Tue)", "First day of the 2025\u20132026 school year"],

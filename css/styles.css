@@ -680,6 +680,19 @@ a.program h3 { color: var(--navy); }
 .photo-card:not(.video-thumb) img { cursor: zoom-in; transition: transform .15s ease; }
 .photo-card:not(.video-thumb):hover img { transform: scale(1.02); }
 
+.instagram-gallery-section { background: #eef3ed; }
+.instagram-gallery-heading {
+  display: flex; align-items: end; justify-content: space-between; gap: 2rem;
+  margin-bottom: 2rem;
+}
+.instagram-gallery-heading h2 { margin-bottom: .45rem; }
+.instagram-gallery-heading p:last-child { max-width: 62ch; margin-bottom: 0; color: var(--muted); }
+.instagram-gallery-heading .btn { flex: 0 0 auto; }
+.instagram-gallery-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; align-items: start; }
+.instagram-gallery-card { min-width: 0; }
+.instagram-gallery-card .instagram-media { min-width: 0 !important; width: 100% !important; margin: 0 !important; }
+.instagram-gallery-caption { margin: .55rem .3rem 0; color: var(--muted); font-size: .92rem; text-align: center; }
+
 /* ---------- Lightbox ---------- */
 .lightbox {
   position: fixed; inset: 0; z-index: 1000;
@@ -750,12 +763,27 @@ body.open-house-popup-open { overflow: hidden; }
 .event-flyer a { display: block; }
 .event-flyer img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: var(--shadow); }
 .event-flyer figcaption { margin-top: .65rem; color: var(--muted); font-size: .88rem; }
+.event-feature-no-image { grid-template-columns: minmax(0, 760px); }
+.event-list-section { padding-top: 0; }
+.event-list-section h2 { margin-bottom: 1.35rem; }
+.event-list-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.event-card {
+  padding: clamp(1.25rem, 3vw, 1.8rem); border: 1px solid #dfd2bc; border-radius: 8px;
+  background: var(--white); box-shadow: 0 8px 22px rgba(59, 90, 74, .08);
+}
+.event-card h3 { margin: 0 0 .55rem; color: var(--navy); font-size: 1.35rem; }
+.event-card-date { color: var(--navy); font-weight: 800; }
+.event-card .event-actions { margin-top: 1.2rem; }
+.events-empty { text-align: center; }
 
 @media (max-width: 760px) {
   .event-feature { grid-template-columns: 1fr; gap: 2rem; }
   .event-details { padding-top: 0; }
   .event-actions { flex-direction: column; }
   .event-actions .btn { width: 100%; text-align: center; }
+  .event-list-grid { grid-template-columns: 1fr; }
+  .instagram-gallery-heading { align-items: flex-start; flex-direction: column; gap: 1rem; }
+  .instagram-gallery-grid { grid-template-columns: 1fr; }
 }
 
 /* ---------- Responsive ---------- */
@@ -765,10 +793,15 @@ body.open-house-popup-open { overflow: hidden; }
   .program-grid { grid-template-columns: repeat(2, 1fr); }
   .gallery-strip { grid-template-columns: repeat(2, 1fr); }
   .photo-gallery { grid-template-columns: repeat(2, 1fr); }
+  .instagram-gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stats-inner { grid-template-columns: repeat(2, 1fr); }
   .hero-inner { grid-template-columns: minmax(0, 1fr); }
   .hero-image { order: -1; }
   .quotes, .footer-inner { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  .instagram-gallery-grid { grid-template-columns: 1fr; }
 }
 
 /* Header collapses to a hamburger menu earlier so the enlarged school name

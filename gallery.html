@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=13" />
+  <link rel="stylesheet" href="css/styles.css?v=14" />
 </head>
 <body>
 
@@ -235,6 +235,20 @@
     </div>
   </section>
 
+  <section class="section instagram-gallery-section" id="instagram-gallery-section" hidden>
+    <div class="container">
+      <div class="instagram-gallery-heading">
+        <div>
+          <p class="eyebrow">From our Instagram</p>
+          <h2 id="instagram-gallery-heading">Latest from APLS</h2>
+          <p id="instagram-gallery-intro"></p>
+        </div>
+        <a class="btn btn-ghost" id="instagram-profile-link" href="https://www.instagram.com/aplsfamilies/" target="_blank" rel="noopener">Visit @aplsfamilies</a>
+      </div>
+      <div class="instagram-gallery-grid" id="instagram-gallery-root" aria-labelledby="instagram-gallery-heading"></div>
+    </div>
+  </section>
+
   <!-- ============ CTA BAND ============ -->
   <section class="cta-band">
     <div class="container cta-inner">
@@ -378,6 +392,8 @@
     })();
   </script>
 
+  <script src="data/gallery.js"></script>
+  <script src="js/apls-render.js?v=8"></script>
   <script src="js/mobile-nav.js?v=4"></script>
   <script src="data/tuition.js"></script>
   <script src="data/chat-knowledge.js"></script>

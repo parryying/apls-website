@@ -50,8 +50,8 @@ does not use an LLM, external API, database, or visitor tracking.
 ### CMS preview
 
 Open `cms/index.html` to use the browser-based content editor for programs,
-tuition, calendar, and teacher data. The editor provides live previews and
-stores drafts in the current browser.
+tuition, calendar, teacher, gallery, and events data. The editor provides live
+previews and stores drafts in the current browser.
 
 The Programs & Tuition editor has one workspace per program. Each program owns
 one tuition heading, note, and table used by the full Tuition page, its program
@@ -96,9 +96,22 @@ ranges. Numbered markers correspond to a complete monthly agenda with full event
 names, date ranges, categories, and notes; selecting either returns focus to its
 spreadsheet row.
 
+The Gallery editor curates free official Instagram embeds. Publish a post from
+the public `@aplsfamilies` account, copy its post or Reel URL, and add that URL
+in the Gallery workspace. Instagram stores and serves the photo; the website
+stores only the selected URL, caption, order, and visibility setting. The
+permanent local photo gallery remains visible when Instagram is unavailable.
+
+The Events & Announcements editor manages multiple published, draft, or archived
+items. Events can include dates, times, location, flyer, and action links;
+announcements can omit event-specific details. Enabling **Show on school
+calendar** adds a locked Calendar row while `events.js` remains the source of
+truth.
+
 The CMS preview does not publish directly. Use **Export data file** to download
-the updated `tuition.js`, `calendar.js`, or `teachers.js`, then replace the
-matching file in `data/` and deploy the website normally.
+the updated `tuition.js`, `calendar.js`, `teachers.js`, `gallery.js`, or
+`events.js`, then replace the matching file in `data/` and deploy the website
+normally.
 
 ## Deploying
 

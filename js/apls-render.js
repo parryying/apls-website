@@ -224,6 +224,259 @@
     });
   }
 
+  /* ---------- Gallery ---------- */
+  function instagramPostUrl(value) {
+    var match = String(value || "").trim().match(/^https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/[^/?#]+/i);
+    return match ? match[0] + "/" : "";
+  }
+
+  function loadInstagramEmbeds() {
+    if (window.instgrm && window.instgrm.Embeds) {
+      window.instgrm.Embeds.process();
+      return;
+    }
+    if (document.getElementById("instagram-embed-script")) return;
+    var script = document.createElement("script");
+    script.id = "instagram-embed-script";
+    script.async = true;
+    script.src = "https://www.instagram.com/embed.js";
+    document.body.appendChild(script);
+  }
+
+  function renderGallery() {
+    var root = document.getElementById("instagram-gallery-root");
+    var section = document.getElementById("instagram-gallery-section");
+    if (!root || !section || typeof window.APLS_GALLERY === "undefined") return;
+    var data = window.APLS_GALLERY;
+    var posts = (data.instagramPosts || []).filter(function (post) {
+      return post.visible !== false && instagramPostUrl(post.url);
+    });
+    if (!posts.length) {
+      section.hidden = true;
+      return;
+    }
+
+    var heading = document.getElementById("instagram-gallery-heading");
+    var intro = document.getElementById("instagram-gallery-intro");
+    var profile = document.getElementById("instagram-profile-link");
+    if (heading) heading.textContent = data.instagramHeading || "Latest from APLS";
+    if (intro) intro.textContent = data.instagramIntro || "";
+    if (profile && data.instagramProfileUrl) profile.href = data.instagramProfileUrl;
+    root.innerHTML = "";
+    posts.forEach(function (post) {
+      var card = el("article", "instagram-gallery-card");
+      var embed = el("blockquote", "instagram-media");
+      embed.setAttribute("data-instgrm-permalink", instagramPostUrl(post.url));
+      embed.setAttribute("data-instgrm-version", "14");
+      embed.appendChild(el("a", null, post.caption || "View this post on Instagram"));
+      embed.querySelector("a").href = instagramPostUrl(post.url);
+      card.appendChild(embed);
+      if (post.caption) card.appendChild(el("p", "instagram-gallery-caption", post.caption));
+      root.appendChild(card);
+    });
+    section.hidden = false;
+    loadInstagramEmbeds();
+  }
+
+  /* ---------- Events and announcements ---------- */
+  function dateFromValue(value) {
+    var parts = String(value || "").split("-").map(Number);
+    if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return null;
+    var date = new Date(parts[0], parts[1] - 1, parts[2]);
+    return date.getFullYear() === parts[0] && date.getMonth() === parts[1] - 1 && date.getDate() === parts[2] ? date : null;
+  }
+
+  function eventIsPast(item) {
+    var end = dateFromValue(item.endDate || item.startDate);
+    if (!end) return false;
+    end.setHours(23, 59, 59, 999);
+    return end < new Date();
+  }
+
+  function timeLabel(value) {
+    var match = String(value || "").match(/^(\d{1,2}):(\d{2})$/);
+    if (!match) return "";
+    var hour = Number(match[1]);
+    var minute = match[2];
+    return (hour % 12 || 12) + (minute === "00" ? "" : ":" + minute) + " " + (hour < 12 ? "a.m." : "p.m.");
+  }
+
+  function eventDateLabel(item, longForm) {
+    var start = dateFromValue(item.startDate);
+    var end = dateFromValue(item.endDate);
+    if (!start) return "";
+    var options = longForm
+      ? { weekday: "long", month: "long", day: "numeric", year: "numeric" }
+      : { month: "short", day: "numeric", year: "numeric" };
+    var label = new Intl.DateTimeFormat("en-US", options).format(start);
+    if (end && item.endDate !== item.startDate) label += " - " + new Intl.DateTimeFormat("en-US", options).format(end);
+    return label;
+  }
+
+  function eventWhenLabel(item, longForm) {
+    var label = eventDateLabel(item, longForm);
+    var startTime = timeLabel(item.startTime);
+    var endTime = timeLabel(item.endTime);
+    if (startTime) label += " | " + startTime + (endTime ? "-" + endTime : "");
+    return label;
+  }
+
+  function eventAction(label, url, primary) {
+    if (!label || !url) return null;
+    var link = el("a", primary ? "btn btn-primary" : "btn btn-ghost", label);
+    link.href = url;
+    if (/^https?:\/\//i.test(url)) {
+      link.target = "_blank";
+      link.rel = "noopener";
+    }
+    return link;
+  }
+
+  function appendEventActions(parent, item) {
+    var primary = eventAction(item.primaryLabel, item.primaryUrl, true);
+    var secondary = eventAction(item.secondaryLabel, item.secondaryUrl, false);
+    if (!primary && !secondary) return;
+    var actions = el("div", "event-actions");
+    if (primary) actions.appendChild(primary);
+    if (secondary) actions.appendChild(secondary);
+    parent.appendChild(actions);
+  }
+
+  function renderFeaturedEvent(item) {
+    var article = el("article", "container event-feature" + (item.image ? "" : " event-feature-no-image"));
+    var details = el("div", "event-details");
+    var eyebrow = item.type === "announcement" ? "Announcement" : (eventIsPast(item) ? "Past event" : "Upcoming event");
+    details.appendChild(el("p", "eyebrow", eyebrow));
+    details.appendChild(el("h2", null, item.title || "Untitled"));
+    if (item.type !== "announcement" && item.startDate) details.appendChild(el("p", "event-date", eventWhenLabel(item, true)));
+    if (item.summary) details.appendChild(el("p", null, item.summary));
+
+    var facts = el("dl", "event-facts");
+    if (item.type !== "announcement" && item.startDate) {
+      var when = el("div");
+      when.appendChild(el("dt", null, "When"));
+      when.appendChild(el("dd", null, eventWhenLabel(item, false)));
+      facts.appendChild(when);
+    }
+    if (item.address || item.locationName) {
+      var where = el("div");
+      where.appendChild(el("dt", null, "Where"));
+      var whereValue = el("dd");
+      if (item.mapUrl) {
+        var mapLink = el("a", null, item.address || item.locationName);
+        mapLink.href = item.mapUrl;
+        mapLink.target = "_blank";
+        mapLink.rel = "noopener";
+        whereValue.appendChild(mapLink);
+      } else {
+        whereValue.textContent = item.address || item.locationName;
+      }
+      where.appendChild(whereValue);
+      facts.appendChild(where);
+    }
+    var contact = el("div");
+    contact.appendChild(el("dt", null, "Contact"));
+    var contactValue = el("dd");
+    var phone = el("a", null, "425-747-4172");
+    phone.href = "tel:+14257474172";
+    var email = el("a", null, "apls@apls.org");
+    email.href = "mailto:apls@apls.org";
+    contactValue.appendChild(phone);
+    contactValue.appendChild(document.createTextNode(" | "));
+    contactValue.appendChild(email);
+    contact.appendChild(contactValue);
+    facts.appendChild(contact);
+    details.appendChild(facts);
+    appendEventActions(details, item);
+    article.appendChild(details);
+
+    if (item.image) {
+      var figure = el("figure", "event-flyer");
+      var imageLink = el("a");
+      imageLink.href = item.image;
+      imageLink.target = "_blank";
+      imageLink.rel = "noopener";
+      imageLink.setAttribute("aria-label", "Open the full-size image for " + (item.title || "this event"));
+      var image = el("img");
+      image.src = item.image;
+      image.alt = item.imageAlt || item.title || "APLS event";
+      image.loading = "lazy";
+      imageLink.appendChild(image);
+      figure.appendChild(imageLink);
+      figure.appendChild(el("figcaption", null, "Select the image to view it full size."));
+      article.appendChild(figure);
+    }
+    return article;
+  }
+
+  function renderEventCard(item) {
+    var card = el("article", "event-card");
+    card.appendChild(el("p", "eyebrow", item.type === "announcement" ? "Announcement" : (eventIsPast(item) ? "Past event" : "Upcoming event")));
+    card.appendChild(el("h3", null, item.title || "Untitled"));
+    if (item.type !== "announcement" && item.startDate) card.appendChild(el("p", "event-card-date", eventWhenLabel(item, false)));
+    if (item.summary) card.appendChild(el("p", null, item.summary));
+    appendEventActions(card, item);
+    return card;
+  }
+
+  function updateEventSchema(items) {
+    var existing = document.getElementById("apls-events-schema");
+    if (existing) existing.remove();
+    var events = items.filter(function (item) { return item.type === "event" && item.startDate; }).map(function (item) {
+      var schema = {
+        "@type": "Event",
+        name: item.title,
+        description: item.summary,
+        startDate: item.startDate + (item.startTime ? "T" + item.startTime : ""),
+        endDate: (item.endDate || item.startDate) + (item.endTime ? "T" + item.endTime : ""),
+        eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+        eventStatus: "https://schema.org/EventScheduled",
+        organizer: { "@type": "EducationalOrganization", name: "Asia Pacific Language School", url: "https://www.apls.org/" }
+      };
+      if (item.image) schema.image = new URL(item.image, "https://www.apls.org/").href;
+      if (item.locationName || item.address) schema.location = { "@type": "Place", name: item.locationName || "Asia Pacific Language School", address: item.address || "" };
+      return schema;
+    });
+    if (!events.length) return;
+    var script = document.createElement("script");
+    script.id = "apls-events-schema";
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": events });
+    document.head.appendChild(script);
+  }
+
+  function renderEvents() {
+    var root = document.getElementById("events-root");
+    if (!root || typeof window.APLS_EVENTS === "undefined") return;
+    var items = (window.APLS_EVENTS.items || []).filter(function (item) { return item.status === "published"; });
+    root.innerHTML = "";
+    if (!items.length) {
+      var empty = el("section", "section");
+      var emptyInner = el("div", "container events-empty");
+      emptyInner.appendChild(el("h2", null, "No current announcements"));
+      emptyInner.appendChild(el("p", null, "Please check back for upcoming APLS events and school announcements."));
+      empty.appendChild(emptyInner);
+      root.appendChild(empty);
+      return;
+    }
+    var featured = items.find(function (item) { return item.featured; }) || items[0];
+    var featureSection = el("section", "section");
+    featureSection.appendChild(renderFeaturedEvent(featured));
+    root.appendChild(featureSection);
+    var remaining = items.filter(function (item) { return item !== featured; });
+    if (remaining.length) {
+      var listSection = el("section", "section event-list-section");
+      var listInner = el("div", "container");
+      listInner.appendChild(el("h2", null, "More events and announcements"));
+      var grid = el("div", "event-list-grid");
+      remaining.forEach(function (item) { grid.appendChild(renderEventCard(item)); });
+      listInner.appendChild(grid);
+      listSection.appendChild(listInner);
+      root.appendChild(listSection);
+    }
+    updateEventSchema(items);
+  }
+
   /* ---------- Calendar ---------- */
   function calendarYearForDate(years, value) {
     var parts = String(value || "").split("-").map(Number);
@@ -249,7 +502,8 @@
     };
     Object.keys(definitions).forEach(function (programKey) {
       var program = programs[programKey] || {};
-      if (!program.startDate && !program.endDate) return;
+      var calendarStartDate = program.calendarStartDate || program.startDate;
+      if (!calendarStartDate && !program.endDate) return;
       years.forEach(function (year) {
         (year.months || []).forEach(function (month) {
           month.events = (month.events || []).filter(function (event) {
@@ -257,7 +511,7 @@
           });
         });
       });
-      [program.startDate, program.endDate].forEach(function (value, boundaryIndex) {
+      [calendarStartDate, program.endDate].forEach(function (value, boundaryIndex) {
         if (!value) return;
         var year = calendarYearForDate(years, value);
         if (!year) return;
@@ -291,7 +545,52 @@
         });
       });
     });
+    ((window.APLS_EVENTS || {}).items || []).filter(function (item) {
+      return item.type === "event" && item.status === "published" && item.showOnCalendar && item.startDate;
+    }).forEach(function (item) {
+      var year = calendarYearForDate(years, item.startDate);
+      if (!year) return;
+      var start = dateFromValue(item.startDate);
+      if (!start) return;
+      var monthName = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(start);
+      var month = (year.months || []).find(function (candidate) { return candidate.name === monthName; });
+      if (!month) {
+        month = { name: monthName, events: [] };
+        year.months = year.months || [];
+        year.months.push(month);
+      }
+      month.events = (month.events || []).filter(function (event) {
+        return !(event[2] && event[2].managedEvent === item.id);
+      });
+      var dateLabel = programCalendarLabel(item.startDate);
+      if (item.endDate && item.endDate !== item.startDate) dateLabel += " - " + programCalendarLabel(item.endDate);
+      month.events.push([dateLabel, item.title, {
+        startDate: item.startDate,
+        endDate: item.endDate || "",
+        category: "school-event",
+        notes: "Managed from Events & Announcements",
+        managedEvent: item.id
+      }]);
+      month.events.sort(function (left, right) {
+        var leftDate = left[2] && left[2].startDate;
+        var rightDate = right[2] && right[2].startDate;
+        if (leftDate && rightDate) return leftDate.localeCompare(rightDate);
+        return 0;
+      });
+      year.months.sort(function (left, right) { return new Date(left.name + " 1") - new Date(right.name + " 1"); });
+    });
     return years;
+  }
+
+  function calendarEventCategory(event) {
+    var metadata = event[2] || {};
+    if (metadata.category) return metadata.category;
+    var name = String(event[1] || "");
+    if (/childcare/i.test(name)) return "childcare";
+    if (/camp/i.test(name)) return "camp";
+    if (/school closed|closed for/i.test(name)) return "school-closed";
+    if (/^(first|last) day/i.test(name)) return "program-date";
+    return "school-event";
   }
 
   function renderCalendar() {
@@ -301,14 +600,13 @@
     var years = calendarWithProgramDates(data.years || []);
     root.innerHTML = "";
 
-    // Downloads (built from each year's PDF, so PDFs live in one place too)
-    var withPdf = years.filter(function (y) { return y.pdf; });
-    if (withPdf.length) {
-      root.appendChild(el("h2", null, "Downloads"));
+    // Printable views are generated directly from the same calendar data.
+    if (years.length) {
+      root.appendChild(el("h2", null, "Printable calendars"));
       var dl = el("p", "prog-downloads prog-downloads-stack");
-      withPdf.forEach(function (y) {
-        var a = el("a", null, "\uD83D\uDCC4 " + (y.pdfLabel || y.label));
-        a.href = y.pdf;
+      years.forEach(function (y) {
+        var a = el("a", null, "Print or save " + y.label);
+        a.href = "calendar-print.html?year=" + encodeURIComponent(y.id || "");
         a.target = "_blank";
         a.rel = "noopener";
         dl.appendChild(a);
@@ -318,9 +616,11 @@
 
     // One table per school year
     years.forEach(function (year) {
+      var section = el("section", "calendar-year");
+      section.dataset.calendarYear = year.id || "";
       var h = el("h2", null, year.label);
       if (year.id) h.id = year.id;
-      root.appendChild(h);
+      section.appendChild(h);
 
       var table = el("table", "schedule-table cal-table");
       var tbody = el("tbody");
@@ -333,13 +633,15 @@
 
         (month.events || []).forEach(function (ev) {
           var tr = el("tr");
+          tr.className = "calendar-event-row calendar-category-" + calendarEventCategory(ev);
           tr.appendChild(el("td", null, ev[0]));
           tr.appendChild(el("td", null, ev[1]));
           tbody.appendChild(tr);
         });
       });
       table.appendChild(tbody);
-      root.appendChild(table);
+      section.appendChild(table);
+      root.appendChild(section);
     });
 
     if (data.footnote) root.appendChild(el("p", "muted", data.footnote));
@@ -389,5 +691,7 @@
     renderProgramContent();
     renderCalendar();
     renderTeachers();
+    renderGallery();
+    renderEvents();
   });
 })();

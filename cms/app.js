@@ -2,6 +2,7 @@
   "use strict";
 
   var STORAGE_KEY = "apls-cms-preview-draft-v2";
+  var CALENDAR_PRINT_PREVIEW_KEY = "apls-calendar-print-preview-v1";
   var PROGRAMS = [
     ["preschool", "Preschool"],
     ["kindergarten", "Kindergarten & 1st Grade"],
@@ -22,7 +23,9 @@
     overview: ["Website overview", "Choose a content area, make changes, and review the result before exporting.", "Content summary"],
     tuition: ["Programs and tuition", "Choose one program and update its enrollment details, schedule, and tuition in one place.", "Program preview"],
     calendar: ["School calendar", "Enter one event per row. Weekdays and website groupings are calculated automatically.", "Calendar preview"],
-    teachers: ["Teacher profiles", "Add, reorder, or update the profiles shown on the Why APLS page.", "Teacher section"]
+    teachers: ["Teacher profiles", "Add, reorder, or update the profiles shown on the Why APLS page.", "Teacher section"],
+    gallery: ["Gallery", "Curate public Instagram posts for the Latest from APLS section.", "Instagram preview"],
+    events: ["Events and announcements", "Publish event details and announcements, with optional school-calendar visibility.", "Events page preview"]
   };
 
   function clone(value) {
@@ -45,7 +48,9 @@
   var sourceState = {
     tuition: clone(window.APLS_TUITION || {}),
     calendar: clone(window.APLS_CALENDAR || { years: [] }),
-    teachers: clone(window.APLS_TEACHERS || [])
+    teachers: clone(window.APLS_TEACHERS || []),
+    gallery: clone(window.APLS_GALLERY || { instagramPosts: [] }),
+    events: clone(window.APLS_EVENTS || { items: [] })
   };
   var savedState = loadDraft();
   var state = savedState ? mergeDefaults(sourceState, savedState) : clone(sourceState);
@@ -102,9 +107,13 @@
     } else if (options.textarea) {
       control = '<textarea data-path="' + escapeHtml(path) + '" rows="' + (options.rows || 3) + '">' + escapeHtml(value) + "</textarea>";
     } else {
-      control = '<input type="' + (options.type || "text") + '" data-path="' + escapeHtml(path) + '" value="' + escapeHtml(value) + '" />';
+      control = '<input type="' + (options.type || "text") + '" data-path="' + escapeHtml(path) + '" value="' + escapeHtml(value) + '"' + (options.paymentAmount ? ' data-payment-amount min="0" step="0.01"' : "") + ' />';
     }
     return '<label class="' + classes + '"><span class="field-label"><span>' + escapeHtml(label) + "</span>" + hint + "</span>" + control + "</label>";
+  }
+
+  function booleanField(label, path, checked, hint) {
+    return '<label class="toggle-field"><input type="checkbox" data-boolean-path="' + escapeHtml(path) + '"' + (checked ? " checked" : "") + ' /><span><strong>' + escapeHtml(label) + '</strong>' + (hint ? '<small>' + escapeHtml(hint) + "</small>" : "") + "</span></label>";
   }
 
   function blockHeading(title, description, actionHtml) {
@@ -139,6 +148,15 @@
     return definitions[programKey] && definitions[programKey][boundary];
   }
 
+  function supportsSeparateCalendarStart(programKey) {
+    return programKey === "after-school";
+  }
+
+  function programCalendarBoundaryValue(programKey, program, boundary) {
+    if (boundary === "start" && supportsSeparateCalendarStart(programKey) && program.calendarStartDate) return program.calendarStartDate;
+    return program[boundary + "Date"] || "";
+  }
+
   function calendarYearIndexForDate(value) {
     var date = dateFromIso(value);
     if (!date) return -1;
@@ -160,8 +178,6 @@
     state.calendar.years.push({
       label: startYear + "\u2013" + (startYear + 1) + " school year",
       id: startYear + "-" + (startYear + 1),
-      pdf: "",
-      pdfLabel: "",
       months: []
     });
     state.calendar.years.sort(function (left, right) { return String(right.id).localeCompare(String(left.id)); });
@@ -174,7 +190,7 @@
   function managedCalendarRow(programKey, boundary, program) {
     var eventName = calendarBoundaryDefinition(programKey, boundary);
     if (!eventName) return null;
-    var year = String(program[boundary + "Date"] || program.term || "").match(/\b(20\d{2})\b/);
+    var year = String(programCalendarBoundaryValue(programKey, program, boundary) || program.term || "").match(/\b(20\d{2})\b/);
     return (state.calendarRows || []).find(function (row) {
       if (row.managedProgram === programKey && row.managedBoundary === boundary) return true;
       return String(row.event || "").toLowerCase() === eventName.toLowerCase() && (!year || String(row.startDate).slice(0, 4) === year[1]);
@@ -185,7 +201,7 @@
     var program = (state.tuition.programs || {})[programKey];
     if (!program || !calendarBoundaryDefinition(programKey, "start")) return;
     ["start", "end"].forEach(function (boundary) {
-      var value = program[boundary + "Date"] || "";
+      var value = programCalendarBoundaryValue(programKey, program, boundary);
       var row = managedCalendarRow(programKey, boundary, program);
       if (!dateFromIso(value)) {
         if (row && row.managedProgram === programKey) state.calendarRows.splice(state.calendarRows.indexOf(row), 1);
@@ -215,6 +231,26 @@
 
   function syncAllProgramCalendars() {
     ["after-school", "saturday-school"].forEach(syncProgramCalendar);
+  }
+
+  function syncAllEventCalendars() {
+    state.calendarRows = (state.calendarRows || []).filter(function (row) { return !row.managedEvent; });
+    (state.events.items || []).forEach(function (item, index) {
+      if (item.type !== "event" || item.status !== "published" || !item.showOnCalendar || !dateFromIso(item.startDate)) return;
+      var yearIndex = ensureCalendarYearForDate(item.startDate);
+      if (yearIndex === -1) return;
+      state.calendarRows.push({
+        yearIndex: yearIndex,
+        startDate: item.startDate,
+        endDate: item.endDate || "",
+        event: item.title || "Untitled event",
+        category: "school-event",
+        notes: "Managed from Events & Announcements",
+        monthName: monthHeadingForDate(item.startDate),
+        managedEvent: item.id || "event-" + index
+      });
+    });
+    syncCalendarFromRows();
   }
 
   function calendarEventForProgram(programKey, program, boundary) {
@@ -290,23 +326,40 @@
     }).format(amount);
   }
 
-  function formattedMonthlyPayments(dates, rate) {
+  function paymentMonths(dates) {
+    return (dates || []).reduce(function (months, value) {
+      var key = String(value).slice(0, 7);
+      if (/^\d{4}-\d{2}$/.test(key) && months.indexOf(key) === -1) months.push(key);
+      return months;
+    }, []).sort();
+  }
+
+  function paymentMonthLabel(value) {
     var monthNames = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
-    var months = [];
-    var counts = {};
-    (dates || []).forEach(function (value) {
-      var date = dateFromIso(value);
-      if (!date) return;
-      var key = value.slice(0, 7);
-      if (!counts[key]) {
-        counts[key] = { date: date, count: 0 };
-        months.push(key);
-      }
-      counts[key].count += 1;
+    var parts = String(value).split("-").map(Number);
+    return monthNames[parts[1] - 1] || value;
+  }
+
+  function paymentPlanAmounts(program, rowIndex, total) {
+    var months = paymentMonths((program.classDates || [])[rowIndex] || []);
+    var plan = (program.paymentPlans || [])[rowIndex] || {};
+    if (!months.length) return [];
+    if (plan.mode === "custom") {
+      return months.map(function (_, monthIndex) { return Number((plan.customAmounts || [])[monthIndex]); });
+    }
+    var regularAmount = Number(plan.regularAmount);
+    if (!Number.isFinite(regularAmount) || regularAmount < 0) return [];
+    return months.map(function (_, monthIndex) {
+      return monthIndex === months.length - 1 ? total - (regularAmount * (months.length - 1)) : regularAmount;
     });
-    return months.sort().map(function (key) {
-      var month = counts[key];
-      return formattedTuitionTotal(rate * month.count) + " (" + monthNames[month.date.getMonth()] + ")";
+  }
+
+  function formattedPaymentPlan(program, rowIndex, total) {
+    var months = paymentMonths((program.classDates || [])[rowIndex] || []);
+    var amounts = paymentPlanAmounts(program, rowIndex, total);
+    if (!months.length || amounts.length !== months.length || amounts.some(function (amount) { return !Number.isFinite(amount); })) return "";
+    return months.map(function (month, monthIndex) {
+      return formattedTuitionTotal(amounts[monthIndex]) + " (" + paymentMonthLabel(month) + ")";
     }).join(", ");
   }
 
@@ -329,8 +382,9 @@
     (program.rows || []).forEach(function (row, rowIndex) {
       var dates = (program.classDates || [])[rowIndex] || [];
       var classCount = dates.length;
+      var total = rate * classCount;
       if (totalColumn !== -1) row[totalColumn] = classCount ? formattedTuitionTotal(rate * classCount) + " (" + classCount + " " + (classCount === 1 ? "class" : "classes") + ")" : "";
-      if (monthlyColumn !== -1) row[monthlyColumn] = classCount ? formattedMonthlyPayments(dates, rate) : "";
+      if (monthlyColumn !== -1) row[monthlyColumn] = classCount ? formattedPaymentPlan(program, rowIndex, total) : "";
     });
   }
 
@@ -358,10 +412,41 @@
     return dates.map(function (value) { return formatter.format(dateFromIso(value)); }).join(", ");
   }
 
+  function renderGeneratedDatesTable(program) {
+    var monthKeys = (program.classDates || []).reduce(function (months, dates) {
+      paymentMonths(dates).forEach(function (month) {
+        if (months.indexOf(month) === -1) months.push(month);
+      });
+      return months;
+    }, []).sort();
+    if (!monthKeys.length) return '<p class="schedule-empty">Enter a start date, end date, and class day to generate the schedule.</p>';
+    var monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long" });
+    var dayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
+    var html = '<div class="class-schedule-table-wrap"><table class="class-schedule-table"><thead><tr><th>Classes / days</th>' + monthKeys.map(function (month) {
+      return "<th>" + escapeHtml(monthFormatter.format(dateFromIso(month + "-01"))) + "</th>";
+    }).join("") + "</tr></thead><tbody>";
+    (program.rows || []).forEach(function (row, rowIndex) {
+      var dates = (program.classDates || [])[rowIndex] || [];
+      html += '<tr><th scope="row"><strong>' + escapeHtml(row[0] || "Tuition row " + (rowIndex + 1)) + "</strong><span>" + dates.length + " " + (dates.length === 1 ? "class" : "classes") + "</span></th>";
+      monthKeys.forEach(function (month) {
+        html += "<td>";
+        dates.forEach(function (value, dateIndex) {
+          if (String(value).slice(0, 7) !== month) return;
+          var date = dateFromIso(value);
+          var label = date ? dayFormatter.format(date) + " " + (date.getMonth() + 1) + "/" + date.getDate() : value;
+          html += '<div class="class-date-row"><time datetime="' + escapeHtml(value) + '">' + escapeHtml(label) + '</time><button class="remove-class-date" type="button" title="Remove class date" aria-label="Remove ' + escapeHtml(label) + " from " + escapeHtml(row[0] || "this option") + '" data-action="remove-class-date" data-index="' + rowIndex + '" data-date-index="' + dateIndex + '">&times;</button></div>';
+        });
+        html += "</td>";
+      });
+      html += "</tr>";
+    });
+    return html + "</tbody></table></div>";
+  }
+
   function renderScheduleBuilder(base, program) {
     var rules = program.scheduleRules || [];
     var html = '<section class="editor-block schedule-builder">' +
-      blockHeading("Automatic class dates", "Choose how often each enrollment option meets. Dates are generated inclusively from the start and end dates above.") +
+      blockHeading("Class schedule", "Choose the weekly pattern, then remove any holidays or planned closures from the generated table.") +
       '<div class="schedule-rule-list">';
     (program.rows || []).forEach(function (row, rowIndex) {
       var rule = rules[rowIndex] || { intervalWeeks: 1, weekdays: [] };
@@ -371,7 +456,39 @@
           [1, 2, 3, 4].map(function (interval) { return '<option value="' + interval + '"' + (Number(rule.intervalWeeks) === interval ? " selected" : "") + '>Every ' + (interval === 1 ? "week" : interval + " weeks") + "</option>"; }).join("") +
         '</select></label><fieldset class="weekday-fieldset"><legend>Class days</legend><div class="weekday-checks">' +
           WEEKDAYS.map(function (day, dayIndex) { return '<label><input type="checkbox" data-schedule-day="' + dayIndex + '" data-rule-index="' + rowIndex + '"' + ((rule.weekdays || []).map(Number).indexOf(dayIndex) !== -1 ? " checked" : "") + " />" + escapeHtml(day.slice(0, 3)) + "</label>"; }).join("") +
-        '</div></fieldset></div><details class="generated-dates"' + (dates.length && dates.length <= 14 ? " open" : "") + '><summary>' + dates.length + ' class date' + (dates.length === 1 ? "" : "s") + ' generated</summary><p>' + escapeHtml(scheduleRuleSummary(program, rowIndex)) + "</p></details></article>";
+        "</div></fieldset></div></article>";
+    });
+    return html + '</div><div class="generated-schedule-heading"><div><h3>Scheduled class dates</h3><p>Dates are grouped by month like the registration flyer. Remove a date to exclude that class.</p></div></div>' + renderGeneratedDatesTable(program) + "</section>";
+  }
+
+  function renderPaymentPlanBuilder(base, program) {
+    var plans = program.paymentPlans || [];
+    var rate = Number(program.ratePerClass);
+    var html = '<section class="editor-block payment-plan-builder">' +
+      blockHeading("Installment plans", "Payment months come from each option's class dates. Flyer amounts stay unchanged until you edit them or request a suggestion.") +
+      '<div class="payment-plan-list">';
+    (program.rows || []).forEach(function (row, rowIndex) {
+      var dates = (program.classDates || [])[rowIndex] || [];
+      var months = paymentMonths(dates);
+      var total = Number.isFinite(rate) ? rate * dates.length : 0;
+      var plan = plans[rowIndex] || { mode: "regular-final", regularAmount: "", customAmounts: [] };
+      var mode = plan.mode === "custom" ? "custom" : "regular-final";
+      var amounts = paymentPlanAmounts(program, rowIndex, total);
+      var path = base + ".paymentPlans." + rowIndex;
+      html += '<article class="payment-plan"><div class="schedule-rule-heading"><div><span class="repeater-number">Enrollment option</span><h3>' + escapeHtml(row[0] || "Tuition row " + (rowIndex + 1)) + '</h3></div><strong>' + months.length + " payment month" + (months.length === 1 ? "" : "s") + "</strong></div>" +
+        '<div class="payment-plan-settings">' +
+          field("Payment method", path + ".mode", mode, { options: [
+            { value: "regular-final", label: "Regular + final balance" },
+            { value: "custom", label: "Custom installments" }
+          ] }) +
+          (mode === "regular-final" ? field("Regular installment", path + ".regularAmount", plan.regularAmount || "", { type: "number", paymentAmount: true, hint: "Enter the full amount, then click Apply" }) : '<div class="field"><span class="field-label"><span>Custom amounts</span><span class="field-hint">One per payment month</span></span><span class="payment-plan-copy">Enter all amounts, then click Apply.</span></div>') +
+        '</div><div class="payment-month-grid">';
+      months.forEach(function (month, monthIndex) {
+        var amount = amounts[monthIndex];
+        html += '<label class="payment-month"><span>' + escapeHtml(paymentMonthLabel(month)) + (monthIndex === months.length - 1 && mode === "regular-final" ? " (final)" : "") + "</span>" +
+            (mode === "custom" ? '<input type="number" min="0" step="0.01" data-payment-amount data-path="' + escapeHtml(path + ".customAmounts." + monthIndex) + '" value="' + escapeHtml((plan.customAmounts || [])[monthIndex] || "") + '" />' : '<output>' + escapeHtml(Number.isFinite(amount) ? formattedTuitionTotal(amount) : "Enter an amount") + "</output>") + "</label>";
+      });
+          html += '</div><div class="payment-plan-footer"><span>Total tuition: <strong>' + escapeHtml(formattedTuitionTotal(total)) + '</strong></span><div class="payment-plan-actions"><button class="small-button payment-apply-button" type="button" data-action="apply-payment-plan" data-index="' + rowIndex + '">Apply payment plan</button><button class="small-button" type="button" data-action="suggest-payment-plan" data-index="' + rowIndex + '">Suggest a plan</button></div></div></article>';
     });
     return html + "</div></section>";
   }
@@ -381,11 +498,14 @@
     var errors = [];
     var warnings = [];
     var start = dateFromIso(program.startDate);
+    var calendarProgramStartValue = supportsSeparateCalendarStart(programKey) ? program.calendarStartDate || program.startDate : program.startDate;
+    var calendarProgramStart = dateFromIso(calendarProgramStartValue);
     var end = dateFromIso(program.endDate);
     var applicationRequired = ["Open", "Waitlist", "Coming soon"].indexOf(program.enrollmentStatus) !== -1;
 
     if (applicationRequired && !String(program.applicationUrl || "").trim()) errors.push("An application URL is required while enrollment is " + program.enrollmentStatus + ".");
     if (program.startDate && !start) errors.push("Start date is invalid.");
+    if (supportsSeparateCalendarStart(programKey) && program.calendarStartDate && !dateFromIso(program.calendarStartDate)) errors.push("Calendar start date is invalid.");
     if (program.endDate && !end) errors.push("End date is invalid.");
     if (start && end && end < start) errors.push("End date is before start date.");
     if (fixedTermProgram(program) && (!start || !end)) warnings.push("This fixed-term program needs both a start date and an end date.");
@@ -400,8 +520,8 @@
     var calendarStartDate = calendarBoundaryDate(calendarStart, "start");
     var calendarEndDate = calendarBoundaryDate(calendarEnd, "end");
     if (calendarStart) {
-      if (!start) warnings.push("Calendar lists " + calendarStartDate + " for \u201c" + calendarStart.event + "\u201d, but the program start date is missing.");
-      else if (program.startDate !== calendarStartDate) warnings.push("Program starts " + program.startDate + ", but the matching calendar event starts " + calendarStartDate + ".");
+      if (!calendarProgramStart) warnings.push("Calendar lists " + calendarStartDate + " for \u201c" + calendarStart.event + "\u201d, but the calendar start date is missing.");
+      else if (calendarProgramStartValue !== calendarStartDate) warnings.push("Program calendar starts " + calendarProgramStartValue + ", but the matching calendar event starts " + calendarStartDate + ".");
     }
     if (calendarEnd) {
       if (!end) warnings.push("Calendar lists " + calendarEndDate + " for \u201c" + calendarEnd.event + "\u201d, but the program end date is missing.");
@@ -447,6 +567,24 @@
         var optionName = row[0] || "Tuition row " + (rowIndex + 1);
         if (!rule) errors.push(optionName + " needs a frequency rule.");
         else if (!(rule.weekdays || []).length) errors.push(optionName + " needs at least one class day.");
+        var dates = (program.classDates || [])[rowIndex] || [];
+        var months = paymentMonths(dates);
+        var plan = (program.paymentPlans || [])[rowIndex];
+        var total = rate * dates.length;
+        if (!plan) errors.push(optionName + " needs an installment plan.");
+        else if (plan.mode === "custom") {
+          var customAmounts = months.map(function (_, monthIndex) { return Number((plan.customAmounts || [])[monthIndex]); });
+          if (customAmounts.some(function (amount) { return !Number.isFinite(amount) || amount < 0; })) errors.push(optionName + " needs a non-negative custom payment for every class month.");
+          else {
+            var customTotal = customAmounts.reduce(function (sum, amount) { return sum + amount; }, 0);
+            if (Math.abs(customTotal - total) > 0.009) errors.push(optionName + " installments total " + formattedTuitionTotal(customTotal) + ", but tuition is " + formattedTuitionTotal(total) + ".");
+          }
+        } else {
+          var regularAmount = Number(plan.regularAmount);
+          var finalAmount = total - (regularAmount * Math.max(0, months.length - 1));
+          if (!Number.isFinite(regularAmount) || regularAmount < 0) errors.push(optionName + " needs a non-negative regular installment amount.");
+          else if (finalAmount < 0) errors.push(optionName + " regular installments exceed total tuition before the final month.");
+        }
       });
     }
     return { errors: errors, warnings: warnings };
@@ -525,6 +663,8 @@
     var yearCount = (state.calendar.years || []).length;
     var teacherCount = state.teachers.length;
     var programCount = Object.keys(state.tuition.programs || {}).length;
+    var instagramCount = (state.gallery.instagramPosts || []).filter(function (post) { return post.visible !== false; }).length;
+    var publishedEventCount = (state.events.items || []).filter(function (item) { return item.status === "published"; }).length;
     var validationSummary = allProgramValidation();
     var validationDetail = programCount + " program workspaces \u00b7 " + validationSummary.programs + " need review";
     if (validationSummary.errors) validationDetail += " \u00b7 " + validationSummary.errors + " errors";
@@ -533,6 +673,8 @@
         summaryCard("02", "Programs", validationDetail, "tuition") +
         summaryCard("03", "Calendar", yearCount + " school year" + (yearCount === 1 ? "" : "s"), "calendar") +
         summaryCard("04", "Teachers", teacherCount + " profile" + (teacherCount === 1 ? "" : "s"), "teachers") +
+        summaryCard("05", "Gallery", instagramCount + " curated Instagram post" + (instagramCount === 1 ? "" : "s"), "gallery") +
+        summaryCard("06", "Events & announcements", publishedEventCount + " published item" + (publishedEventCount === 1 ? "" : "s"), "events") +
       "</div>" +
       '<section class="workflow"><h2>Preview workflow</h2><div class="workflow-steps">' +
         workflowStep("1", "Choose a section", "Open one of the structured content editors.") +
@@ -579,6 +721,7 @@
           { value: "Inquire", label: "Inquire for availability" }
         ] }) +
         field("Application URL", base + ".applicationUrl", program.applicationUrl || "") +
+        (supportsSeparateCalendarStart(selectedTuitionProgram) ? field("Calendar start date", base + ".calendarStartDate", program.calendarStartDate || "", { type: "date", hint: "Optional. Use when care or program operations begin before classes." }) : "") +
         field("Start date", base + ".startDate", program.startDate || "", { type: "date" }) +
         field("End date", base + ".endDate", program.endDate || "", { type: "date" }) +
         field("Extended care", base + ".careStatus", program.careStatus || "not-applicable", { options: [
@@ -592,8 +735,9 @@
       "</div>" +
       "</section>" +
       (usesScheduleBuilder(selectedTuitionProgram) ? renderScheduleBuilder(base, program) : "") +
+      (usesScheduleBuilder(selectedTuitionProgram) ? renderPaymentPlanBuilder(base, program) : "") +
       '<section class="editor-block">' +
-      blockHeading("Tuition", usesScheduleBuilder(selectedTuitionProgram) ? "Total tuition and monthly payments are calculated from the per-class rate and generated class dates." : "This single note and table appear on both the Tuition page and the program page.") +
+      blockHeading("Tuition", usesScheduleBuilder(selectedTuitionProgram) ? "Total tuition is calculated from class dates. Monthly payments use the installment plan above." : "This single note and table appear on both the Tuition page and the program page.") +
       '<div class="field-grid">' +
         field("Section heading", base + ".heading", program.heading || "") +
         field("Per-class rate", base + ".ratePerClass", program.ratePerClass || "", { type: "number", hint: usesScheduleBuilder(selectedTuitionProgram) ? "Used to calculate total tuition" : "Optional; numbers only" }) +
@@ -802,18 +946,18 @@
         return '<button type="button" role="tab" class="sheet-tab' + (index === selectedCalendarYear ? " is-active" : "") + '" aria-selected="' + (index === selectedCalendarYear) + '" data-action="select-calendar-year" data-index="' + index + '">' + escapeHtml(item.id || item.label) + "</button>";
       }).join("") +
       '<button type="button" class="sheet-tab sheet-tab-add" data-action="add-year">+ New year</button></div>' +
-      '<section class="sheet-setup"><div class="field-grid three">' +
+      '<section class="sheet-setup"><div class="field-grid">' +
         field("School-year label", "years." + selectedCalendarYear + ".label", year.label || "") +
         field("School-year ID", "years." + selectedCalendarYear + ".id", year.id || "", { hint: "YYYY-YYYY" }) +
-        field("PDF filename", "years." + selectedCalendarYear + ".pdf", year.pdf || "", { hint: "Generated later" }) +
       "</div></section>" +
       '<section class="sheet-status" aria-live="polite"><div><strong data-calendar-count="events">' + rows.length + '</strong><span>events</span></div><div class="is-ready"><strong data-calendar-count="ready">' + summary.ready + '</strong><span>ready</span></div><div class="' + (summary.issues ? "has-issues" : "is-ready") + '"><strong data-calendar-count="issues">' + summary.issues + "</strong><span>need attention</span></div>" +
+      '<button class="small-button" type="button" data-action="preview-print-calendar">Printable year</button>' +
       '<button class="small-button" type="button" data-action="add-calendar-row">Add event row</button></section>' +
       '<section class="calendar-sheet-wrap"><table class="calendar-sheet"><thead><tr><th class="sheet-row-number">#</th><th>School year</th><th>Start date</th><th>End date</th><th class="sheet-event-column">Event</th><th>Category</th><th>Notes</th><th>Check</th><th class="sheet-action-column"></th></tr></thead><tbody>';
     rows.forEach(function (row) {
       var rowIndex = state.calendarRows.indexOf(row);
       var issues = calendarRowIssues(row, rowIndex);
-      var managed = Boolean(row.managedProgram);
+      var managed = Boolean(row.managedProgram || row.managedEvent);
       var locked = managed ? " disabled" : "";
       html += '<tr class="calendar-sheet-row' + (issues.length ? " has-error" : "") + (managed ? " is-managed" : "") + '">' +
         '<th scope="row" class="sheet-row-number">' + (rowIndex + 1) + "</th>" +
@@ -823,12 +967,11 @@
         '<td><input type="text" aria-label="Event name for row ' + (rowIndex + 1) + '" data-calendar-index="' + rowIndex + '" data-calendar-field="event" value="' + escapeHtml(row.event) + '"' + locked + " /></td>" +
         '<td><select aria-label="Category for row ' + (rowIndex + 1) + '" class="category-select category-' + escapeHtml(row.category) + '" data-calendar-index="' + rowIndex + '" data-calendar-field="category"' + locked + ">" + calendarCategoryOptions(row.category) + "</select></td>" +
         '<td><input type="text" aria-label="Notes for row ' + (rowIndex + 1) + '" data-calendar-index="' + rowIndex + '" data-calendar-field="notes" value="' + escapeHtml(row.notes) + '"' + locked + " /></td>" +
-        '<td class="sheet-check"><span class="' + (issues.length ? "check-error" : "check-ready") + '">' + escapeHtml(issues[0] || (managed ? "Managed by " + ((state.tuition.programs[row.managedProgram] || {}).name || row.managedProgram) : shortDateSummary(row))) + "</span></td>" +
+        '<td class="sheet-check"><span class="' + (issues.length ? "check-error" : "check-ready") + '">' + escapeHtml(issues[0] || (row.managedEvent ? "Managed by Events & Announcements" : (managed ? "Managed by " + ((state.tuition.programs[row.managedProgram] || {}).name || row.managedProgram) : shortDateSummary(row)))) + "</span></td>" +
         '<td><button class="remove-cell" type="button" aria-label="Remove event row ' + (rowIndex + 1) + '" data-action="remove-calendar-row" data-index="' + rowIndex + '"' + locked + '>&times;</button></td></tr>';
     });
     html += '</tbody></table></section><div class="sheet-footer"><button class="small-button" type="button" data-action="add-calendar-row">Add event row</button><span>Weekdays are calculated from the dates. Leave End date blank for a one-day event.</span></div>' +
-      '<details class="calendar-settings"><summary>Calendar notes and download settings</summary><div class="field-grid">' +
-        field("PDF link label", "years." + selectedCalendarYear + ".pdfLabel", year.pdfLabel || "") +
+      '<details class="calendar-settings"><summary>Calendar notes</summary><div class="field-grid">' +
         field("Calendar footnote", "footnote", calendar.footnote || "", { textarea: true, full: true }) +
       "</div></details></div>";
     editorContent.innerHTML = html;
@@ -852,11 +995,103 @@
     editorContent.innerHTML = html;
   }
 
+  function instagramUrlValid(value) {
+    return /^https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/[^/?#]+/i.test(String(value || "").trim());
+  }
+
+  function renderGalleryEditor() {
+    var gallery = state.gallery;
+    var posts = gallery.instagramPosts || [];
+    var html = '<section class="editor-block">' +
+      blockHeading("Latest from APLS", "These are public Instagram posts selected for the Gallery page.", '<a class="small-button editor-page-link" href="../gallery.html" target="_blank" rel="noopener">Open Gallery page</a>') +
+      '<div class="editor-alert"><strong>Free Instagram workflow</strong><p>Post from the public @aplsfamilies account, copy the post link, and paste it here. The photo remains stored on Instagram.</p></div>' +
+      '<div class="field-grid">' +
+        field("Section heading", "instagramHeading", gallery.instagramHeading || "") +
+        field("Instagram profile URL", "instagramProfileUrl", gallery.instagramProfileUrl || "") +
+        field("Section introduction", "instagramIntro", gallery.instagramIntro || "", { textarea: true, full: true }) +
+      '</div></section><section class="editor-block">' +
+      blockHeading("Curated posts", "Posts appear in this order. Hidden posts stay in the data file but do not appear publicly.", '<button class="small-button" type="button" data-action="add-instagram-post">Add Instagram post</button>') +
+      '<div class="repeater-list">';
+    if (!posts.length) html += '<div class="editor-empty"><strong>No Instagram posts selected</strong><p>Add a post and paste its public Instagram URL.</p></div>';
+    posts.forEach(function (post, index) {
+      var valid = instagramUrlValid(post.url);
+      html += '<article class="repeater-item media-editor-item' + (valid ? "" : " has-warning") + '"><div class="repeater-heading"><div><span class="repeater-number">Post ' + (index + 1) + '</span><h3>' + escapeHtml(post.caption || "Instagram post") + '</h3></div><div class="item-actions">' +
+        '<button class="icon-move-button" type="button" aria-label="Move post ' + (index + 1) + ' up" title="Move up" data-action="move-gallery-post" data-index="' + index + '" data-direction="-1"' + (index === 0 ? " disabled" : "") + '>&uarr;</button>' +
+        '<button class="icon-move-button" type="button" aria-label="Move post ' + (index + 1) + ' down" title="Move down" data-action="move-gallery-post" data-index="' + index + '" data-direction="1"' + (index === posts.length - 1 ? " disabled" : "") + '>&darr;</button>' +
+        '<button class="danger-button" type="button" data-action="remove-gallery-post" data-index="' + index + '">Remove</button></div></div>' +
+        (valid ? "" : '<p class="inline-warning">Paste a public Instagram post or Reel URL.</p>') +
+        '<div class="field-grid">' +
+          field("Instagram post URL", "instagramPosts." + index + ".url", post.url || "", { full: true, hint: "instagram.com/p/... or /reel/..." }) +
+          field("Internal caption", "instagramPosts." + index + ".caption", post.caption || "", { full: true, hint: "Used in the CMS and as fallback link text" }) +
+        '</div><div class="toggle-row">' + booleanField("Show on Gallery page", "instagramPosts." + index + ".visible", post.visible !== false, "Turn off to keep the link without displaying it.") + "</div></article>";
+    });
+    html += "</div></section>";
+    editorContent.innerHTML = html;
+  }
+
+  function eventItemIssues(item) {
+    var issues = [];
+    if (!String(item.title || "").trim()) issues.push("Title is required");
+    if (item.type === "event" && !dateFromIso(item.startDate)) issues.push("Event date is required");
+    if (item.endDate && !dateFromIso(item.endDate)) issues.push("End date is invalid");
+    if (dateFromIso(item.startDate) && dateFromIso(item.endDate) && dateFromIso(item.endDate) < dateFromIso(item.startDate)) issues.push("End date is before start date");
+    if (item.image && !String(item.imageAlt || "").trim()) issues.push("Image alt text is required when a flyer or image is used");
+    if (item.showOnCalendar && item.type !== "event") issues.push("Only events can appear on the school calendar");
+    return issues;
+  }
+
+  function renderEventsEditor() {
+    var items = state.events.items || [];
+    var html = '<section class="editor-block">' +
+      blockHeading("Events and announcements", "Published items appear on the Events page. Event dates can also appear on the school calendar.", '<a class="small-button editor-page-link" href="../events.html" target="_blank" rel="noopener">Open Events page</a>') +
+      '<div class="button-row editor-primary-actions"><button class="small-button" type="button" data-action="add-event">Add event</button><button class="small-button" type="button" data-action="add-announcement">Add announcement</button></div></section>' +
+      '<div class="repeater-list event-editor-list">';
+    if (!items.length) html += '<div class="editor-empty"><strong>No events or announcements</strong><p>Add an item to begin building the public page.</p></div>';
+    items.forEach(function (item, index) {
+      var base = "items." + index;
+      var issues = eventItemIssues(item);
+      html += '<article class="repeater-item event-editor-item' + (issues.length ? " has-warning" : "") + '"><div class="repeater-heading"><div><span class="repeater-number">' + escapeHtml(item.type === "announcement" ? "Announcement" : "Event") + ' ' + (index + 1) + '</span><h3>' + escapeHtml(item.title || "Untitled") + '</h3><span class="content-status status-' + escapeHtml(item.status || "draft") + '">' + escapeHtml(item.status || "draft") + '</span></div><div class="item-actions">' +
+        '<button class="icon-move-button" type="button" aria-label="Move item ' + (index + 1) + ' up" title="Move up" data-action="move-event" data-index="' + index + '" data-direction="-1"' + (index === 0 ? " disabled" : "") + '>&uarr;</button>' +
+        '<button class="icon-move-button" type="button" aria-label="Move item ' + (index + 1) + ' down" title="Move down" data-action="move-event" data-index="' + index + '" data-direction="1"' + (index === items.length - 1 ? " disabled" : "") + '>&darr;</button>' +
+        '<button class="danger-button" type="button" data-action="remove-event" data-index="' + index + '">Remove</button></div></div>' +
+        (issues.length ? '<p class="inline-warning">' + escapeHtml(issues.join(" | ")) + "</p>" : "") +
+        '<div class="field-grid">' +
+          field("Content type", base + ".type", item.type || "event", { options: [{ value: "event", label: "Event" }, { value: "announcement", label: "Announcement" }] }) +
+          field("Publishing status", base + ".status", item.status || "draft", { options: [{ value: "draft", label: "Draft" }, { value: "published", label: "Published" }, { value: "archived", label: "Archived" }] }) +
+          field("Title", base + ".title", item.title || "", { full: true }) +
+          field("Description", base + ".summary", item.summary || "", { textarea: true, full: true, rows: 4 }) +
+        '</div><div class="event-only-fields' + (item.type === "announcement" ? " is-hidden" : "") + '"><h4>Event details</h4><div class="field-grid">' +
+          field("Start date", base + ".startDate", item.startDate || "", { type: "date" }) +
+          field("End date", base + ".endDate", item.endDate || "", { type: "date", hint: "Optional for one-day events" }) +
+          field("Start time", base + ".startTime", item.startTime || "", { type: "time" }) +
+          field("End time", base + ".endTime", item.endTime || "", { type: "time" }) +
+          field("Location name", base + ".locationName", item.locationName || "") +
+          field("Map URL", base + ".mapUrl", item.mapUrl || "") +
+          field("Address", base + ".address", item.address || "", { full: true }) +
+        "</div></div>" +
+        '<h4>Image and actions</h4><div class="field-grid">' +
+          field("Flyer or image path", base + ".image", item.image || "", { hint: "Example: images/event.webp" }) +
+          field("Image alt text", base + ".imageAlt", item.imageAlt || "") +
+          field("Primary button label", base + ".primaryLabel", item.primaryLabel || "") +
+          field("Primary button URL", base + ".primaryUrl", item.primaryUrl || "") +
+          field("Secondary button label", base + ".secondaryLabel", item.secondaryLabel || "") +
+          field("Secondary button URL", base + ".secondaryUrl", item.secondaryUrl || "") +
+        '</div><div class="toggle-row">' +
+          booleanField("Feature this item", base + ".featured", Boolean(item.featured), "Featured content appears first on the Events page.") +
+          booleanField("Show on school calendar", base + ".showOnCalendar", Boolean(item.showOnCalendar), "The calendar entry is managed from this event.") +
+        "</div></article>";
+    });
+    html += "</div>";
+    editorContent.innerHTML = html;
+  }
+
   function renderEditor() {
     if (activeSection === "overview") renderOverviewEditor();
     if (activeSection === "tuition") renderTuitionEditor();
     if (activeSection === "calendar") renderCalendarEditor();
     if (activeSection === "teachers") renderTeachersEditor();
+    if (activeSection === "gallery") renderGalleryEditor();
+    if (activeSection === "events") renderEventsEditor();
   }
 
   function node(tag, className, text) {
@@ -888,7 +1123,9 @@
     var summaries = [
       [Object.keys(state.tuition.programs || {}).length, "Program workspaces", (state.tuition.fees || []).length + " shared fees and policies"],
       [(state.calendar.years || []).length, "School years", countCalendarEvents() + " calendar events"],
-      [state.teachers.length, "Teacher profiles", "Shown on the Why APLS page"]
+      [state.teachers.length, "Teacher profiles", "Shown on the Why APLS page"],
+      [(state.gallery.instagramPosts || []).filter(function (post) { return post.visible !== false; }).length, "Instagram posts", "Curated for the Gallery page"],
+      [(state.events.items || []).filter(function (item) { return item.status === "published"; }).length, "Published updates", "Events and announcements"]
     ];
     summaries.forEach(function (summary) {
       var row = node("div", "preview-summary-row");
@@ -1142,12 +1379,94 @@
     previewCanvas.replaceChildren(grid);
   }
 
+  function renderGalleryPreview() {
+    var wrapper = node("div", "gallery-preview");
+    wrapper.appendChild(node("h2", "", state.gallery.instagramHeading || "Latest from APLS"));
+    if (state.gallery.instagramIntro) wrapper.appendChild(node("p", "", state.gallery.instagramIntro));
+    var posts = (state.gallery.instagramPosts || []).filter(function (post) { return post.visible !== false; });
+    if (!posts.length) {
+      var empty = node("div", "preview-empty");
+      empty.appendChild(node("strong", "", "No curated posts yet"));
+      empty.appendChild(node("p", "", "Add a public Instagram post URL to activate this section on the Gallery page."));
+      wrapper.appendChild(empty);
+    } else {
+      var grid = node("div", "gallery-preview-grid");
+      posts.forEach(function (post, index) {
+        var card = node("article", "gallery-preview-card" + (instagramUrlValid(post.url) ? "" : " has-warning"));
+        card.appendChild(node("span", "gallery-preview-icon", "IG"));
+        card.appendChild(node("strong", "", post.caption || "Instagram post " + (index + 1)));
+        card.appendChild(node("small", "", instagramUrlValid(post.url) ? "Ready to embed" : "Instagram URL needed"));
+        if (instagramUrlValid(post.url)) {
+          var link = node("a", "", "Open post");
+          link.href = post.url;
+          link.target = "_blank";
+          link.rel = "noopener";
+          card.appendChild(link);
+        }
+        grid.appendChild(card);
+      });
+      wrapper.appendChild(grid);
+    }
+    previewCanvas.replaceChildren(wrapper);
+  }
+
+  function eventPreviewWhen(item) {
+    var start = dateFromIso(item.startDate);
+    if (!start) return item.type === "event" ? "Date needed" : "Announcement";
+    var label = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(start);
+    if (item.startTime) label += " | " + item.startTime;
+    return label;
+  }
+
+  function renderEventsPreview() {
+    var wrapper = node("div", "events-preview");
+    var published = (state.events.items || []).filter(function (item) { return item.status === "published"; });
+    var items = published.length ? published : (state.events.items || []);
+    if (!items.length) {
+      var empty = node("div", "preview-empty");
+      empty.appendChild(node("strong", "", "No content yet"));
+      empty.appendChild(node("p", "", "Add an event or announcement to begin."));
+      wrapper.appendChild(empty);
+      previewCanvas.replaceChildren(wrapper);
+      return;
+    }
+    var featured = items.find(function (item) { return item.featured; }) || items[0];
+    var feature = node("article", "event-preview-feature");
+    feature.appendChild(node("span", "preview-content-type", featured.status === "published" ? (featured.type || "event") : "draft preview"));
+    if (featured.image) {
+      var image = node("img");
+      image.src = "../" + featured.image.replace(/^\.\.\//, "");
+      image.alt = featured.imageAlt || "";
+      feature.appendChild(image);
+    }
+    feature.appendChild(node("h2", "", featured.title || "Untitled"));
+    feature.appendChild(node("strong", "event-preview-date", eventPreviewWhen(featured)));
+    if (featured.summary) feature.appendChild(node("p", "", featured.summary));
+    wrapper.appendChild(feature);
+    var remaining = items.filter(function (item) { return item !== featured; });
+    if (remaining.length) {
+      var list = node("div", "event-preview-list");
+      remaining.forEach(function (item) {
+        var row = node("article", "event-preview-row");
+        row.appendChild(node("span", "preview-content-type", item.status === "published" ? (item.type || "event") : "draft"));
+        row.appendChild(node("strong", "", item.title || "Untitled"));
+        row.appendChild(node("small", "", eventPreviewWhen(item)));
+        list.appendChild(row);
+      });
+      wrapper.appendChild(list);
+    }
+    if (!published.length) wrapper.appendChild(node("p", "preview-note", "Draft preview: no items are currently published."));
+    previewCanvas.replaceChildren(wrapper);
+  }
+
   function renderPreview() {
     previewCanvas.classList.toggle("is-calendar-preview", activeSection === "calendar");
     if (activeSection === "overview") renderOverviewPreview();
     if (activeSection === "tuition") renderTuitionPreview();
     if (activeSection === "calendar") renderCalendarPreview();
     if (activeSection === "teachers") renderTeachersPreview();
+    if (activeSection === "gallery") renderGalleryPreview();
+    if (activeSection === "events") renderEventsPreview();
   }
 
   function selectSection(section) {
@@ -1199,6 +1518,8 @@
     draftPill.textContent = "No unsaved changes";
     draftPill.classList.remove("is-dirty");
     saveStatus.textContent = "Source data loaded";
+    syncAllProgramCalendars();
+    syncAllEventCalendars();
     renderEditor();
     renderPreview();
     showToast("Draft reset to the website source data.");
@@ -1214,6 +1535,14 @@
 
   function tableAt(path) {
     return path ? getPath(state.tuition, path) : state.tuition;
+  }
+
+  function moveArrayItem(items, index, direction) {
+    var target = index + direction;
+    if (target < 0 || target >= items.length) return false;
+    var item = items.splice(index, 1)[0];
+    items.splice(target, 0, item);
+    return true;
   }
 
   function monthHeadingForDate(value) {
@@ -1243,7 +1572,7 @@
       var groups = [];
       var byName = {};
       state.calendarRows.filter(function (row) {
-        return Number(row.yearIndex) === yearIndex && dateFromIso(row.startDate) && String(row.event || "").trim();
+        return !row.managedEvent && Number(row.yearIndex) === yearIndex && dateFromIso(row.startDate) && String(row.event || "").trim();
       }).sort(function (left, right) {
         return left.startDate.localeCompare(right.startDate) || left.event.localeCompare(right.event);
       }).forEach(function (row) {
@@ -1306,6 +1635,18 @@
     });
   }
 
+  function galleryHasErrors() {
+    return (state.gallery.instagramPosts || []).some(function (post) {
+      return post.visible !== false && !instagramUrlValid(post.url);
+    });
+  }
+
+  function eventsHaveErrors() {
+    return (state.events.items || []).some(function (item) {
+      return item.status === "published" && eventItemIssues(item).length;
+    });
+  }
+
   function updateTuitionValidationFeedback() {
     if (activeSection !== "tuition") return;
     var validationRoot = document.getElementById("program-validation");
@@ -1339,6 +1680,53 @@
       renderPreview();
       return true;
     }
+    if (action === "suggest-payment-plan") {
+      var suggestionScrollPosition = window.scrollY;
+      var paymentProgram = state.tuition.programs[selectedTuitionProgram];
+      var paymentDates = (paymentProgram.classDates || [])[index] || [];
+      var paymentMonthCount = paymentMonths(paymentDates).length;
+      var paymentTotal = Number(paymentProgram.ratePerClass) * paymentDates.length;
+      if (!paymentMonthCount || !Number.isFinite(paymentTotal)) return true;
+      var suggestedAmount = Math.round((paymentTotal / paymentMonthCount) / 5) * 5;
+      paymentProgram.paymentPlans = paymentProgram.paymentPlans || [];
+      paymentProgram.paymentPlans[index] = {
+        mode: "regular-final",
+        regularAmount: String(suggestedAmount),
+        customAmounts: []
+      };
+      updateGeneratedTuition(paymentProgram);
+      markDirty();
+      renderEditor();
+      renderPreview();
+      window.scrollTo(0, suggestionScrollPosition);
+      showToast("Suggested installments added. Compare them with Sharon's flyer before exporting.");
+      return true;
+    }
+    if (action === "apply-payment-plan") {
+      var paymentCard = button.closest(".payment-plan");
+      var applyScrollPosition = window.scrollY;
+      paymentCard.querySelectorAll("[data-payment-amount][data-path]").forEach(function (paymentInput) {
+        setPath(state.tuition, paymentInput.dataset.path, paymentInput.value);
+      });
+      updateGeneratedTuition(state.tuition.programs[selectedTuitionProgram]);
+      markDirty();
+      renderEditor();
+      renderPreview();
+      window.scrollTo(0, applyScrollPosition);
+      showToast("Payment plan applied.");
+      return true;
+    }
+    if (action === "remove-class-date") {
+      var scheduleProgram = state.tuition.programs[selectedTuitionProgram];
+      var scheduleDates = (scheduleProgram.classDates || [])[index] || [];
+      scheduleDates.splice(Number(button.dataset.dateIndex), 1);
+      updateGeneratedTuition(scheduleProgram);
+      markDirty();
+      renderEditor();
+      renderPreview();
+      showToast("Class date removed. Tuition and payments were recalculated.");
+      return true;
+    }
     if (action === "previous-preview-month" || action === "next-preview-month") {
       var previewMonths = calendarPreviewMonths();
       var currentPreviewIndex = previewMonths.findIndex(function (month) { return calendarMonthKey(month) === selectedCalendarPreviewMonth; });
@@ -1356,6 +1744,65 @@
       }
       return true;
     }
+    if (action === "preview-print-calendar") {
+      var selectedRows = state.calendarRows.filter(function (row) { return Number(row.yearIndex) === selectedCalendarYear; });
+      if (selectedRows.some(function (row) { return calendarRowIssues(row, state.calendarRows.indexOf(row)).length; })) {
+        showToast("Fix the calendar rows marked for attention before opening the printable year.");
+        return true;
+      }
+      syncCalendarFromRows();
+      var printPayload = JSON.stringify({
+        calendar: state.calendar,
+        tuition: state.tuition,
+        events: state.events
+      });
+      try {
+        localStorage.setItem(CALENDAR_PRINT_PREVIEW_KEY, printPayload);
+      } catch (error) {
+        // The new window also receives the payload for local file previews.
+      }
+      var printYear = (state.calendar.years[selectedCalendarYear] || {}).id || "";
+      var printWindow = window.open("about:blank", "_blank");
+      if (!printWindow) {
+        showToast("Allow pop-ups to open the printable calendar preview.");
+        return true;
+      }
+      printWindow.name = "APLS_CALENDAR_DRAFT:" + printPayload;
+      printWindow.location.href = "../calendar-print.html?year=" + encodeURIComponent(printYear) + "&draft=1";
+      return true;
+    }
+
+    if (action === "add-instagram-post") {
+      state.gallery.instagramPosts.push({ url: "", caption: "", visible: true });
+    }
+    if (action === "remove-gallery-post") state.gallery.instagramPosts.splice(index, 1);
+    if (action === "move-gallery-post" && !moveArrayItem(state.gallery.instagramPosts, index, Number(button.dataset.direction))) return true;
+    if (action === "add-event" || action === "add-announcement") {
+      state.events.items.push({
+        id: (action === "add-event" ? "event-" : "announcement-") + Date.now(),
+        type: action === "add-event" ? "event" : "announcement",
+        status: "draft",
+        featured: false,
+        title: action === "add-event" ? "New event" : "New announcement",
+        summary: "",
+        startDate: "",
+        endDate: "",
+        startTime: "",
+        endTime: "",
+        locationName: "",
+        address: "",
+        mapUrl: "",
+        image: "",
+        imageAlt: "",
+        primaryLabel: "",
+        primaryUrl: "",
+        secondaryLabel: "",
+        secondaryUrl: "",
+        showOnCalendar: false
+      });
+    }
+    if (action === "remove-event") state.events.items.splice(index, 1);
+    if (action === "move-event" && !moveArrayItem(state.events.items, index, Number(button.dataset.direction))) return true;
 
     if (action === "remove-item") getPath(activeSection === "calendar" ? state.calendar : state.tuition, path).splice(index, 1);
     if (action === "add-fee") state.tuition.fees.push({ appliesTo: [], label: "New fee", text: "" });
@@ -1368,6 +1815,8 @@
         if (usesScheduleBuilder(selectedTuitionProgram)) {
           rowTable.scheduleRules = rowTable.scheduleRules || [];
           rowTable.scheduleRules.push({ intervalWeeks: 1, weekdays: [] });
+          rowTable.paymentPlans = rowTable.paymentPlans || [];
+          rowTable.paymentPlans.push({ mode: "regular-final", regularAmount: "", customAmounts: [] });
         }
       }
     }
@@ -1376,6 +1825,7 @@
       removeRowTable.rows.splice(index, 1);
       if (/^programs\./.test(path) && removeRowTable.classDates) removeRowTable.classDates.splice(index, 1);
       if (/^programs\./.test(path) && usesScheduleBuilder(selectedTuitionProgram) && removeRowTable.scheduleRules) removeRowTable.scheduleRules.splice(index, 1);
+      if (/^programs\./.test(path) && usesScheduleBuilder(selectedTuitionProgram) && removeRowTable.paymentPlans) removeRowTable.paymentPlans.splice(index, 1);
     }
     if (action === "add-table-column") {
       var addColumnTable = tableAt(path);
@@ -1399,8 +1849,6 @@
       state.calendar.years.unshift({
         label: startYear + "–" + (startYear + 1) + " school year",
         id: startYear + "-" + (startYear + 1),
-        pdf: "pdfs/" + startYear + "-" + (startYear + 1) + "-Calendar.pdf",
-        pdfLabel: startYear + "–" + (startYear + 1) + " school calendar (PDF)",
         months: []
       });
       selectedCalendarYear = 0;
@@ -1412,6 +1860,19 @@
     if (action === "remove-calendar-row") state.calendarRows.splice(index, 1);
     if (action === "add-teacher") state.teachers.push({ name: "Teacher name", role: "", years: "", bio: "", photo: "", icon: "T" });
     if (action === "remove-teacher") state.teachers.splice(index, 1);
+    if (/instagram-post|gallery-post/.test(action)) {
+      markDirty();
+      renderEditor();
+      renderPreview();
+      return true;
+    }
+    if (/event|announcement/.test(action)) {
+      syncAllEventCalendars();
+      markDirty();
+      renderEditor();
+      renderPreview();
+      return true;
+    }
     markDirty();
     syncCalendarFromRows();
     renderEditor();
@@ -1423,14 +1884,22 @@
     var headers = {
       tuition: "/* APLS tuition data - exported from Content Studio */\nwindow.APLS_TUITION = ",
       calendar: "/* APLS calendar data - exported from Content Studio */\nwindow.APLS_CALENDAR = ",
-      teachers: "/* APLS teacher data - exported from Content Studio */\nwindow.APLS_TEACHERS = "
+      teachers: "/* APLS teacher data - exported from Content Studio */\nwindow.APLS_TEACHERS = ",
+      gallery: "/* APLS gallery data - exported from Content Studio */\nwindow.APLS_GALLERY = ",
+      events: "/* APLS events and announcements data - exported from Content Studio */\nwindow.APLS_EVENTS = "
     };
     if (section === "tuition") {
       Object.keys(state.tuition.programs || {}).forEach(function (programKey) {
         if (usesScheduleBuilder(programKey)) updateGeneratedTuition(state.tuition.programs[programKey]);
       });
     }
-    if (section === "calendar") syncCalendarFromRows();
+    if (section === "calendar") {
+      syncCalendarFromRows();
+      (state.calendar.years || []).forEach(function (year) {
+        delete year.pdf;
+        delete year.pdfLabel;
+      });
+    }
     return headers[section] + JSON.stringify(state[section], null, 2) + ";\n";
   }
 
@@ -1443,6 +1912,14 @@
     }
     if (section === "calendar" && calendarHasErrors()) {
       showToast("Fix the calendar rows marked for attention before exporting.");
+      return;
+    }
+    if (section === "gallery" && galleryHasErrors()) {
+      showToast("Add a valid public Instagram URL or hide the incomplete Gallery post before exporting.");
+      return;
+    }
+    if (section === "events" && eventsHaveErrors()) {
+      showToast("Fix the published Events items marked for attention before exporting.");
       return;
     }
     if ((section === "tuition" || section === "calendar") && allProgramValidation().warnings) {
@@ -1475,6 +1952,26 @@
   });
 
   editorContent.addEventListener("input", function (event) {
+    var paymentAmountInput = event.target.closest("[data-payment-amount]");
+    if (paymentAmountInput) {
+      var paymentCard = paymentAmountInput.closest(".payment-plan");
+      if (paymentCard) paymentCard.classList.add("has-pending-payment");
+      markDirty();
+      return;
+    }
+    var booleanInput = event.target.closest("[data-boolean-path]");
+    if (booleanInput) {
+      setPath(state[activeSection], booleanInput.dataset.booleanPath, booleanInput.checked);
+      if (activeSection === "events" && /\.featured$/.test(booleanInput.dataset.booleanPath) && booleanInput.checked) {
+        var featuredIndex = Number(booleanInput.dataset.booleanPath.split(".")[1]);
+        state.events.items.forEach(function (item, index) { item.featured = index === featuredIndex; });
+      }
+      if (activeSection === "events") syncAllEventCalendars();
+      markDirty();
+      renderEditor();
+      renderPreview();
+      return;
+    }
     var calendarInput = event.target.closest("[data-calendar-field]");
     if (calendarInput) {
       var rowIndex = Number(calendarInput.dataset.calendarIndex);
@@ -1520,19 +2017,44 @@
     }
     var input = event.target.closest("[data-path]");
     if (input) {
+      var customPaymentSeed = null;
+      var paymentModeMatch = input.dataset.path.match(/^programs\.([^.]+)\.paymentPlans\.(\d+)\.mode$/);
+      if (activeSection === "tuition" && paymentModeMatch && input.value === "custom") {
+        var seedProgram = state.tuition.programs[paymentModeMatch[1]];
+        var seedRowIndex = Number(paymentModeMatch[2]);
+        var seedDates = (seedProgram.classDates || [])[seedRowIndex] || [];
+        customPaymentSeed = paymentPlanAmounts(seedProgram, seedRowIndex, Number(seedProgram.ratePerClass) * seedDates.length);
+      }
       setPath(state[activeSection], input.dataset.path, input.value);
+      if (activeSection === "events") {
+        syncAllEventCalendars();
+        markDirty();
+        if (/\.(type|status)$/.test(input.dataset.path)) renderEditor();
+        renderPreview();
+        return;
+      }
+      if (activeSection === "gallery") {
+        markDirty();
+        renderPreview();
+        return;
+      }
+      if (customPaymentSeed) {
+        state.tuition.programs[paymentModeMatch[1]].paymentPlans[Number(paymentModeMatch[2])].customAmounts = customPaymentSeed.map(String);
+      }
       var schedulePath = "programs." + selectedTuitionProgram + ".";
       var regeneratesSchedule = input.dataset.path === schedulePath + "startDate" || input.dataset.path === schedulePath + "endDate" || input.dataset.path.indexOf(schedulePath + "scheduleRules.") === 0;
+      var updatesCalendarStart = input.dataset.path === schedulePath + "calendarStartDate";
+      var updatesPaymentPlan = input.dataset.path.indexOf(schedulePath + "paymentPlans.") === 0;
       var recalculatesTuition = input.dataset.path === schedulePath + "ratePerClass";
-      if (activeSection === "tuition" && usesScheduleBuilder(selectedTuitionProgram) && (regeneratesSchedule || recalculatesTuition)) {
-        if (regeneratesSchedule) {
-          updateGeneratedClassDates(state.tuition.programs[selectedTuitionProgram]);
-          syncProgramCalendar(selectedTuitionProgram);
-        }
+      if (activeSection === "tuition" && usesScheduleBuilder(selectedTuitionProgram) && (regeneratesSchedule || updatesCalendarStart || updatesPaymentPlan || recalculatesTuition)) {
+        var tuitionScrollPosition = updatesPaymentPlan ? window.scrollY : null;
+        if (regeneratesSchedule) updateGeneratedClassDates(state.tuition.programs[selectedTuitionProgram]);
+        if (regeneratesSchedule || updatesCalendarStart) syncProgramCalendar(selectedTuitionProgram);
         else updateGeneratedTuition(state.tuition.programs[selectedTuitionProgram]);
         markDirty();
         renderEditor();
         renderPreview();
+        if (tuitionScrollPosition !== null) window.scrollTo(0, tuitionScrollPosition);
         return;
       }
       markDirty();
@@ -1583,6 +2105,7 @@
   });
 
   syncAllProgramCalendars();
+  syncAllEventCalendars();
   selectSection("overview");
   if (loadDraft()) {
     draftPill.textContent = "Local draft loaded";

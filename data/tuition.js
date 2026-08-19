@@ -58,6 +58,7 @@ window.APLS_TUITION = {
       term: "Fall 2026",
       enrollmentStatus: "Open",
       applicationUrl: "pdfs/Chinese-Japanese%20MW-W%20afterschool%20classes-Fall%202026_Final.pdf",
+      calendarStartDate: "2026-09-09",
       startDate: "2026-09-14",
       endDate: "2026-12-09",
       schedule: "Mon. & Wed. \u00b7 2:00\u20133:30 or 4:00\u20135:30 p.m.",
@@ -68,26 +69,30 @@ window.APLS_TUITION = {
         { intervalWeeks: 1, weekdays: [1, 3] },
         { intervalWeeks: 1, weekdays: [3] }
       ],
+      paymentPlans: [
+        { mode: "regular-final", regularAmount: "450", customAmounts: [] },
+        { mode: "regular-final", regularAmount: "200", customAmounts: [] }
+      ],
       classDates: [
         ["2026-09-14", "2026-09-16", "2026-09-21", "2026-09-23", "2026-09-28", "2026-09-30", "2026-10-05", "2026-10-07", "2026-10-12", "2026-10-14", "2026-10-19", "2026-10-21", "2026-10-26", "2026-10-28", "2026-11-02", "2026-11-04", "2026-11-09", "2026-11-11", "2026-11-16", "2026-11-18", "2026-11-23", "2026-11-25", "2026-11-30", "2026-12-02", "2026-12-07", "2026-12-09"],
         ["2026-09-16", "2026-09-23", "2026-09-30", "2026-10-07", "2026-10-14", "2026-10-21", "2026-10-28", "2026-11-04", "2026-11-11", "2026-11-18", "2026-11-25", "2026-12-02", "2026-12-09"]
       ],
-      editorNote: "September 9 is intentionally excluded because families need time to confirm after-school schedules after public schools begin September 8.",
+      editorNote: "",
       heading: "After-School tuition",
       note: "Fall 2026 tuition is $55 per class. Classes are enrolled by the quarter \u2014 single classes are not sold separately. No make-up classes or payment refunds. We offer pick-up from local elementary schools for $25 per student, per trip.",
       columns: ["Enrollment option", "Total tuition", "Monthly payment"],
       rows: [
-        ["Monday & Wednesday", "$1,430 (26 classes)", "$330 (Sept.), $440 (Oct.), $495 (Nov.), $165 (Dec.)"],
-        ["Wednesday only", "$715 (13 classes)", "$165 (Sept.), $220 (Oct.), $220 (Nov.), $110 (Dec.)"]
+        ["Monday & Wednesday", "$1,430 (26 classes)", "$450 (Sept.), $450 (Oct.), $450 (Nov.), $80 (Dec.)"],
+        ["Wednesday only", "$715 (13 classes)", "$200 (Sept.), $200 (Oct.), $200 (Nov.), $115 (Dec.)"]
       ]
     },
     "saturday-school": {
       name: "Saturday School",
       term: "Fall 2026",
       enrollmentStatus: "Open",
-      applicationUrl: "pdfs/Sat.%20school%20classes_APLS_Fall%202026.pdf",
-      startDate: "",
-      endDate: "",
+      applicationUrl: "pdfs/Sat.%20school%20classes_APLS_Fall%202026_Final.pdf",
+      startDate: "2026-09-19",
+      endDate: "2026-12-12",
       schedule: "Saturday \u00b7 9:30\u201311:00 a.m.",
       format: "90-minute classes; no extended care",
       careStatus: "unavailable",
@@ -95,15 +100,18 @@ window.APLS_TUITION = {
       scheduleRules: [
         { intervalWeeks: 1, weekdays: [6] }
       ],
-      classDates: [
-        ["2026-09-19", "2026-09-26", "2026-10-03", "2026-10-10", "2026-10-17", "2026-10-24", "2026-10-31", "2026-11-07", "2026-11-14", "2026-11-21", "2026-11-28", "2026-12-05", "2026-12-12"]
+      paymentPlans: [
+        { mode: "regular-final", regularAmount: "220", customAmounts: [] }
       ],
-      editorNote: "Confirm before publishing dates or care details: the calendar says September 12, while the program page and PDF say September 19. The PDF advertises $25/hour care, while the website says no extended care.",
+      classDates: [
+        ["2026-09-19", "2026-09-26", "2026-10-03", "2026-10-10", "2026-10-17", "2026-10-24", "2026-10-31", "2026-11-07", "2026-11-14", "2026-11-21", "2026-12-05", "2026-12-12"]
+      ],
+      editorNote: "",
       heading: "Saturday School tuition",
       note: "Fall 2026 tuition is $55 per class. Classes are enrolled by the quarter \u2014 single classes are not sold separately. No make-up classes or payment refunds. No extended care is offered.",
       columns: ["Enrollment option", "Total tuition", "Monthly payment"],
       rows: [
-        ["Fall Quarter (Sept.\u2013Dec.)", "$715 (13 classes)", "$110 (Sept.), $275 (Oct.), $220 (Nov.), $110 (Dec.)"]
+        ["Fall Quarter (Sept.\u2013Dec.)", "$660 (12 classes)", "$220 (Sept.), $220 (Oct.), $220 (Nov.)"]
       ]
     },
     "summer-camp": {
