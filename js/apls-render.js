@@ -107,6 +107,20 @@
     });
   }
 
+  function renderSharedFeeRates() {
+    if (typeof window.APLS_TUITION === "undefined") return;
+    var fees = window.APLS_TUITION.fees || [];
+    document.querySelectorAll("[data-shared-fee-rate]").forEach(function (element) {
+      var feeKey = element.getAttribute("data-shared-fee-rate");
+      var fee = fees.find(function (item) {
+        if (feeKey === "extended-care") return /^extended care\b/i.test(String(item.label || "").trim());
+        return false;
+      });
+      var rate = fee && String(fee.label || "").match(/\$[\d,.]+(?:\.\d{1,2})?\s*(?:per\s+hour|\/\s*(?:hour|hr))/i);
+      if (rate) element.textContent = "\u00b7 " + rate[0].replace(/\s*(?:per\s+hour|\/\s*(?:hour|hr))$/i, "/hour");
+    });
+  }
+
   function renderApplicationLinks() {
     var links = document.querySelectorAll("[data-application-program]");
     if (!links.length || typeof window.APLS_TUITION === "undefined") return;
@@ -690,6 +704,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     renderTuition();
     renderProgramTuition();
+    renderSharedFeeRates();
     renderApplicationLinks();
     renderProgramContent();
     renderCalendar();
