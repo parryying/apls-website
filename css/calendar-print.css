@@ -151,12 +151,19 @@ body {
   font-weight: 700;
 }
 
+.calendar-grid thead th.is-weekend { background: #203f72; }
+
 .calendar-grid thead .calendar-month-heading { width: 48px; }
 
 .calendar-grid tbody td {
   height: 18px;
   background: #ffffff;
   font-weight: 700;
+}
+
+.calendar-grid tbody td.is-weekend {
+  background: #f0f2f4;
+  color: #536273;
 }
 
 .calendar-grid tbody tr.month-start td,

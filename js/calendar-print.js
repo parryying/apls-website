@@ -15,7 +15,7 @@
     "school-boundary": "First / last day of school"
   };
   var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  var WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+  var WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   function element(tag, className, text) {
     var node = document.createElement(tag);
@@ -139,12 +139,14 @@
     return mondays;
   }
 
-  function buildWeekdayGrid(period, events) {
+  function buildCalendarGrid(period, events) {
     var table = element("table", "calendar-grid");
     var head = element("thead");
     var headRow = element("tr");
     headRow.appendChild(element("th", "calendar-month-heading", ""));
-    WEEKDAYS.forEach(function (weekday) { headRow.appendChild(element("th", "", weekday)); });
+    WEEKDAYS.forEach(function (weekday, dayOffset) {
+      headRow.appendChild(element("th", dayOffset >= 5 ? "is-weekend" : "", weekday));
+    });
     head.appendChild(headRow);
     table.appendChild(head);
     var body = element("tbody");
@@ -164,7 +166,10 @@
         WEEKDAYS.forEach(function (weekday, dayOffset) {
           var date = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + dayOffset);
           var dayEvents = events.filter(function (eventItem) { return eventOccursOn(eventItem, date); });
-          var cell = element("td", dayEvents.length ? "has-calendar-event" : "", date.getDate());
+          var cellClasses = [];
+          if (dayOffset >= 5) cellClasses.push("is-weekend");
+          if (dayEvents.length) cellClasses.push("has-calendar-event");
+          var cell = element("td", cellClasses.join(" "), date.getDate());
           dayEvents.forEach(function (eventItem) { cell.classList.add("calendar-color-" + eventItem.color); });
           if (dayEvents.length) cell.title = dayEvents.map(function (eventItem) { return eventItem.name; }).join("; ");
           row.appendChild(cell);
@@ -261,7 +266,7 @@
       var sheet = element("section", "print-sheet");
       sheet.appendChild(pageHeader(yearId, period.label));
       var content = element("div", "print-calendar-layout");
-      content.appendChild(buildWeekdayGrid(period, events));
+      content.appendChild(buildCalendarGrid(period, events));
       content.appendChild(buildNotes(period, events));
       sheet.appendChild(content);
       var footer = element("footer", "print-page-footer");
