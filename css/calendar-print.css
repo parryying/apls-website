@@ -241,6 +241,8 @@ body {
 }
 
 .note-row::before { top: 3px; left: 0; }
+.note-row.calendar-color-none { padding-left: 0; }
+.note-row.calendar-color-none::before { display: none; }
 .note-date { color: #203b76; }
 .note-name { min-width: 0; overflow-wrap: anywhere; }
 .note-row.calendar-color-school-closed::before,

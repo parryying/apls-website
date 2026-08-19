@@ -65,6 +65,7 @@
 
   function colorForEvent(name, category) {
     if (/^(first|last) day of (?:the )?(?:\d{4}[\u2013-]\d{4} )?school (?:year|in \d{4})/i.test(name)) return "school-boundary";
+    if (/^first day of (?:the )?(?:After-School program|Saturday School)$/i.test(name)) return "none";
     if (category === "school-closed") return "school-closed";
     if (category === "childcare" || category === "camp" || category === "program-date") return "childcare-program";
     return "school-event";
@@ -102,7 +103,9 @@
 
   function legendFor(events) {
     var used = {};
-    events.forEach(function (eventItem) { used[eventItem.color] = true; });
+    events.forEach(function (eventItem) {
+      if (eventItem.color !== "none") used[eventItem.color] = true;
+    });
     var legend = element("div", "print-legend");
     Object.keys(COLOR_LABELS).forEach(function (color) {
       if (!used[color]) return;
