@@ -375,7 +375,7 @@ a.program h3 { color: var(--navy); }
   .program-filters { display: grid; grid-template-columns: repeat(4, max-content); }
 }
 @media (max-width: 640px) {
-  .hub-grid { grid-template-columns: 1fr; }
+  .hub-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
   .program-filter { padding: .65em .9em; }
 }
 
