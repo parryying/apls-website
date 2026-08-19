@@ -927,10 +927,9 @@ body.open-house-popup-open { overflow: hidden; }
   }
   .header-cta::after { content: "Tour"; font-size: .85rem; }
 
-  /* Stack hero CTAs while leaving the secondary action clear of fixed controls. */
+  /* Stack hero CTAs at equal width. */
   .hero-actions { flex-direction: column; align-items: stretch; gap: .6rem; }
   .hero-actions .btn { width: 100%; text-align: center; }
-  .hero .hero-actions .btn-ghost { width: fit-content; align-self: flex-start; }
 
   /* Tour actions: stack equal width */
   .tour-actions { flex-direction: column; align-items: stretch; }
