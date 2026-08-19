@@ -15,7 +15,7 @@
     "school-boundary": "First / last day of school"
   };
   var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  var WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  var WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   function element(tag, className, text) {
     var node = document.createElement(tag);
@@ -128,15 +128,15 @@
     return header;
   }
 
-  function mondaysInMonth(year, monthIndex) {
-    var mondays = [];
+  function sundaysInMonth(year, monthIndex) {
+    var sundays = [];
     var date = new Date(year, monthIndex, 1);
-    while (date.getDay() !== 1) date.setDate(date.getDate() + 1);
+    while (date.getDay() !== 0) date.setDate(date.getDate() + 1);
     while (date.getMonth() === monthIndex) {
-      mondays.push(new Date(date.getFullYear(), date.getMonth(), date.getDate()));
+      sundays.push(new Date(date.getFullYear(), date.getMonth(), date.getDate()));
       date.setDate(date.getDate() + 7);
     }
-    return mondays;
+    return sundays;
   }
 
   function buildCalendarGrid(period, events) {
@@ -145,29 +145,29 @@
     var headRow = element("tr");
     headRow.appendChild(element("th", "calendar-month-heading", ""));
     WEEKDAYS.forEach(function (weekday, dayOffset) {
-      headRow.appendChild(element("th", dayOffset >= 5 ? "is-weekend" : "", weekday));
+      headRow.appendChild(element("th", dayOffset === 0 || dayOffset === 6 ? "is-weekend" : "", weekday));
     });
     head.appendChild(headRow);
     table.appendChild(head);
     var body = element("tbody");
 
     period.months.forEach(function (monthDefinition) {
-      var mondays = mondaysInMonth(monthDefinition.year, monthDefinition.month);
-      mondays.forEach(function (monday, weekIndex) {
+      var sundays = sundaysInMonth(monthDefinition.year, monthDefinition.month);
+      sundays.forEach(function (sunday, weekIndex) {
         var row = element("tr");
         if (weekIndex === 0) row.className = "month-start";
         if (weekIndex === 0) {
           var monthCell = element("th", "calendar-month-label");
-          monthCell.rowSpan = mondays.length;
+          monthCell.rowSpan = sundays.length;
           monthCell.appendChild(element("span", "", MONTH_NAMES[monthDefinition.month].slice(0, 3)));
           monthCell.appendChild(element("strong", "", monthDefinition.year));
           row.appendChild(monthCell);
         }
         WEEKDAYS.forEach(function (weekday, dayOffset) {
-          var date = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + dayOffset);
+          var date = new Date(sunday.getFullYear(), sunday.getMonth(), sunday.getDate() + dayOffset);
           var dayEvents = events.filter(function (eventItem) { return eventOccursOn(eventItem, date); });
           var cellClasses = [];
-          if (dayOffset >= 5) cellClasses.push("is-weekend");
+          if (dayOffset === 0 || dayOffset === 6) cellClasses.push("is-weekend");
           if (dayEvents.length) cellClasses.push("has-calendar-event");
           var cell = element("td", cellClasses.join(" "), date.getDate());
           dayEvents.forEach(function (eventItem) { cell.classList.add("calendar-color-" + eventItem.color); });
