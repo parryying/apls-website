@@ -139,18 +139,23 @@
 
     var heroActions = document.querySelector(".hero-actions");
     var mobileViewport = window.matchMedia("(max-width: 560px)");
-    if (heroActions && "IntersectionObserver" in window) {
-      var heroActionsInView = false;
+    if (heroActions) {
+      var heroActionsInView = function () {
+        var bounds = heroActions.getBoundingClientRect();
+        return bounds.bottom > 0 && bounds.top < window.innerHeight;
+      };
       var updateHeroBlock = function () {
-        launcherBlockedByHero = mobileViewport.matches && heroActionsInView;
+        launcherBlockedByHero = mobileViewport.matches && heroActionsInView();
         if (launcherBlockedByHero) launcher.classList.remove("is-intro");
         syncLauncherVisibility();
       };
-      var heroObserver = new IntersectionObserver(function (entries) {
-        heroActionsInView = entries[0].isIntersecting;
-        updateHeroBlock();
-      });
-      heroObserver.observe(heroActions);
+      updateHeroBlock();
+      window.addEventListener("scroll", updateHeroBlock, { passive: true });
+      window.addEventListener("resize", updateHeroBlock);
+      if ("IntersectionObserver" in window) {
+        var heroObserver = new IntersectionObserver(updateHeroBlock);
+        heroObserver.observe(heroActions);
+      }
       if (mobileViewport.addEventListener) {
         mobileViewport.addEventListener("change", updateHeroBlock);
       } else {
