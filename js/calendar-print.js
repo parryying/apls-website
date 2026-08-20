@@ -114,16 +114,10 @@
     return legend;
   }
 
-  function pageHeader(yearId, periodLabel) {
+  function pageHeader(yearId) {
     var header = element("header", "print-page-header");
-    var logo = element("img");
-    logo.className = "print-logo";
-    logo.src = "images/apls-logo.png";
-    logo.alt = "";
-    header.appendChild(logo);
     var heading = element("div", "print-heading");
     heading.appendChild(element("h1", "", "Asia Pacific Language School " + yearId.replace("-", "\u2013") + " calendar"));
-    heading.appendChild(element("p", "", periodLabel));
     header.appendChild(heading);
     return header;
   }
@@ -136,6 +130,8 @@
       sundays.push(new Date(date.getFullYear(), date.getMonth(), date.getDate()));
       date.setDate(date.getDate() + 7);
     }
+    if (monthIndex === 7) sundays = sundays.filter(function (sunday) { return sunday.getDate() >= 9; });
+    if (monthIndex === 5) sundays = sundays.filter(function (sunday) { return sunday.getDate() + 5 <= 25; });
     return sundays;
   }
 
@@ -262,22 +258,27 @@
     var footnote = (window.APLS_CALENDAR || {}).footnote || "";
     documentRoot.innerHTML = "";
 
-    periods.forEach(function (period, pageIndex) {
-      var sheet = element("section", "print-sheet");
-      sheet.appendChild(pageHeader(yearId, period.label));
-      var content = element("div", "print-calendar-layout");
-      content.appendChild(buildCalendarGrid(period, events));
-      content.appendChild(buildNotes(period, events));
-      sheet.appendChild(content);
-      var footer = element("footer", "print-page-footer");
-      var footerCopy = element("div");
-      if (footnote) footerCopy.appendChild(element("p", "", footnote));
-      footerCopy.appendChild(legendFor(events.filter(function (eventItem) { return eventIsInPeriod(eventItem, period); })));
-      footer.appendChild(footerCopy);
-      footer.appendChild(element("span", "print-page-number", "Page " + (pageIndex + 1) + " of " + periods.length));
-      sheet.appendChild(footer);
-      documentRoot.appendChild(sheet);
-    });
+    var annualPeriod = {
+      start: periods[0].start,
+      end: periods[1].end,
+      months: periods.reduce(function (months, period) { return months.concat(period.months); }, [])
+    };
+    var sheet = element("section", "print-sheet print-sheet-annual");
+    sheet.appendChild(pageHeader(yearId));
+    var content = element("div", "print-calendar-layout print-calendar-layout-annual");
+    var calendar = element("section", "print-calendar-column");
+    calendar.appendChild(buildCalendarGrid(annualPeriod, events));
+    var calendarFooter = element("footer", "print-calendar-footer");
+    var key = element("div", "print-calendar-key");
+    key.appendChild(element("strong", "", "Legend:"));
+    key.appendChild(legendFor(events));
+    calendarFooter.appendChild(key);
+    if (footnote) calendarFooter.appendChild(element("p", "", footnote));
+    calendar.appendChild(calendarFooter);
+    content.appendChild(calendar);
+    content.appendChild(buildNotes(annualPeriod, events));
+    sheet.appendChild(content);
+    documentRoot.appendChild(sheet);
 
     document.title = yearLabel + " | APLS Printable Calendar";
     document.getElementById("draft-badge").hidden = params.get("draft") !== "1";
