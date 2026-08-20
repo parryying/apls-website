@@ -131,6 +131,33 @@
     document.body.appendChild(panel);
     document.body.appendChild(launcher);
 
+    var launcherBlockedByHero = false;
+
+    function syncLauncherVisibility() {
+      launcher.hidden = !panel.hidden || launcherBlockedByHero;
+    }
+
+    var heroActions = document.querySelector(".hero-actions");
+    var mobileViewport = window.matchMedia("(max-width: 560px)");
+    if (heroActions && "IntersectionObserver" in window) {
+      var heroActionsInView = false;
+      var updateHeroBlock = function () {
+        launcherBlockedByHero = mobileViewport.matches && heroActionsInView;
+        if (launcherBlockedByHero) launcher.classList.remove("is-intro");
+        syncLauncherVisibility();
+      };
+      var heroObserver = new IntersectionObserver(function (entries) {
+        heroActionsInView = entries[0].isIntersecting;
+        updateHeroBlock();
+      });
+      heroObserver.observe(heroActions);
+      if (mobileViewport.addEventListener) {
+        mobileViewport.addEventListener("change", updateHeroBlock);
+      } else {
+        mobileViewport.addListener(updateHeroBlock);
+      }
+    }
+
     var introTimer = null;
     try {
       if (window.matchMedia("(max-width: 560px)").matches && !window.localStorage.getItem("apls-chat-launcher-intro-seen")) {
@@ -186,7 +213,7 @@
       launcher.classList.remove("is-intro");
       lastFocused = document.activeElement;
       panel.hidden = false;
-      launcher.hidden = true;
+      syncLauncherVisibility();
       launcher.setAttribute("aria-expanded", "true");
       if (!messages.children.length) {
         addMessage("bot", knowledge.welcome);
@@ -197,7 +224,7 @@
 
     function closePanel() {
       panel.hidden = true;
-      launcher.hidden = false;
+      syncLauncherVisibility();
       launcher.setAttribute("aria-expanded", "false");
       (lastFocused && lastFocused.focus ? lastFocused : launcher).focus();
     }
