@@ -505,6 +505,10 @@ h3 {
   font-size: 0.7rem;
 }
 
+.tab-alert[hidden] {
+  display: none;
+}
+
 .program-tab.is-active .tab-alert {
   color: var(--danger);
   background: var(--paper);

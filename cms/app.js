@@ -26,7 +26,7 @@
     "school-boundary": "First / last day of school"
   };
   var SECTION_COPY = {
-    overview: ["Website overview", "Choose a content area, make changes, and review the result before exporting.", "Content summary"],
+    overview: ["Website overview", "Choose a content area, make changes, and review the result before sending an update.", "Content summary"],
     tuition: ["Programs and tuition", "Choose one program and update its enrollment details, schedule, and tuition in one place.", "Program preview"],
     calendar: ["School calendar", "Enter one event per row. Weekdays and website groupings are calculated automatically.", "Calendar preview"],
     teachers: ["Teacher profiles", "Add, reorder, or update the profiles shown on the Why APLS page.", "Teacher section"],
@@ -652,7 +652,7 @@
     var html = "";
     if (validation.errors.length || validation.warnings.length) {
       html += '<div class="validation-panel">';
-      if (validation.errors.length) html += '<section class="validation-group is-error"><strong>' + validation.errors.length + ' error' + (validation.errors.length === 1 ? "" : "s") + ' \u00b7 export blocked</strong><ul>' + validation.errors.map(function (message) { return "<li>" + escapeHtml(message) + "</li>"; }).join("") + "</ul></section>";
+      if (validation.errors.length) html += '<section class="validation-group is-error"><strong>' + validation.errors.length + ' error' + (validation.errors.length === 1 ? "" : "s") + ' \u00b7 download blocked</strong><ul>' + validation.errors.map(function (message) { return "<li>" + escapeHtml(message) + "</li>"; }).join("") + "</ul></section>";
       if (validation.warnings.length) html += '<section class="validation-group is-warning"><strong>' + validation.warnings.length + ' warning' + (validation.warnings.length === 1 ? "" : "s") + '</strong><ul>' + validation.warnings.map(function (message) { return "<li>" + escapeHtml(message) + "</li>"; }).join("") + "</ul></section>";
       html += "</div>";
     } else {
@@ -704,7 +704,7 @@
       '<section class="workflow"><h2>Preview workflow</h2><div class="workflow-steps">' +
         workflowStep("1", "Choose a section", "Open one of the structured content editors.") +
         workflowStep("2", "Review as you type", "The right panel reflects every field change.") +
-        workflowStep("3", "Export a data file", "Download and replace the matching file in data/.") +
+        workflowStep("3", "Send the update", "Download the area you changed and send the file to your website manager.") +
       "</div></section>";
   }
 
@@ -1731,7 +1731,7 @@
       renderEditor();
       renderPreview();
       window.scrollTo(0, suggestionScrollPosition);
-      showToast("Suggested installments added. Compare them with Sharon's flyer before exporting.");
+      showToast("Suggested installments added. Compare them with Sharon's flyer before downloading the update.");
       return true;
     }
     if (action === "apply-payment-plan") {
@@ -1938,25 +1938,25 @@
   function exportFile(section) {
     if (!state[section]) return;
     if (section === "tuition" && tuitionHasErrors()) {
-      showToast("Fix the program errors marked in Programs & Tuition before exporting.");
+      showToast("Fix the program errors marked in Programs & Tuition before downloading the update.");
       if (activeSection !== "tuition") selectSection("tuition");
       return;
     }
     if (section === "calendar" && calendarHasErrors()) {
-      showToast("Fix the calendar rows marked for attention before exporting.");
+      showToast("Fix the calendar rows marked for attention before downloading the update.");
       return;
     }
     if (section === "gallery" && galleryHasErrors()) {
-      showToast("Add a valid public Instagram URL or hide the incomplete Gallery post before exporting.");
+      showToast("Add a valid public Instagram URL or hide the incomplete Gallery post before downloading the update.");
       return;
     }
     if (section === "events" && eventsHaveErrors()) {
-      showToast("Fix the published Events items marked for attention before exporting.");
+      showToast("Fix the published Events items marked for attention before downloading the update.");
       return;
     }
     if ((section === "tuition" || section === "calendar") && allProgramValidation().warnings) {
       var warningCount = allProgramValidation().warnings;
-      if (!window.confirm(warningCount + " automatic warning" + (warningCount === 1 ? " remains" : "s remain") + ". Review the marked programs before publishing. Export anyway?")) return;
+      if (!window.confirm(warningCount + " automatic warning" + (warningCount === 1 ? " remains" : "s remain") + ". Review the marked programs before sending the update. Download anyway?")) return;
     }
     var blob = new Blob([fileContent(section)], { type: "text/javascript;charset=utf-8" });
     var url = URL.createObjectURL(blob);
@@ -1968,7 +1968,7 @@
     link.remove();
     URL.revokeObjectURL(url);
     exportDialog.close();
-    showToast(section + ".js downloaded. Exporting did not publish it.");
+    showToast(section + ".js downloaded. Send it to your website manager to publish.");
   }
 
   document.addEventListener("click", function (event) {

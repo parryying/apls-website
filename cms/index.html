@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <script src="../data/tuition.js?v=7"></script>
   <script src="../data/calendar.js"></script>
   <script src="../data/teachers.js"></script>
@@ -31,8 +31,8 @@
     <div class="header-actions">
       <span class="save-status" id="save-status" role="status">Source data loaded</span>
       <button class="button button-secondary" type="button" id="reset-button">Reset draft</button>
-      <button class="button button-secondary" type="button" id="save-button">Save draft</button>
-      <button class="button button-primary" type="button" id="export-button">Export data file</button>
+      <button class="button button-secondary" type="button" id="save-button">Save on this computer</button>
+      <button class="button button-primary" type="button" id="export-button">Download update</button>
     </div>
   </header>
 
@@ -65,10 +65,10 @@
         Events &amp; Announcements
       </button>
       <div class="nav-note">
-        <strong>Preview only</strong>
-        <p>Drafts stay in this browser until you export and replace the matching file.</p>
+        <strong>Before publishing</strong>
+        <p>Save your draft, then download the update and send it to your website manager.</p>
       </div>
-      <a class="site-link" href="../index.html" target="_blank" rel="noopener">Open staging website</a>
+      <a class="site-link" href="../index.html" target="_blank" rel="noopener">Open website preview</a>
     </nav>
 
     <main class="editor" id="editor" tabindex="-1">
@@ -76,7 +76,7 @@
         <div>
           <p class="eyebrow">Content manager</p>
           <h1 id="section-title">Website overview</h1>
-          <p id="section-description">Choose a content area, make changes, and review the result before exporting.</p>
+          <p id="section-description">Choose a content area, make changes, and review the result before sending an update.</p>
         </div>
         <span class="draft-pill" id="draft-pill">No unsaved changes</span>
       </div>
@@ -98,12 +98,12 @@
   <dialog class="export-dialog" id="export-dialog">
     <div class="dialog-heading">
       <div>
-        <p class="eyebrow">Export</p>
-        <h2>Download website data</h2>
+        <p class="eyebrow">Handoff</p>
+        <h2>Download an update</h2>
       </div>
-      <button class="icon-button" type="button" id="close-export" aria-label="Close export dialog">&times;</button>
+      <button class="icon-button" type="button" id="close-export" aria-label="Close download dialog">&times;</button>
     </div>
-    <p>Download a replacement file, then add it to the website's <code>data</code> folder. Exporting does not publish changes.</p>
+    <p>Choose the area you changed, then send the downloaded file to your website manager. They will review and publish it.</p>
     <div class="export-options">
       <button type="button" class="export-option" data-export="tuition">
         <strong>tuition.js</strong>
