@@ -1,29 +1,41 @@
-name: Deploy cPanel Staging
+name: Deploy cPanel Production
 
 on:
   workflow_dispatch:
     inputs:
       release_ref:
-        description: Commit SHA, tag, or branch to deploy
+        description: Exact commit SHA already verified on staging
         required: true
-        default: main
+        type: string
+      confirmation:
+        description: Type PUBLISH to deploy to apls.org
+        required: true
         type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: cpanel-staging-sftp
-  cancel-in-progress: true
+  group: cpanel-production-sftp
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: cpanel-staging
-      url: https://www.apls.org/_newsite/
+      name: cpanel-production
+      url: https://www.apls.org/
     steps:
-      - name: Check out repository
+      - name: Verify production confirmation
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          if [ "$CONFIRMATION" != "PUBLISH" ]; then
+            echo "Production deployment cancelled: confirmation must be PUBLISH."
+            exit 1
+          fi
+
+      - name: Check out release
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.release_ref }}
@@ -44,12 +56,12 @@ jobs:
           bash .github/scripts/prepare-site.sh "$RUNNER_TEMP/apls-site" \
             | tee "$RUNNER_TEMP/apls-site-manifest.txt"
 
-      - name: Deploy staging site
+      - name: Deploy production site
         env:
           REMOTE_HOST: ${{ vars.CPANEL_HOST }}
           REMOTE_PORT: ${{ vars.CPANEL_PORT }}
           REMOTE_USERNAME: ${{ vars.CPANEL_USERNAME }}
-          REMOTE_TARGET: ${{ vars.CPANEL_STAGING_PATH }}
+          REMOTE_TARGET: ${{ vars.CPANEL_PRODUCTION_PATH }}
         run: |
           cat > "$RUNNER_TEMP/deploy.sftp" <<EOF
           lcd "$RUNNER_TEMP/apls-site"

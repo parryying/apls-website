@@ -115,5 +115,41 @@ normally.
 
 ## Deploying
 
-This folder is the complete, portable website. To publish, upload the contents
-of `apls-website/` to the website host. No special server or software required.
+The cPanel deployments are manual GitHub Actions workflows:
+
+- **Deploy cPanel Staging** publishes a selected commit to
+  `https://www.apls.org/_newsite/`.
+- **Deploy cPanel Production** publishes the exact staging-tested commit to
+  `https://www.apls.org/`. It also requires the confirmation value `PUBLISH`
+  and uses the protected `cpanel-production` environment.
+
+Both workflows use `.github/scripts/prepare-site.sh` to package only public site
+files. The CMS, audits, temporary files, archived forms, previews, repository
+configuration, and obsolete PDF revisions are not uploaded.
+
+Required repository variables are `CPANEL_HOST`, `CPANEL_PORT`,
+`CPANEL_USERNAME`, `CPANEL_STAGING_PATH`, and `CPANEL_PRODUCTION_PATH`. The
+required secret is `CPANEL_SSH_PRIVATE_KEY`.
+
+### Production launch
+
+1. Commit and push the intended release. Record its full commit SHA.
+2. Run **Deploy cPanel Staging** with that SHA, then verify the staging site on
+	desktop and mobile.
+3. Confirm that the existing live-site backup and restore procedure are
+	available. Do not use `_newsite` as the old-site backup.
+4. Run **Deploy cPanel Production** with the same SHA, enter `PUBLISH`, approve
+	the production environment, and watch the workflow to completion.
+5. In a private browser window, verify the homepage, Programs, Enrollment,
+	Tuition, Forms, Calendar, Tour, PDFs, video, chat, and mobile navigation.
+	Also verify `/robots.txt`, `/sitemap.xml`, HTTPS/www redirects, and legacy
+	`/index.php`, `/pro_preschool.php`, and `/calendar.php` redirects.
+
+SFTP overwrites matching files one at a time and does not delete stale remote
+files. A deployment can therefore serve a brief mixture of file versions while
+it runs. Keep the old PHP files until the new site has been stable and its 301
+redirects have been verified.
+
+If a critical production check fails, stop making changes and restore the
+existing cPanel backup, beginning with the old `.htaccess` and homepage files.
+Then verify the old homepage and PHP routes before resuming normal traffic.
