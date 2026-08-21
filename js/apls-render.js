@@ -495,6 +495,21 @@
   }
 
   /* ---------- Calendar ---------- */
+  function calendarMonthDate(value) {
+    var match = String(value || "").trim().match(/^([A-Za-z]+)\s+(\d{4})$/);
+    if (!match) return null;
+    var monthIndex = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"].indexOf(match[1].slice(0, 3).toLowerCase());
+    return monthIndex < 0 ? null : new Date(Number(match[2]), monthIndex, 1);
+  }
+
+  function compareCalendarMonths(left, right) {
+    var leftDate = calendarMonthDate(left.name);
+    var rightDate = calendarMonthDate(right.name);
+    if (!leftDate) return rightDate ? 1 : 0;
+    if (!rightDate) return -1;
+    return leftDate - rightDate;
+  }
+
   function calendarYearForDate(years, value) {
     var parts = String(value || "").split("-").map(Number);
     if (parts.length !== 3 || !parts[0]) return null;
@@ -557,9 +572,7 @@
           var rightDay = Number((right[0].match(/\d+/) || [999])[0]);
           return leftDay - rightDay;
         });
-        year.months.sort(function (left, right) {
-          return new Date(left.name + " 1") - new Date(right.name + " 1");
-        });
+        year.months.sort(compareCalendarMonths);
       });
     });
     ((window.APLS_EVENTS || {}).items || []).filter(function (item) {
@@ -594,7 +607,7 @@
         if (leftDate && rightDate) return leftDate.localeCompare(rightDate);
         return 0;
       });
-      year.months.sort(function (left, right) { return new Date(left.name + " 1") - new Date(right.name + " 1"); });
+      year.months.sort(compareCalendarMonths);
     });
     return years;
   }
@@ -642,8 +655,8 @@
   function calendarPreviewEvents(year) {
     var events = [];
     (year.months || []).forEach(function (month) {
-      var monthDate = new Date(month.name + " 1");
-      if (isNaN(monthDate.getTime())) return;
+      var monthDate = calendarMonthDate(month.name);
+      if (!monthDate) return;
       (month.events || []).forEach(function (event) {
         var dates = calendarEventDates(event, monthDate);
         if (!dates.start) return;
@@ -670,8 +683,12 @@
   function buildCalendarMonthView(year) {
     var yearMatch = String(year.id || "").match(/^(\d{4})-(\d{4})$/);
     if (!yearMatch) return null;
+    var firstPublishedMonth = (year.months || []).map(function (month) {
+      return calendarMonthDate(month.name);
+    }).filter(Boolean).sort(function (left, right) { return left - right; })[0];
+    var firstMonth = firstPublishedMonth || new Date(Number(yearMatch[1]), 8, 1);
     var months = [];
-    for (var offset = 0; offset < 12; offset += 1) months.push(new Date(Number(yearMatch[1]), 7 + offset, 1));
+    for (var offset = 0; offset < 12; offset += 1) months.push(new Date(firstMonth.getFullYear(), firstMonth.getMonth() + offset, 1));
     var events = calendarPreviewEvents(year);
     var selectedMonth = 0;
     var wrapper = el("section", "public-calendar-preview");

@@ -131,49 +131,37 @@
     document.body.appendChild(panel);
     document.body.appendChild(launcher);
 
-    var launcherBlockedByHero = false;
-
     function syncLauncherVisibility() {
-      launcher.hidden = !panel.hidden || launcherBlockedByHero;
+      launcher.hidden = !panel.hidden;
     }
 
     var heroActions = document.querySelector(".hero-actions");
     var mobileViewport = window.matchMedia("(max-width: 560px)");
     if (heroActions) {
-      var heroActionsInView = function () {
+      var updateHeroOffset = function () {
+        launcher.style.removeProperty("bottom");
+        if (!mobileViewport.matches || !panel.hidden) return;
         var bounds = heroActions.getBoundingClientRect();
-        return bounds.bottom > 0 && bounds.top < window.innerHeight;
+        var margin = 12;
+        var launcherHeight = launcher.offsetHeight || 52;
+        var launcherTop = window.innerHeight - margin - launcherHeight;
+        var overlapsActions = bounds.bottom > launcherTop && bounds.top < window.innerHeight - margin;
+        if (overlapsActions && bounds.top > launcherHeight + margin) {
+          launcher.style.bottom = Math.ceil(window.innerHeight - bounds.top + margin) + "px";
+        }
       };
-      var updateHeroBlock = function () {
-        launcherBlockedByHero = mobileViewport.matches && heroActionsInView();
-        if (launcherBlockedByHero) launcher.classList.remove("is-intro");
-        syncLauncherVisibility();
-      };
-      updateHeroBlock();
-      window.addEventListener("scroll", updateHeroBlock, { passive: true });
-      window.addEventListener("resize", updateHeroBlock);
+      updateHeroOffset();
+      window.addEventListener("scroll", updateHeroOffset, { passive: true });
+      window.addEventListener("resize", updateHeroOffset);
       if ("IntersectionObserver" in window) {
-        var heroObserver = new IntersectionObserver(updateHeroBlock);
+        var heroObserver = new IntersectionObserver(updateHeroOffset);
         heroObserver.observe(heroActions);
       }
       if (mobileViewport.addEventListener) {
-        mobileViewport.addEventListener("change", updateHeroBlock);
+        mobileViewport.addEventListener("change", updateHeroOffset);
       } else {
-        mobileViewport.addListener(updateHeroBlock);
+        mobileViewport.addListener(updateHeroOffset);
       }
-    }
-
-    var introTimer = null;
-    try {
-      if (window.matchMedia("(max-width: 560px)").matches && !window.localStorage.getItem("apls-chat-launcher-intro-seen")) {
-        launcher.classList.add("is-intro");
-        window.localStorage.setItem("apls-chat-launcher-intro-seen", "true");
-        introTimer = window.setTimeout(function () {
-          launcher.classList.remove("is-intro");
-        }, 5000);
-      }
-    } catch (error) {
-      launcher.classList.remove("is-intro");
     }
 
     function addChoices(choices) {
@@ -214,8 +202,6 @@
     }
 
     function openPanel() {
-      if (introTimer) window.clearTimeout(introTimer);
-      launcher.classList.remove("is-intro");
       lastFocused = document.activeElement;
       panel.hidden = false;
       syncLauncherVisibility();
