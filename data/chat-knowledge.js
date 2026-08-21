@@ -35,15 +35,15 @@
   ];
 
   window.APLS_CHAT_KNOWLEDGE = {
-    welcome: "Hi! I can help with quick questions about APLS programs, tuition, schedules, and enrollment.",
+    welcome: "Hi! I can help with quick questions about APLS. Choose a sample question below, or type your own.",
     suggestions: [
-      { label: "Programs", target: "programs" },
-      { label: "Tuition", target: "tuition" },
-      { label: "Hours", target: "hours" },
-      { label: "Enrollment", target: "enrollment" }
+      { label: "What programs do you offer?", target: "programs" },
+      { label: "How much is tuition?", target: "tuition" },
+      { label: "What ages do you accept?", target: "ages" },
+      { label: "How do I enroll?", target: "enrollment" }
     ],
     fallback: {
-      answer: "I couldn't find a reliable answer to that question. Please contact APLS and our staff will be happy to help.",
+      answer: "I couldn't find a reliable answer to that question. Please call APLS at 425-747-4172 or email apls@apls.org, and our staff will be happy to help.",
       link: { label: "Contact APLS", href: "contact.html" }
     },
     entries: [
@@ -101,6 +101,42 @@
         patterns: ["programs", "classes", "what do you offer", "which program", "school programs"],
         answer: "APLS offers Preschool, Kindergarten & 1st Grade, After-School, Saturday School, Summer Camp, and AP Prep programs in Chinese and Japanese.",
         link: { label: "Explore all programs", href: "programs.html" }
+      },
+      {
+        id: "program-preschool",
+        patterns: ["preschool", "pre school", "preschool program"],
+        answer: "APLS Preschool offers Chinese or Japanese immersion for children beginning at age 2½, with half-day and full-day options from 2 to 5 days per week.",
+        link: { label: "View the Preschool program", href: "preschool.html" }
+      },
+      {
+        id: "program-kindergarten",
+        patterns: ["kindergarten", "first grade", "kindergarten and first grade", "kindergarten program"],
+        answer: "APLS offers a full-day dual-language Kindergarten & 1st Grade program in Chinese and English, with Japanese enrichment and extended care available.",
+        link: { label: "View the Kindergarten & 1st Grade program", href: "kindergarten.html" }
+      },
+      {
+        id: "program-after-school",
+        patterns: ["after school", "afterschool", "after school program"],
+        answer: "APLS After-School offers Chinese and Japanese language classes for elementary-age students, with local school pick-up and extended care available.",
+        link: { label: "View the After-School program", href: "after-school.html" }
+      },
+      {
+        id: "program-saturday",
+        patterns: ["saturday school", "saturday classes", "weekend classes"],
+        answer: "APLS Saturday School offers 90-minute Chinese and Japanese language classes for elementary-age students.",
+        link: { label: "View the Saturday School program", href: "saturday-school.html" }
+      },
+      {
+        id: "program-summer",
+        patterns: ["summer camp", "summer", "camp"],
+        answer: "APLS Summer Camp offers weekly Chinese and Japanese language immersion with academic learning, culture, arts, and recreation.",
+        link: { label: "View the Summer Camp program", href: "summer-camp.html" }
+      },
+      {
+        id: "program-ap-prep",
+        patterns: ["ap prep", "ap chinese", "ap japanese"],
+        answer: "APLS AP Prep helps high-school students prepare for the AP Chinese or AP Japanese Language and Culture exam.",
+        link: { label: "View the AP Prep program", href: "ap-prep.html" }
       },
       {
         id: "languages",
