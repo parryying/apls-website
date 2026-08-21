@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ✏️ EDIT: update the domain if the live site is not www.apls.org.
-     Update <lastmod> dates when a page's content changes.
-     The pages below are planned; they will be crawlable once each file is built. -->
+<!-- Public canonical pages. Update <lastmod> only when page content changes. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.apls.org/</loc>
-    <lastmod>2026-08-03</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.apls.org/why-apls.html</loc>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.apls.org/programs.html</loc>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.apls.org/preschool.html</loc>
-    <lastmod>2026-08-03</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.apls.org/kindergarten.html</loc>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -37,6 +38,7 @@
   </url>
   <url>
     <loc>https://www.apls.org/summer-camp.html</loc>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -52,6 +54,7 @@
   </url>
   <url>
     <loc>https://www.apls.org/gallery.html</loc>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -68,16 +71,19 @@
   </url>
   <url>
     <loc>https://www.apls.org/enrollment.html</loc>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.apls.org/tour.html</loc>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.apls.org/enrollment-process.html</loc>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -98,6 +104,7 @@
   </url>
   <url>
     <loc>https://www.apls.org/contact.html</loc>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>

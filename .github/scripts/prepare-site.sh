@@ -49,7 +49,7 @@ for page in "${pages[@]}"; do
   cp "$repository_root/$page" "$destination/$page"
 done
 
-for file in .htaccess robots.txt sitemap.xml; do
+for file in .htaccess llms.txt robots.txt sitemap.xml; do
   cp "$repository_root/$file" "$destination/$file"
 done
 

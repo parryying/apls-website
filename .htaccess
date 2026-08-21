@@ -55,8 +55,28 @@ DirectoryIndex index.html index.php
 </IfModule>
 
 # ------------------------------------------------------------
-#  ⚠️ Before go-live, these redirect TARGETS must exist as files:
-#     enrollment.html, contact.html, gallery.html, japanese.html
-#  (they are planned but not built yet). Until they exist, the
-#  redirects above will land on a 404.
+#  Browser caching. The server already gzips text responses, but it
+#  sends no cache headers at all, so every repeat visit refetches
+#  everything.
+#  data/*.js and js/*.js are loaded without version strings on most
+#  pages, so they must revalidate — otherwise a CMS publish would keep
+#  serving stale tuition, calendar, and event content.
 # ------------------------------------------------------------
+<IfModule mod_headers.c>
+  # Unanchored so it also matches the /_newsite/ staging path.
+  SetEnvIf Request_URI "/(data|js)/" APLS_REVALIDATE=1
+
+  Header set Cache-Control "no-cache, must-revalidate" env=APLS_REVALIDATE
+
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+
+  <FilesMatch "\.css$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+
+  <FilesMatch "\.(webp|png|jpe?g|gif|svg|ico|mp4|webm|woff2?)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
