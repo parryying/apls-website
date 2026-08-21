@@ -1,0 +1,109 @@
+name: Review CMS Content
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - data/tuition.js
+      - data/calendar.js
+      - data/teachers.js
+      - data/gallery.js
+      - data/events.js
+      - images/uploads/**
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: cms-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    if: startsWith(github.head_ref, 'cms/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out submission
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Enforce CMS file scope
+        env:
+          CMS_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          CMS_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/validate-cms-pr-scope.js
+      - name: Validate CMS content
+        run: npm run validate:cms
+      - name: Validate CMS media
+        run: npm run validate:cms-media
+      - name: Run CMS tests
+        run: npm run test:cms
+      - name: Check JavaScript syntax
+        run: |
+          node --check cms/app.js
+          node --check cms/shared-validation.js
+          node --check js/apls-render.js
+
+  deploy-staging:
+    needs: validate
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    environment:
+      name: cpanel-staging
+      url: https://www.apls.org/_newsite/
+    steps:
+      - name: Check out validated submission
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ vars.CPANEL_HOST }}
+          REMOTE_PORT: ${{ vars.CPANEL_PORT }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/apls-cpanel-deploy
+          chmod 600 ~/.ssh/apls-cpanel-deploy
+          ssh-keyscan -p "$REMOTE_PORT" -H "$REMOTE_HOST" >> ~/.ssh/known_hosts
+      - name: Prepare exact submission
+        run: bash .github/scripts/prepare-site.sh "$RUNNER_TEMP/apls-site"
+      - name: Deploy staging
+        env:
+          REMOTE_HOST: ${{ vars.CPANEL_HOST }}
+          REMOTE_PORT: ${{ vars.CPANEL_PORT }}
+          REMOTE_USERNAME: ${{ vars.CPANEL_USERNAME }}
+          REMOTE_TARGET: ${{ vars.CPANEL_STAGING_PATH }}
+        run: |
+          cat > "$RUNNER_TEMP/deploy.sftp" <<EOF
+          lcd "$RUNNER_TEMP/apls-site"
+          cd "$REMOTE_TARGET"
+          put -r *
+          put .htaccess
+          bye
+          EOF
+          sftp -b "$RUNNER_TEMP/deploy.sftp" -i ~/.ssh/apls-cpanel-deploy -P "$REMOTE_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$REMOTE_USERNAME@$REMOTE_HOST"
+      - name: Add review summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              '### CMS review ready',
+              '',
+              `Validated commit: \`${context.payload.pull_request.head.sha}\``,
+              '',
+              'Staging: https://www.apls.org/_newsite/',
+              '',
+              'Production remains unchanged until the reviewed commit is merged and released through the protected production workflow.'
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });

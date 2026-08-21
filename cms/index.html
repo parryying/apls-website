@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
+  <meta name="apls-cms-api" content="" />
   <link rel="icon" href="../images/apls-logo.png" type="image/png" />
   <title>APLS Content Studio - Preview</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,7 +16,11 @@
   <script src="../data/teachers.js"></script>
   <script src="../data/gallery.js"></script>
   <script src="../data/events.js"></script>
-  <script src="app.js?v=11" defer></script>
+  <script src="shared-validation.js?v=1"></script>
+  <script src="build-config.js"></script>
+  <script src="cloud-client.js?v=1"></script>
+  <script src="media-client.js?v=1"></script>
+  <script src="app.js?v=15" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#editor">Skip to editor</a>
@@ -125,6 +130,29 @@
         <strong>events.js</strong>
         <span>Events, announcements, flyers, links, and calendar visibility</span>
       </button>
+    </div>
+  </dialog>
+
+  <dialog class="export-dialog" id="review-dialog">
+    <div class="dialog-heading">
+      <div>
+        <p class="eyebrow">Review request</p>
+        <h2>Submit website update</h2>
+      </div>
+      <button class="icon-button" type="button" id="close-review" aria-label="Close review dialog">&times;</button>
+    </div>
+    <p>Your update will be validated, added to GitHub for review, and deployed to staging. Production will not change.</p>
+    <div class="review-dialog-content">
+      <strong>Changed sections</strong>
+      <ul id="review-sections"></ul>
+      <label class="field full">
+        <span class="field-label"><span>Note for reviewer</span><span class="field-hint">Optional</span></span>
+        <textarea id="review-note" rows="3"></textarea>
+      </label>
+      <div class="button-row review-dialog-actions">
+        <button class="button button-secondary" type="button" id="cancel-review">Cancel</button>
+        <button class="button button-primary" type="button" id="submit-review">Submit for review</button>
+      </div>
     </div>
   </dialog>
 

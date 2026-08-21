@@ -10,6 +10,8 @@ desktop.ini
 
 # Node (not used by the site, but just in case)
 node_modules/
+dist-cms/
+.wrangler/
 
 # Temporary image staging / candidate photos
 images/_cand/

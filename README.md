@@ -49,9 +49,10 @@ does not use an LLM, external API, database, or visitor tracking.
 
 ### CMS preview
 
-Open `cms/index.html` to use the browser-based content editor for programs,
-tuition, calendar, teacher, gallery, and events data. The editor provides live
-previews and stores drafts in the current browser.
+Open `cms/index.html` to use the local fallback editor for programs, tuition,
+calendar, teacher, gallery, and events data. The protected hosted version uses
+the same editor and previews, while adding cloud drafts and GitHub review
+submissions. See `cloudflare/README.md` for account setup and rollout checks.
 
 The Programs & Tuition editor has one workspace per program. Each program owns
 one tuition heading, note, and table used by the full Tuition page, its program
@@ -76,8 +77,8 @@ The program editor runs automatic checks while fields are edited:
 	duplicate dates, dates outside the program range, declared class counts, and
 	tuition totals calculated from the per-class rate.
 
-Automatic errors block tuition export. Warnings remain reviewable and require an
-explicit confirmation before tuition or calendar data can be exported. The
+Automatic errors block download or review submission. Warnings remain
+reviewable and require explicit confirmation. The
 After-School and Saturday public schedule tables are rendered from the same
 structured class-date lists used by these checks.
 
@@ -90,7 +91,7 @@ Calendar page also overlays these events directly from program data, so replacin
 
 The Calendar editor uses one spreadsheet-style row per event. Enter real start
 and end dates; the CMS calculates weekday labels, groups events by month, and
-flags incomplete, duplicate, out-of-range, or reversed dates before export. Its
+flags incomplete, duplicate, out-of-range, or reversed dates before submission. Its
 live month-grid preview shows events on their actual dates, including multi-day
 ranges. Numbered markers correspond to a complete monthly agenda with full event
 names, date ranges, categories, and notes; selecting either returns focus to its
@@ -108,10 +109,26 @@ announcements can omit event-specific details. Enabling **Show on school
 calendar** adds a locked Calendar row while `events.js` remains the source of
 truth.
 
-The CMS preview does not publish directly. Use **Export data file** to download
-the updated `tuition.js`, `calendar.js`, `teachers.js`, `gallery.js`, or
-`events.js`, then replace the matching file in `data/` and deploy the website
-normally.
+The CMS never publishes production directly. On the protected hosted CMS,
+**Submit for review** saves changed data and optimized images to a `cms/*`
+GitHub branch, opens a pull request, runs shared validation, and deploys the
+exact validated commit to staging. Parry reviews and merges the pull request,
+then uses the protected production workflow. The local `file://` editor retains
+**Download update** only as an owner emergency fallback.
+
+Teacher and Event fields support cloud-only image upload. The browser accepts
+JPEG, PNG, and WebP originals up to 10 MB, corrects orientation, resizes the
+longest edge to 2,000 pixels, converts to WebP, targets 500 KB, blocks normal
+outputs above 1 MB, and keeps pending images in IndexedDB until submission.
+Only optimized website copies under `images/uploads/YYYY/` are committed.
+
+Shared checks are available locally and in GitHub Actions:
+
+```powershell
+npm run validate:cms
+npm run validate:cms-media
+npm run test:cms
+```
 
 ## Deploying
 
