@@ -26,7 +26,7 @@
     "school-boundary": "First / last day of school"
   };
   var SECTION_COPY = {
-    overview: ["Website overview", "Choose a content area, make changes, and review the result before exporting.", "Content summary"],
+    overview: ["Website overview", "Choose a content area, make changes, and review the result before sending an update.", "Content summary"],
     tuition: ["Programs and tuition", "Choose one program and update its enrollment details, schedule, and tuition in one place.", "Program preview"],
     calendar: ["School calendar", "Enter one event per row. Weekdays and website groupings are calculated automatically.", "Calendar preview"],
     teachers: ["Teacher profiles", "Add, reorder, or update the profiles shown on the Why APLS page.", "Teacher section"],
@@ -68,6 +68,10 @@
   var selectedCalendarPreviewMonth = "";
   var isDirty = false;
   var toastTimer;
+  var changedSections = {};
+  var cloudBaseSha = "";
+  var cloudReady = false;
+  var pendingMedia = {};
 
   var editorContent = document.getElementById("editor-content");
   var previewCanvas = document.getElementById("preview-canvas");
@@ -77,6 +81,7 @@
   var draftPill = document.getElementById("draft-pill");
   var saveStatus = document.getElementById("save-status");
   var exportDialog = document.getElementById("export-dialog");
+  var reviewDialog = document.getElementById("review-dialog");
 
   function loadDraft() {
     try {
@@ -120,6 +125,23 @@
 
   function booleanField(label, path, checked, hint) {
     return '<label class="toggle-field"><input type="checkbox" data-boolean-path="' + escapeHtml(path) + '"' + (checked ? " checked" : "") + ' /><span><strong>' + escapeHtml(label) + '</strong>' + (hint ? '<small>' + escapeHtml(hint) + "</small>" : "") + "</span></label>";
+  }
+
+  function mediaPreviewSource(path) {
+    return pendingMedia[path] && pendingMedia[path].previewUrl ? pendingMedia[path].previewUrl : "../" + String(path || "").replace(/^\.\.\//, "");
+  }
+
+  function imageUploadField(label, section, path, currentValue) {
+    if (!window.APLS_CMS_CLOUD || !window.APLS_CMS_CLOUD.enabled) {
+      return field(label + " path", path, currentValue || "", { hint: "Cloud image upload will replace this path field" });
+    }
+    var record = pendingMedia[currentValue];
+    return '<label class="image-upload-field"><span class="field-label"><span>' + escapeHtml(label) + '</span><span class="field-hint">JPEG, PNG, or WebP · 10 MB max</span></span>' +
+      (currentValue ? '<img class="image-upload-preview" src="' + escapeHtml(mediaPreviewSource(currentValue)) + '" alt="" />' : "") +
+      '<input type="file" accept="image/jpeg,image/png,image/webp" data-image-upload data-image-section="' + escapeHtml(section) + '" data-image-path="' + escapeHtml(path) + '" />' +
+      (currentValue ? '<span class="image-upload-current">' + escapeHtml(currentValue) + "</span>" : "") +
+      (record ? '<span class="image-upload-meta">Optimized: ' + record.width + " × " + record.height + " · " + Math.ceil(record.size / 1024) + " KB</span>" : "") +
+      "</label>";
   }
 
   function blockHeading(title, description, actionHtml) {
@@ -519,6 +541,13 @@
   }
 
   function programValidation(programKey) {
+    if (window.APLS_CMS_VALIDATION) {
+      return window.APLS_CMS_VALIDATION.validateProgram(programKey, {
+        tuition: state.tuition,
+        calendar: state.calendar,
+        calendarRows: state.calendarRows
+      });
+    }
     var program = (state.tuition.programs || {})[programKey] || {};
     var errors = [];
     var warnings = [];
@@ -652,7 +681,7 @@
     var html = "";
     if (validation.errors.length || validation.warnings.length) {
       html += '<div class="validation-panel">';
-      if (validation.errors.length) html += '<section class="validation-group is-error"><strong>' + validation.errors.length + ' error' + (validation.errors.length === 1 ? "" : "s") + ' \u00b7 export blocked</strong><ul>' + validation.errors.map(function (message) { return "<li>" + escapeHtml(message) + "</li>"; }).join("") + "</ul></section>";
+      if (validation.errors.length) html += '<section class="validation-group is-error"><strong>' + validation.errors.length + ' error' + (validation.errors.length === 1 ? "" : "s") + ' \u00b7 download blocked</strong><ul>' + validation.errors.map(function (message) { return "<li>" + escapeHtml(message) + "</li>"; }).join("") + "</ul></section>";
       if (validation.warnings.length) html += '<section class="validation-group is-warning"><strong>' + validation.warnings.length + ' warning' + (validation.warnings.length === 1 ? "" : "s") + '</strong><ul>' + validation.warnings.map(function (message) { return "<li>" + escapeHtml(message) + "</li>"; }).join("") + "</ul></section>";
       html += "</div>";
     } else {
@@ -704,7 +733,7 @@
       '<section class="workflow"><h2>Preview workflow</h2><div class="workflow-steps">' +
         workflowStep("1", "Choose a section", "Open one of the structured content editors.") +
         workflowStep("2", "Review as you type", "The right panel reflects every field change.") +
-        workflowStep("3", "Export a data file", "Download and replace the matching file in data/.") +
+        workflowStep("3", "Send the update", "Download the area you changed and send the file to your website manager.") +
       "</div></section>";
   }
 
@@ -913,6 +942,9 @@
   }
 
   function calendarRowIssues(row, rowIndex) {
+    if (window.APLS_CMS_VALIDATION) {
+      return window.APLS_CMS_VALIDATION.calendarRowIssues(row, rowIndex, state.calendarRows, state.calendar);
+    }
     var issues = [];
     var start = dateFromIso(row.startDate);
     var end = dateFromIso(row.endDate);
@@ -1011,7 +1043,7 @@
           field("Name", base + ".name", teacher.name || "") +
           field("Role or program", base + ".role", teacher.role || "") +
           field("Years at APLS", base + ".years", teacher.years || "", { hint: "Leave blank to hide" }) +
-          field("Photo path", base + ".photo", teacher.photo || "", { hint: "Example: images/teacher.jpg" }) +
+          imageUploadField("Teacher photo", "teachers", base + ".photo", teacher.photo || "") +
           field("Fallback icon", base + ".icon", teacher.icon || "", { hint: "Shown when no photo is set" }) +
           field("Biography", base + ".bio", teacher.bio || "", { textarea: true, full: true }) +
         "</div></article>";
@@ -1021,6 +1053,7 @@
   }
 
   function instagramUrlValid(value) {
+    if (window.APLS_CMS_VALIDATION) return window.APLS_CMS_VALIDATION.instagramUrlValid(value);
     return /^https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/[^/?#]+/i.test(String(value || "").trim());
   }
 
@@ -1055,6 +1088,7 @@
   }
 
   function eventItemIssues(item) {
+    if (window.APLS_CMS_VALIDATION) return window.APLS_CMS_VALIDATION.eventItemIssues(item);
     var issues = [];
     if (!String(item.title || "").trim()) issues.push("Title is required");
     if (item.type === "event" && !dateFromIso(item.startDate)) issues.push("Event date is required");
@@ -1095,7 +1129,7 @@
           field("Address", base + ".address", item.address || "", { full: true }) +
         "</div></div>" +
         '<h4>Image and actions</h4><div class="field-grid">' +
-          field("Flyer or image path", base + ".image", item.image || "", { hint: "Example: images/event.webp" }) +
+          imageUploadField("Flyer or image", "events", base + ".image", item.image || "") +
           field("Image alt text", base + ".imageAlt", item.imageAlt || "") +
           field("Primary button label", base + ".primaryLabel", item.primaryLabel || "") +
           field("Primary button URL", base + ".primaryUrl", item.primaryUrl || "") +
@@ -1395,7 +1429,7 @@
       var card = node("article", "teacher-preview");
       if (teacher.photo) {
         var image = node("img");
-        image.src = "../" + teacher.photo.replace(/^\.\.\//, "");
+        image.src = mediaPreviewSource(teacher.photo);
         image.alt = teacher.name || "APLS teacher";
         card.appendChild(image);
       } else {
@@ -1467,7 +1501,7 @@
     feature.appendChild(node("span", "preview-content-type", featured.status === "published" ? (featured.type || "event") : "draft preview"));
     if (featured.image) {
       var image = node("img");
-      image.src = "../" + featured.image.replace(/^\.\.\//, "");
+      image.src = mediaPreviewSource(featured.image);
       image.alt = featured.imageAlt || "";
       feature.appendChild(image);
     }
@@ -1520,6 +1554,7 @@
 
   function markDirty() {
     isDirty = true;
+    if (activeSection !== "overview") changedSections[activeSection] = true;
     draftPill.textContent = "Unsaved changes";
     draftPill.classList.add("is-dirty");
     saveStatus.textContent = "Changes not saved";
@@ -1535,8 +1570,25 @@
   function saveDraft() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      markSaved();
-      showToast("Draft saved in this browser.");
+      if (window.APLS_CMS_CLOUD && window.APLS_CMS_CLOUD.enabled && cloudReady) {
+        saveStatus.textContent = "Saving to cloud";
+        window.APLS_CMS_CLOUD.saveDraft({
+          baseSha: cloudBaseSha,
+          state: state,
+          changedSections: Object.keys(changedSections)
+        }).then(function (result) {
+          markSaved();
+          draftPill.textContent = "Cloud draft saved";
+          saveStatus.textContent = "Saved " + new Date(result.savedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+          showToast("Draft saved securely.");
+        }).catch(function (error) {
+          saveStatus.textContent = "Cloud save failed";
+          showToast(error.message);
+        });
+      } else {
+        markSaved();
+        showToast("Draft saved in this browser.");
+      }
     } catch (error) {
       showToast("This browser blocked local draft storage.");
     }
@@ -1546,6 +1598,7 @@
     if (!window.confirm("Discard this browser draft and reload the website source data?")) return;
     state = clone(sourceState);
     localStorage.removeItem(STORAGE_KEY);
+    changedSections = {};
     isDirty = false;
     draftPill.textContent = "No unsaved changes";
     draftPill.classList.remove("is-dirty");
@@ -1555,6 +1608,119 @@
     renderEditor();
     renderPreview();
     showToast("Draft reset to the website source data.");
+    Object.keys(pendingMedia).forEach(function (path) { if (pendingMedia[path].previewUrl) URL.revokeObjectURL(pendingMedia[path].previewUrl); });
+    pendingMedia = {};
+    if (window.APLS_CMS_MEDIA && window.APLS_CMS_MEDIA.enabled) window.APLS_CMS_MEDIA.clear().catch(function () {});
+    if (window.APLS_CMS_CLOUD && window.APLS_CMS_CLOUD.enabled && cloudReady) {
+      window.APLS_CMS_CLOUD.discardDraft().catch(function (error) { showToast(error.message); });
+    }
+  }
+
+  function changedSectionLabels() {
+    return Object.keys(changedSections).map(function (section) {
+      return SECTION_COPY[section] ? SECTION_COPY[section][0] : section;
+    });
+  }
+
+  function openReviewDialog() {
+    var labels = changedSectionLabels();
+    if (!labels.length) {
+      showToast("Make and save a change before submitting for review.");
+      return;
+    }
+    document.getElementById("review-sections").innerHTML = labels.map(function (label) { return "<li>" + escapeHtml(label) + "</li>"; }).join("");
+    reviewDialog.showModal();
+  }
+
+  function submitForReview() {
+    var sectionFiles = {
+      tuition: "data/tuition.js",
+      calendar: "data/calendar.js",
+      teachers: "data/teachers.js",
+      gallery: "data/gallery.js",
+      events: "data/events.js"
+    };
+    var files = {};
+    Object.keys(changedSections).forEach(function (section) {
+      if (sectionFiles[section]) files[sectionFiles[section]] = { encoding: "utf-8", content: fileContent(section) };
+    });
+    var button = document.getElementById("submit-review");
+    button.disabled = true;
+    button.textContent = "Submitting...";
+    Promise.all(Object.keys(pendingMedia).map(function (path) {
+      return pendingMedia[path].blob.arrayBuffer().then(function (buffer) {
+        var bytes = new Uint8Array(buffer);
+        var binary = "";
+        bytes.forEach(function (byte) { binary += String.fromCharCode(byte); });
+        files[path] = { encoding: "base64", content: btoa(binary) };
+      });
+    })).then(function () { return window.APLS_CMS_CLOUD.submit({
+      baseSha: cloudBaseSha,
+      files: files,
+      note: document.getElementById("review-note").value
+    }); }).then(function (result) {
+      reviewDialog.close();
+      changedSections = {};
+      isDirty = false;
+      localStorage.removeItem(STORAGE_KEY);
+      draftPill.textContent = "Submitted for review";
+      draftPill.classList.remove("is-dirty");
+      saveStatus.textContent = "Checks running";
+      showToast("Review request #" + result.submission.prNumber + " submitted.");
+      if (window.APLS_CMS_MEDIA && window.APLS_CMS_MEDIA.enabled) window.APLS_CMS_MEDIA.clear().catch(function () {});
+      pendingMedia = {};
+    }).catch(function (error) {
+      if (error.payload && error.payload.code === "STALE_BASE") {
+        cloudReady = false;
+        saveStatus.textContent = "Website changed - reload required";
+      }
+      showToast(error.message);
+    }).finally(function () {
+      button.disabled = false;
+      button.textContent = "Submit for review";
+    });
+  }
+
+  function initializeCloud() {
+    if (!window.APLS_CMS_CLOUD || !window.APLS_CMS_CLOUD.enabled) return;
+    saveStatus.textContent = "Connecting securely";
+    var mediaPromise = window.APLS_CMS_MEDIA && window.APLS_CMS_MEDIA.enabled ? window.APLS_CMS_MEDIA.list() : Promise.resolve([]);
+    Promise.all([window.APLS_CMS_CLOUD.load(), mediaPromise]).then(function (results) {
+      var context = results[0];
+      results[1].forEach(function (record) {
+        record.previewUrl = URL.createObjectURL(record.blob);
+        pendingMedia[record.path] = record;
+      });
+      var buildSha = window.APLS_CMS_BUILD && window.APLS_CMS_BUILD.sourceSha;
+      cloudBaseSha = context.baseSha;
+      if (buildSha && buildSha !== cloudBaseSha) {
+        saveStatus.textContent = "Editor update required";
+        draftPill.textContent = "Reload after the editor updates";
+        document.getElementById("save-button").disabled = true;
+        document.getElementById("export-button").disabled = true;
+        return;
+      }
+      cloudReady = true;
+      document.getElementById("save-button").textContent = "Save now";
+      document.getElementById("export-button").textContent = "Submit for review";
+      if (context.draft && context.draft.state) {
+        state = mergeDefaults(sourceState, context.draft.state);
+        if (!Array.isArray(state.calendarRows)) state.calendarRows = calendarToRows(state.calendar);
+        changedSections = {};
+        (context.draft.changedSections || []).forEach(function (section) { changedSections[section] = true; });
+        syncAllProgramCalendars();
+        syncAllEventCalendars();
+        renderEditor();
+        renderPreview();
+        draftPill.textContent = "Cloud draft loaded";
+        saveStatus.textContent = "Saved " + new Date(context.draft.updatedAt).toLocaleString();
+      } else {
+        saveStatus.textContent = "Secure cloud editor ready";
+      }
+    }).catch(function (error) {
+      saveStatus.textContent = "Cloud connection failed";
+      showToast(error.message);
+    });
   }
 
   function showToast(message) {
@@ -1731,7 +1897,7 @@
       renderEditor();
       renderPreview();
       window.scrollTo(0, suggestionScrollPosition);
-      showToast("Suggested installments added. Compare them with Sharon's flyer before exporting.");
+      showToast("Suggested installments added. Compare them with Sharon's flyer before downloading the update.");
       return true;
     }
     if (action === "apply-payment-plan") {
@@ -1938,25 +2104,25 @@
   function exportFile(section) {
     if (!state[section]) return;
     if (section === "tuition" && tuitionHasErrors()) {
-      showToast("Fix the program errors marked in Programs & Tuition before exporting.");
+      showToast("Fix the program errors marked in Programs & Tuition before downloading the update.");
       if (activeSection !== "tuition") selectSection("tuition");
       return;
     }
     if (section === "calendar" && calendarHasErrors()) {
-      showToast("Fix the calendar rows marked for attention before exporting.");
+      showToast("Fix the calendar rows marked for attention before downloading the update.");
       return;
     }
     if (section === "gallery" && galleryHasErrors()) {
-      showToast("Add a valid public Instagram URL or hide the incomplete Gallery post before exporting.");
+      showToast("Add a valid public Instagram URL or hide the incomplete Gallery post before downloading the update.");
       return;
     }
     if (section === "events" && eventsHaveErrors()) {
-      showToast("Fix the published Events items marked for attention before exporting.");
+      showToast("Fix the published Events items marked for attention before downloading the update.");
       return;
     }
     if ((section === "tuition" || section === "calendar") && allProgramValidation().warnings) {
       var warningCount = allProgramValidation().warnings;
-      if (!window.confirm(warningCount + " automatic warning" + (warningCount === 1 ? " remains" : "s remain") + ". Review the marked programs before publishing. Export anyway?")) return;
+      if (!window.confirm(warningCount + " automatic warning" + (warningCount === 1 ? " remains" : "s remain") + ". Review the marked programs before sending the update. Download anyway?")) return;
     }
     var blob = new Blob([fileContent(section)], { type: "text/javascript;charset=utf-8" });
     var url = URL.createObjectURL(blob);
@@ -1968,7 +2134,7 @@
     link.remove();
     URL.revokeObjectURL(url);
     exportDialog.close();
-    showToast(section + ".js downloaded. Exporting did not publish it.");
+    showToast(section + ".js downloaded. Send it to your website manager to publish.");
   }
 
   document.addEventListener("click", function (event) {
@@ -2114,6 +2280,37 @@
   });
 
   editorContent.addEventListener("change", function (event) {
+    var imageInput = event.target.closest("[data-image-upload]");
+    if (imageInput) {
+      var file = imageInput.files && imageInput.files[0];
+      if (!file || !window.APLS_CMS_MEDIA || !window.APLS_CMS_MEDIA.enabled) return;
+      imageInput.disabled = true;
+      saveStatus.textContent = "Optimizing image";
+      window.APLS_CMS_MEDIA.process(file).then(function (record) {
+        record.previewUrl = URL.createObjectURL(record.blob);
+        pendingMedia[record.path] = record;
+        return window.APLS_CMS_MEDIA.save({
+          path: record.path,
+          blob: record.blob,
+          width: record.width,
+          height: record.height,
+          size: record.size,
+          type: record.type,
+          originalName: record.originalName,
+          updatedAt: record.updatedAt
+        }).then(function () {
+          setPath(state[imageInput.dataset.imageSection], imageInput.dataset.imagePath, record.path);
+          markDirty();
+          renderEditor();
+          renderPreview();
+          showToast("Image optimized to " + Math.ceil(record.size / 1024) + " KB.");
+        });
+      }).catch(function (error) {
+        imageInput.disabled = false;
+        showToast(error.message);
+      });
+      return;
+    }
     var tuitionDateInput = event.target.closest('[data-path][type="date"]');
     if (tuitionDateInput && activeSection === "tuition") {
       setPath(state.tuition, tuitionDateInput.dataset.path, tuitionDateInput.value);
@@ -2140,13 +2337,18 @@
   document.getElementById("save-button").addEventListener("click", saveDraft);
   document.getElementById("reset-button").addEventListener("click", resetDraft);
   document.getElementById("export-button").addEventListener("click", function () {
-    if (activeSection === "overview") exportDialog.showModal();
+    if (window.APLS_CMS_CLOUD && window.APLS_CMS_CLOUD.enabled && cloudReady) openReviewDialog();
+    else if (activeSection === "overview") exportDialog.showModal();
     else exportFile(activeSection);
   });
   document.getElementById("close-export").addEventListener("click", function () { exportDialog.close(); });
   exportDialog.addEventListener("click", function (event) {
     if (event.target === exportDialog) exportDialog.close();
   });
+  document.getElementById("close-review").addEventListener("click", function () { reviewDialog.close(); });
+  document.getElementById("cancel-review").addEventListener("click", function () { reviewDialog.close(); });
+  document.getElementById("submit-review").addEventListener("click", submitForReview);
+  reviewDialog.addEventListener("click", function (event) { if (event.target === reviewDialog) reviewDialog.close(); });
   document.addEventListener("keydown", function (event) {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
       event.preventDefault();
@@ -2166,4 +2368,5 @@
     draftPill.textContent = "Local draft loaded";
     saveStatus.textContent = "Local draft loaded";
   }
+  initializeCloud();
 })();

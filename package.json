@@ -1,0 +1,10 @@
+{
+  "name": "apls-website",
+  "private": true,
+  "scripts": {
+    "build:cms": "node scripts/build-cloud-cms.js",
+    "test:cms": "node --test tests/cms-validation.test.js",
+    "validate:cms": "node scripts/validate-cms-content.js",
+    "validate:cms-media": "node scripts/validate-cms-media.js"
+  }
+}

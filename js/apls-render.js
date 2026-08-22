@@ -376,15 +376,18 @@
       var where = el("div");
       where.appendChild(el("dt", null, "Where"));
       var whereValue = el("dd");
-      if (item.mapUrl) {
-        var mapLink = el("a", null, item.address || item.locationName);
-        mapLink.href = item.mapUrl;
-        mapLink.target = "_blank";
-        mapLink.rel = "noopener";
-        whereValue.appendChild(mapLink);
-      } else {
-        whereValue.textContent = item.address || item.locationName;
+      if (item.locationName && item.address) {
+        whereValue.appendChild(el("strong", null, item.locationName));
+        whereValue.appendChild(document.createElement("br"));
       }
+      var locationText = item.address || item.locationName;
+      var locationDetail = item.mapUrl ? el("a", null, locationText) : document.createTextNode(locationText);
+      if (item.mapUrl) {
+        locationDetail.href = item.mapUrl;
+        locationDetail.target = "_blank";
+        locationDetail.rel = "noopener";
+      }
+      whereValue.appendChild(locationDetail);
       where.appendChild(whereValue);
       facts.appendChild(where);
     }
@@ -840,9 +843,15 @@
   function renderTeachers() {
     var root = document.getElementById("teachers-root");
     if (!root || typeof window.APLS_TEACHERS === "undefined") return;
-    var list = window.APLS_TEACHERS;
-    if (!list || !list.length) return;
+    var section = document.getElementById("teachers-section");
+    var list = (window.APLS_TEACHERS || []).filter(function (teacher) {
+      return teacher && String(teacher.name || "").trim() && !/^teacher name$/i.test(String(teacher.name).trim());
+    });
     root.innerHTML = "";
+    if (!list.length) {
+      if (section) section.hidden = true;
+      return;
+    }
 
     list.forEach(function (t) {
       var card = el("div", "card teacher-card");
@@ -871,6 +880,7 @@
 
       root.appendChild(card);
     });
+    if (section) section.hidden = false;
   }
 
   document.addEventListener("DOMContentLoaded", function () {
