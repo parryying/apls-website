@@ -247,6 +247,8 @@ async function route(request, env) {
 
 export default {
   async fetch(request, env) {
+    // Runs as a Pages _worker.js: anything outside /api/ is a static asset.
+    if (!new URL(request.url).pathname.startsWith("/api/")) return env.ASSETS.fetch(request);
     try {
       return await route(request, env);
     } catch (error) {

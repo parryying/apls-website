@@ -1,5 +1,5 @@
-name = "apls-content-studio-api"
-main = "worker.js"
+name = "apls-content-studio"
+pages_build_output_dir = "dist-cms"
 compatibility_date = "2026-08-21"
 
 [[d1_databases]]
@@ -13,7 +13,7 @@ GITHUB_REPO = "apls-website"
 GITHUB_BASE_BRANCH = "main"
 CMS_ORIGIN = "https://apls-content-studio.pages.dev"
 
-# Configure these with `wrangler secret put`:
+# Set with `wrangler pages secret put <NAME> --project-name apls-content-studio`:
 # CF_ACCESS_AUD
 # CF_ACCESS_TEAM_DOMAIN
 # CMS_ALLOWED_EMAILS

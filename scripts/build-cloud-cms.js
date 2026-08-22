@@ -18,4 +18,5 @@ pages.forEach(function (page) { fs.copyFileSync(path.join(root, page), path.join
 });
 var sha = process.env.CF_PAGES_COMMIT_SHA || childProcess.execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
 fs.writeFileSync(path.join(output, "cms", "build-config.js"), "window.APLS_CMS_BUILD = " + JSON.stringify({ sourceSha: sha }) + ";\n");
+fs.copyFileSync(path.join(root, "cloudflare", "worker.js"), path.join(output, "_worker.js"));
 console.log("Cloud CMS build created at " + output + " for " + sha);
