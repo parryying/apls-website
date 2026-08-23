@@ -88,8 +88,9 @@
   var submissionStatusPanel = document.getElementById("submission-status");
   var submissionStatusTitle = document.getElementById("submission-status-title");
   var submissionStatusMessage = document.getElementById("submission-status-message");
-  var submissionReviewLink = document.getElementById("submission-review-link");
-  var submissionStagingLink = document.getElementById("submission-staging-link");
+  var stagingProgress = document.getElementById("staging-progress");
+  var stagingProgressText = document.getElementById("staging-progress-text");
+  var stagingLink = document.getElementById("staging-link");
 
   function loadDraft() {
     try {
@@ -729,6 +730,9 @@
     var publishedEventCount = (state.events.items || []).filter(function (item) { return item.status === "published"; }).length;
     var validationSummary = allProgramValidation();
     var validationDetail = programCount + " program workspaces \u00b7 " + validationSummary.programs + " need review";
+    var finalWorkflowStep = cloudReady
+      ? workflowStep("3", "Submit for review", "Send your saved changes through checks and staging before they are published.")
+      : workflowStep("3", "Prepare for review", "Use the main action above when your changes are ready for review and publishing.");
     if (validationSummary.errors) validationDetail += " \u00b7 " + validationSummary.errors + " errors";
     editorContent.innerHTML =
       '<div class="summary-grid">' +
@@ -741,7 +745,7 @@
       '<section class="workflow"><h2>Preview workflow</h2><div class="workflow-steps">' +
         workflowStep("1", "Choose a section", "Open one of the structured content editors.") +
         workflowStep("2", "Review as you type", "The right panel reflects every field change.") +
-        workflowStep("3", "Send the update", "Download the area you changed and send the file to your website manager.") +
+        finalWorkflowStep +
       "</div></section>";
   }
 
@@ -1633,27 +1637,31 @@
   function renderSubmissionStatus(submission) {
     if (!submission) {
       submissionStatusPanel.hidden = true;
+      stagingProgress.hidden = true;
+      stagingLink.hidden = true;
       return;
     }
     var statuses = {
-      submitted: ["Checks running", "Your update is waiting for validation and staging deployment."],
-      "checks-running": ["Checks running", "Your update is being validated. The staging link will appear when it is ready."],
-      "checks-failed": ["Checks need attention", "The update was not deployed. Open the GitHub review for details."],
-      "staging-ready": ["Staging is ready", "Review your changes on the staging website before they are published."],
-      merged: ["Update approved", "This submission was merged. Its staging preview remains available."],
+      submitted: ["Preparing staging", "Your update was received. The staging button appears at the top of this page in about a minute."],
+      "checks-running": ["Preparing staging", "Your update is being checked. The staging button appears at the top of this page in about a minute."],
+      "checks-failed": ["Update needs attention", "This update was not published to staging. Contact your website manager."],
+      "staging-ready": ["Staging is ready", "Select View staging site at the top of this page to review your changes before they are published."],
+      merged: ["Update approved", "This submission was approved. Its staging preview remains available."],
       closed: ["Review closed", "This submission was closed without being published."]
     };
     var status = statuses[submission.status] ? submission.status : "submitted";
     submissionStatusTitle.textContent = statuses[status][0];
     submissionStatusMessage.textContent = statuses[status][1];
     submissionStatusPanel.className = "submission-status is-" + status;
-    submissionReviewLink.href = submission.url;
-    submissionReviewLink.hidden = !submission.url;
-    submissionStagingLink.href = STAGING_URL;
-    submissionStagingLink.hidden = status !== "staging-ready" && status !== "merged";
+    var waiting = status === "submitted" || status === "checks-running";
+    var ready = status === "staging-ready" || status === "merged";
+    stagingProgressText.textContent = status === "checks-failed" ? "Update needs attention" : "Preparing staging";
+    stagingProgress.classList.toggle("is-failed", status === "checks-failed");
+    stagingProgress.hidden = !waiting && status !== "checks-failed";
+    stagingLink.hidden = !ready;
     submissionStatusPanel.hidden = false;
     window.clearTimeout(submissionPollTimer);
-    if (status === "submitted" || status === "checks-running") {
+    if (waiting) {
       submissionPollTimer = window.setTimeout(refreshSubmissionStatus, SUBMISSION_POLL_MS);
     }
   }
@@ -1749,6 +1757,8 @@
       cloudReady = true;
       document.getElementById("save-button").textContent = "Save now";
       document.getElementById("export-button").textContent = "Submit for review";
+      document.getElementById("publishing-guidance").textContent = "Save your draft, then submit it for review. Your update will be checked and staged before your website manager publishes approved changes.";
+      if (activeSection === "overview") renderOverviewEditor();
       if (context.draft && context.draft.state) {
         state = mergeDefaults(sourceState, context.draft.state);
         if (!Array.isArray(state.calendarRows)) state.calendarRows = calendarToRows(state.calendar);

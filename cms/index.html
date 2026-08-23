@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="styles.css?v=10" />
   <script src="../data/tuition.js?v=7"></script>
   <script src="../data/calendar.js"></script>
   <script src="../data/teachers.js"></script>
@@ -20,7 +20,7 @@
   <script src="build-config.js"></script>
   <script src="cloud-client.js?v=1"></script>
   <script src="media-client.js?v=1"></script>
-  <script src="app.js?v=16" defer></script>
+  <script src="app.js?v=17" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#editor">Skip to editor</a>
@@ -35,6 +35,11 @@
     </div>
     <div class="header-actions">
       <span class="save-status" id="save-status" role="status">Source data loaded</span>
+      <span class="staging-progress" id="staging-progress" role="status" hidden>
+        <span class="staging-spinner" aria-hidden="true"></span>
+        <span id="staging-progress-text">Preparing staging</span>
+      </span>
+      <a class="button button-staging" id="staging-link" href="https://www.apls.org/_newsite/" target="_blank" rel="noopener" hidden>View staging site</a>
       <button class="button button-secondary" type="button" id="reset-button">Reset draft</button>
       <button class="button button-secondary" type="button" id="save-button">Save on this computer</button>
       <button class="button button-primary" type="button" id="export-button">Download update</button>
@@ -71,7 +76,7 @@
       </button>
       <div class="nav-note">
         <strong>Before publishing</strong>
-        <p>Save your draft, then download the update and send it to your website manager.</p>
+        <p id="publishing-guidance">Save your draft and review your changes. When ready, use the main action above to prepare them for review.</p>
       </div>
       <a class="site-link" href="../index.html" target="_blank" rel="noopener">Open website preview</a>
     </nav>
@@ -88,12 +93,8 @@
       <section class="submission-status" id="submission-status" aria-live="polite" hidden>
         <div>
           <p class="eyebrow">Latest submission</p>
-          <strong id="submission-status-title">Checks running</strong>
-          <p id="submission-status-message">Your update is being validated.</p>
-        </div>
-        <div class="submission-status-actions">
-          <a class="button button-secondary" id="submission-review-link" href="#" target="_blank" rel="noopener">Open GitHub review</a>
-          <a class="button button-primary" id="submission-staging-link" href="https://www.apls.org/_newsite/" target="_blank" rel="noopener" hidden>Open staging site</a>
+          <strong id="submission-status-title">Preparing staging</strong>
+          <p id="submission-status-message">Your update was received.</p>
         </div>
       </section>
       <div id="editor-content"></div>
