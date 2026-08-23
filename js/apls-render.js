@@ -841,19 +841,26 @@
 
   /* ---------- Teachers ---------- */
   function renderTeachers() {
-    var root = document.getElementById("teachers-root");
-    if (!root || typeof window.APLS_TEACHERS === "undefined") return;
-    var section = document.getElementById("teachers-section");
+    var roots = document.querySelectorAll("[data-teachers-root]");
+    if (!roots.length || typeof window.APLS_TEACHERS === "undefined") return;
     var list = (window.APLS_TEACHERS || []).filter(function (teacher) {
       return teacher && String(teacher.name || "").trim() && !/^teacher name$/i.test(String(teacher.name).trim());
     });
-    root.innerHTML = "";
-    if (!list.length) {
-      if (section) section.hidden = true;
-      return;
-    }
+    Array.prototype.forEach.call(roots, function (root) {
+      var section = root.closest("[data-teachers-section]");
+      root.innerHTML = "";
+      if (!list.length) {
+        if (section) section.hidden = true;
+        return;
+      }
+      list.forEach(function (t) {
+        root.appendChild(teacherCard(t));
+      });
+      if (section) section.hidden = false;
+    });
+  }
 
-    list.forEach(function (t) {
+  function teacherCard(t) {
       var card = el("div", "card teacher-card");
 
       if (t.photo) {
@@ -878,9 +885,7 @@
 
       if (t.bio) card.appendChild(el("p", "teacher-bio", t.bio));
 
-      root.appendChild(card);
-    });
-    if (section) section.hidden = false;
+      return card;
   }
 
   document.addEventListener("DOMContentLoaded", function () {
