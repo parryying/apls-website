@@ -3,6 +3,8 @@
 
   var STORAGE_KEY = "apls-cms-preview-draft-v2";
   var CALENDAR_PRINT_PREVIEW_KEY = "apls-calendar-print-preview-v1";
+  var STAGING_URL = "https://www.apls.org/_newsite/";
+  var SUBMISSION_POLL_MS = 8000;
   var PROGRAMS = [
     ["preschool", "Preschool"],
     ["kindergarten", "Kindergarten & 1st Grade"],
@@ -72,6 +74,7 @@
   var cloudBaseSha = "";
   var cloudReady = false;
   var pendingMedia = {};
+  var submissionPollTimer;
 
   var editorContent = document.getElementById("editor-content");
   var previewCanvas = document.getElementById("preview-canvas");
@@ -82,6 +85,11 @@
   var saveStatus = document.getElementById("save-status");
   var exportDialog = document.getElementById("export-dialog");
   var reviewDialog = document.getElementById("review-dialog");
+  var submissionStatusPanel = document.getElementById("submission-status");
+  var submissionStatusTitle = document.getElementById("submission-status-title");
+  var submissionStatusMessage = document.getElementById("submission-status-message");
+  var submissionReviewLink = document.getElementById("submission-review-link");
+  var submissionStagingLink = document.getElementById("submission-staging-link");
 
   function loadDraft() {
     try {
@@ -1622,6 +1630,43 @@
     });
   }
 
+  function renderSubmissionStatus(submission) {
+    if (!submission) {
+      submissionStatusPanel.hidden = true;
+      return;
+    }
+    var statuses = {
+      submitted: ["Checks running", "Your update is waiting for validation and staging deployment."],
+      "checks-running": ["Checks running", "Your update is being validated. The staging link will appear when it is ready."],
+      "checks-failed": ["Checks need attention", "The update was not deployed. Open the GitHub review for details."],
+      "staging-ready": ["Staging is ready", "Review your changes on the staging website before they are published."],
+      merged: ["Update approved", "This submission was merged. Its staging preview remains available."],
+      closed: ["Review closed", "This submission was closed without being published."]
+    };
+    var status = statuses[submission.status] ? submission.status : "submitted";
+    submissionStatusTitle.textContent = statuses[status][0];
+    submissionStatusMessage.textContent = statuses[status][1];
+    submissionStatusPanel.className = "submission-status is-" + status;
+    submissionReviewLink.href = submission.url;
+    submissionReviewLink.hidden = !submission.url;
+    submissionStagingLink.href = STAGING_URL;
+    submissionStagingLink.hidden = status !== "staging-ready" && status !== "merged";
+    submissionStatusPanel.hidden = false;
+    window.clearTimeout(submissionPollTimer);
+    if (status === "submitted" || status === "checks-running") {
+      submissionPollTimer = window.setTimeout(refreshSubmissionStatus, SUBMISSION_POLL_MS);
+    }
+  }
+
+  function refreshSubmissionStatus() {
+    if (!window.APLS_CMS_CLOUD || !window.APLS_CMS_CLOUD.enabled || !cloudReady) return;
+    window.APLS_CMS_CLOUD.status().then(function (result) {
+      renderSubmissionStatus(result.submission);
+    }).catch(function () {
+      submissionStatusMessage.textContent = "Status could not be refreshed. Reload this page to try again.";
+    });
+  }
+
   function openReviewDialog() {
     var labels = changedSectionLabels();
     if (!labels.length) {
@@ -1667,6 +1712,7 @@
       draftPill.classList.remove("is-dirty");
       saveStatus.textContent = "Checks running";
       showToast("Review request #" + result.submission.prNumber + " submitted.");
+      renderSubmissionStatus(result.submission);
       if (window.APLS_CMS_MEDIA && window.APLS_CMS_MEDIA.enabled) window.APLS_CMS_MEDIA.clear().catch(function () {});
       pendingMedia = {};
     }).catch(function (error) {
@@ -1717,6 +1763,7 @@
       } else {
         saveStatus.textContent = "Secure cloud editor ready";
       }
+      refreshSubmissionStatus();
     }).catch(function (error) {
       saveStatus.textContent = "Cloud connection failed";
       showToast(error.message);
