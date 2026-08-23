@@ -239,7 +239,8 @@ async function route(request, env) {
     if (!row) return json({ submission: null }, 200, request, env);
     var pull = await github(env, "/pulls/" + row.pr_number);
     var checks = await github(env, "/commits/" + row.head_sha + "/check-runs");
-    var status = pull.merged_at ? "merged" : pull.state === "closed" ? "closed" : checks.check_runs && checks.check_runs.some(function (check) { return check.status !== "completed"; }) ? "checks-running" : checks.check_runs && checks.check_runs.some(function (check) { return check.conclusion !== "success" && check.conclusion !== "skipped"; }) ? "checks-failed" : "staging-ready";
+    var checkRuns = checks.check_runs || [];
+    var status = pull.merged_at ? "merged" : pull.state === "closed" ? "closed" : !checkRuns.length || checkRuns.some(function (check) { return check.status !== "completed"; }) ? "checks-running" : checkRuns.some(function (check) { return check.conclusion !== "success" && check.conclusion !== "skipped"; }) ? "checks-failed" : "staging-ready";
     return json({ submission: { branch: row.branch, prNumber: row.pr_number, headSha: row.head_sha, status: status, url: pull.html_url, updatedAt: row.updated_at } }, 200, request, env);
   }
   return json({ error: "Not found" }, 404, request, env);

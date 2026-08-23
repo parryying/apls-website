@@ -327,6 +327,52 @@ h3 {
   background: #fff4d9;
 }
 
+.submission-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 28px;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid #c8892c;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.submission-status[hidden],
+.submission-status-actions [hidden] {
+  display: none;
+}
+
+.submission-status.is-staging-ready,
+.submission-status.is-merged {
+  border-left-color: var(--teal);
+}
+
+.submission-status.is-checks-failed,
+.submission-status.is-closed {
+  border-left-color: #b84b3f;
+}
+
+.submission-status p {
+  margin-bottom: 0;
+}
+
+.submission-status strong {
+  color: var(--teal-dark);
+}
+
+.submission-status-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 0.55rem;
+}
+
+.submission-status-actions .button {
+  text-decoration: none;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2411,6 +2457,15 @@ h3 {
 
   .draft-pill {
     display: inline-block;
+    margin-top: 0.9rem;
+  }
+
+  .submission-status {
+    display: block;
+  }
+
+  .submission-status-actions {
+    display: grid;
     margin-top: 0.9rem;
   }
 
