@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -20,7 +20,7 @@
   <script src="build-config.js"></script>
   <script src="cloud-client.js?v=1"></script>
   <script src="media-client.js?v=1"></script>
-  <script src="app.js?v=17" defer></script>
+  <script src="app.js?v=18" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#editor">Skip to editor</a>
@@ -41,8 +41,8 @@
       </span>
       <a class="button button-staging" id="staging-link" href="https://www.apls.org/_newsite/" target="_blank" rel="noopener" hidden>View staging site</a>
       <button class="button button-secondary" type="button" id="reset-button">Reset draft</button>
-      <button class="button button-secondary" type="button" id="save-button">Save on this computer</button>
-      <button class="button button-primary" type="button" id="export-button">Download update</button>
+      <button class="button button-secondary" type="button" id="save-button">Save local draft</button>
+      <button class="button button-secondary" type="button" id="export-button">Export local backup</button>
     </div>
   </header>
 
@@ -75,9 +75,10 @@
         Events &amp; Announcements
       </button>
       <div class="nav-note">
-        <strong>Before publishing</strong>
-        <p id="publishing-guidance">Save your draft and review your changes. When ready, use the main action above to prepare them for review.</p>
+        <strong>Local preview</strong>
+        <p id="publishing-guidance">Use the secure cloud studio to save and submit website changes for review.</p>
       </div>
+      <a class="site-link" id="cloud-studio-link" href="https://apls-content-studio.pages.dev/cms/" target="_blank" rel="noopener">Open secure cloud studio</a>
       <a class="site-link" href="../index.html" target="_blank" rel="noopener">Open website preview</a>
     </nav>
 
@@ -115,12 +116,12 @@
   <dialog class="export-dialog" id="export-dialog">
     <div class="dialog-heading">
       <div>
-        <p class="eyebrow">Handoff</p>
-        <h2>Download an update</h2>
+        <p class="eyebrow">Local mode</p>
+        <h2>Export local backup</h2>
       </div>
-      <button class="icon-button" type="button" id="close-export" aria-label="Close download dialog">&times;</button>
+      <button class="icon-button" type="button" id="close-export" aria-label="Close export dialog">&times;</button>
     </div>
-    <p>Choose the area you changed, then send the downloaded file to your website manager. They will review and publish it.</p>
+    <p>Choose an area to download a local data backup. This does not submit or publish changes.</p>
     <div class="export-options">
       <button type="button" class="export-option" data-export="tuition">
         <strong>tuition.js</strong>

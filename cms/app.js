@@ -31,7 +31,7 @@
     overview: ["Website overview", "Choose a content area, make changes, and review the result before sending an update.", "Content summary"],
     tuition: ["Programs and tuition", "Choose one program and update its enrollment details, schedule, and tuition in one place.", "Program preview"],
     calendar: ["School calendar", "Enter one event per row. Weekdays and website groupings are calculated automatically.", "Calendar preview"],
-    teachers: ["Teacher profiles", "Add, reorder, or update the profiles shown on the Why APLS page.", "Teacher section"],
+    teachers: ["Teacher profiles", "Add, reorder, or update the profiles shown on the homepage and the Why APLS page.", "Teacher section"],
     gallery: ["Gallery", "Curate public Instagram posts for the Latest from APLS section.", "Instagram preview"],
     events: ["Events and announcements", "Publish event details and announcements, with optional school-calendar visibility.", "Events page preview"]
   };
@@ -732,7 +732,7 @@
     var validationDetail = programCount + " program workspaces \u00b7 " + validationSummary.programs + " need review";
     var finalWorkflowStep = cloudReady
       ? workflowStep("3", "Submit for review", "Send your saved changes through checks and staging before they are published.")
-      : workflowStep("3", "Prepare for review", "Use the main action above when your changes are ready for review and publishing.");
+      : workflowStep("3", "Continue in cloud studio", "Open the secure cloud studio to save and submit changes for review.");
     if (validationSummary.errors) validationDetail += " \u00b7 " + validationSummary.errors + " errors";
     editorContent.innerHTML =
       '<div class="summary-grid">' +
@@ -1047,7 +1047,7 @@
   }
 
   function renderTeachersEditor() {
-    var html = '<section class="editor-block">' + blockHeading("Teacher profiles", "Profiles appear in this order on the Why APLS page.", '<button class="small-button" type="button" data-action="add-teacher">Add teacher</button>') + '<div class="repeater-list">';
+    var html = '<section class="editor-block">' + blockHeading("Teacher profiles", "Profiles appear in this order on the homepage and the Why APLS page.", '<button class="small-button" type="button" data-action="add-teacher">Add teacher</button>') + '<div class="repeater-list">';
     state.teachers.forEach(function (teacher, index) {
       var base = String(index);
       html += '<article class="repeater-item"><div class="repeater-heading"><div><span class="repeater-number">Profile ' + (index + 1) + "</span><h3>" + escapeHtml(teacher.name || "Unnamed teacher") + '</h3></div><button class="danger-button" type="button" data-action="remove-teacher" data-index="' + index + '">Remove profile</button></div>' +
@@ -1128,7 +1128,7 @@
         (issues.length ? '<p class="inline-warning">' + escapeHtml(issues.join(" | ")) + "</p>" : "") +
         '<div class="field-grid">' +
           field("Content type", base + ".type", item.type || "event", { options: [{ value: "event", label: "Event" }, { value: "announcement", label: "Announcement" }] }) +
-          field("Publishing status", base + ".status", item.status || "draft", { options: [{ value: "draft", label: "Draft" }, { value: "published", label: "Published" }, { value: "archived", label: "Archived" }] }) +
+          field("Publishing status", base + ".status", item.status || "draft", { options: [{ value: "draft", label: "Draft \u2014 hidden from the website" }, { value: "published", label: "Published \u2014 visible on the website" }, { value: "archived", label: "Archived \u2014 removed from the website" }], hint: item.status === "published" ? "This item appears on the Events page once your update is published." : "Only Published items appear on the website. Draft items stay private, even after the website is updated." }) +
           field("Title", base + ".title", item.title || "", { full: true }) +
           field("Description", base + ".summary", item.summary || "", { textarea: true, full: true, rows: 4 }) +
         '</div><div class="event-only-fields' + (item.type === "announcement" ? " is-hidden" : "") + '"><h4>Event details</h4><div class="field-grid">' +
@@ -1194,7 +1194,7 @@
     var summaries = [
       [Object.keys(state.tuition.programs || {}).length, "Program workspaces", (state.tuition.fees || []).length + " shared fees and policies"],
       [(state.calendar.years || []).length, "School years", countCalendarEvents() + " calendar events"],
-      [state.teachers.length, "Teacher profiles", "Shown on the Why APLS page"],
+      [state.teachers.length, "Teacher profiles", "Shown on the homepage and Why APLS"],
       [(state.gallery.instagramPosts || []).filter(function (post) { return post.visible !== false; }).length, "Instagram posts", "Curated for the Gallery page"],
       [(state.events.items || []).filter(function (item) { return item.status === "published"; }).length, "Published updates", "Events and announcements"]
     ];
@@ -1757,7 +1757,10 @@
       cloudReady = true;
       document.getElementById("save-button").textContent = "Save now";
       document.getElementById("export-button").textContent = "Submit for review";
+      document.getElementById("export-button").classList.remove("button-secondary");
+      document.getElementById("export-button").classList.add("button-primary");
       document.getElementById("publishing-guidance").textContent = "Save your draft, then submit it for review. Your update will be checked and staged before your website manager publishes approved changes.";
+      document.getElementById("cloud-studio-link").hidden = true;
       if (activeSection === "overview") renderOverviewEditor();
       if (context.draft && context.draft.state) {
         state = mergeDefaults(sourceState, context.draft.state);
@@ -2191,7 +2194,7 @@
     link.remove();
     URL.revokeObjectURL(url);
     exportDialog.close();
-    showToast(section + ".js downloaded. Send it to your website manager to publish.");
+    showToast(section + ".js exported as a local backup.");
   }
 
   document.addEventListener("click", function (event) {
