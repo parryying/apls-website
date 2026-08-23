@@ -2347,6 +2347,28 @@ h3 {
   margin-top: 1rem;
 }
 
+.review-problems {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-left: 4px solid #b3261e;
+  border-radius: 6px;
+  background: #fdecea;
+  color: #6b1a14;
+}
+
+.review-problems[hidden] {
+  display: none;
+}
+
+.review-problems p {
+  margin: 0 0 0.35rem;
+}
+
+.review-problems ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
 .dialog-heading {
   display: flex;
   align-items: flex-start;

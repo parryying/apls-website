@@ -1675,11 +1675,52 @@
     });
   }
 
+  function blockingSubmissionIssues() {
+    if (!window.APLS_CMS_VALIDATION) return [];
+    var result = window.APLS_CMS_VALIDATION.validateAll({
+      tuition: state.tuition,
+      calendar: state.calendar,
+      calendarRows: state.calendarRows,
+      events: state.events,
+      gallery: state.gallery
+    });
+    var blocking = [];
+    Object.keys(result.programs).forEach(function (key) {
+      (result.programs[key].errors || []).forEach(function (issue) {
+        blocking.push(["Programs and tuition", issue]);
+      });
+    });
+    result.calendar.forEach(function (row) {
+      blocking.push(["Calendar row " + (row.index + 1), row.issues.join(" | ")]);
+    });
+    result.events.forEach(function (item) {
+      if (item.blocking) blocking.push(["Events item " + (item.index + 1), item.issues.join(" | ")]);
+    });
+    result.gallery.forEach(function (item) {
+      if (item.blocking) blocking.push(["Gallery post " + (item.index + 1), item.issues.join(" | ")]);
+    });
+    return blocking;
+  }
+
   function openReviewDialog() {
     var labels = changedSectionLabels();
     if (!labels.length) {
       showToast("Make and save a change before submitting for review.");
       return;
+    }
+    var blocking = blockingSubmissionIssues();
+    var problems = document.getElementById("review-problems");
+    var submitButton = document.getElementById("submit-review");
+    if (blocking.length) {
+      problems.innerHTML = "<p><strong>Fix these before submitting</strong></p><ul>" + blocking.map(function (entry) {
+        return "<li><strong>" + escapeHtml(entry[0]) + ":</strong> " + escapeHtml(entry[1]) + "</li>";
+      }).join("") + "</ul>";
+      problems.hidden = false;
+      submitButton.disabled = true;
+    } else {
+      problems.hidden = true;
+      problems.innerHTML = "";
+      submitButton.disabled = false;
     }
     document.getElementById("review-sections").innerHTML = labels.map(function (label) { return "<li>" + escapeHtml(label) + "</li>"; }).join("");
     reviewDialog.showModal();
