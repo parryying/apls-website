@@ -117,7 +117,7 @@ window.APLS_TUITION = {
     "summer-camp": {
       name: "Summer Camp",
       term: "Summer 2026",
-      enrollmentStatus: "Open",
+      enrollmentStatus: "Closed",
       applicationUrl: "pdfs/Summer-Camp-Application-2026.pdf",
       startDate: "2026-06-29",
       endDate: "2026-08-21",

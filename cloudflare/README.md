@@ -19,9 +19,9 @@ so a stale editor build cannot submit against newer website content.
 
 ## 1. Cloudflare Pages and Access
 
-1. Create a Pages project connected to `parryying/apls-website`.
-2. Select the `cms` branch for the pilot.
-3. Set the build command to `npm run build:cms` and output to `dist-cms`.
+1. Use the Direct Upload Pages project `apls-content-studio`.
+2. Keep `cms` as its production branch.
+3. Build with `npm run build:cms`; the output directory is `dist-cms`.
 4. Add `cms.apls.org`, or use the Pages domain during the pilot.
 5. Create a Cloudflare Access self-hosted application covering the CMS origin.
 6. Allow only Sharon's and Parry's approved email addresses.
@@ -29,6 +29,19 @@ so a stale editor build cannot submit against newer website content.
 
 The CMS and API must use the same protected origin, or the API must be mounted
 under `/api/*` through a Worker route for that origin.
+
+### Automatic deployment
+
+`.github/workflows/cloudflare-cms.yml` validates, builds, and deploys the CMS
+after every push to `main`. Configure these GitHub Actions credentials:
+
+- Repository variable `CLOUDFLARE_ACCOUNT_ID`
+- Repository secret `CLOUDFLARE_API_TOKEN`
+
+Create the API token with Cloudflare Pages edit permission and scope it to the
+APLS account. The workflow pins Wrangler 3.114.15 and deploys with branch `cms`
+so Direct Upload treats the result as production. `workflow_dispatch` can retry
+a deployment without another commit.
 
 ## 2. D1 and Worker
 

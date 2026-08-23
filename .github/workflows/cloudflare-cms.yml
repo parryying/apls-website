@@ -1,0 +1,57 @@
+name: Deploy Cloud CMS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-cms-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: cloudflare-cms
+      url: https://apls-content-studio.pages.dev/cms/
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate CMS content
+        run: npm run validate:cms
+
+      - name: Validate CMS media
+        run: npm run validate:cms-media
+
+      - name: Run CMS tests
+        run: npm run test:cms
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check cms/app.js
+          node --check cms/shared-validation.js
+          node --check cloudflare/worker.js
+          node --check js/apls-render.js
+
+      - name: Build Cloud CMS
+        env:
+          CF_PAGES_COMMIT_SHA: ${{ github.sha }}
+        run: npm run build:cms
+
+      - name: Deploy Cloud CMS
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "3.114.15"
+          command: pages deploy dist-cms --project-name apls-content-studio --branch cms --commit-hash ${{ github.sha }}

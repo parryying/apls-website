@@ -54,6 +54,12 @@ calendar, teacher, gallery, and events data. The protected hosted version uses
 the same editor and previews, while adding cloud drafts and GitHub review
 submissions. See `cloudflare/README.md` for account setup and rollout checks.
 
+The hosted CMS deploys automatically after every push to `main`. The
+`Deploy Cloud CMS` GitHub Actions workflow validates and tests the content,
+builds the exact pushed commit, and deploys it to Cloudflare Pages. It requires
+the repository variable `CLOUDFLARE_ACCOUNT_ID` and the repository secret
+`CLOUDFLARE_API_TOKEN`.
+
 The Programs & Tuition editor has one workspace per program. Each program owns
 one tuition heading, note, and table used by the full Tuition page, its program
 page, and chat answers. It also stores the current term, enrollment status,
