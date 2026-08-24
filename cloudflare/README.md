@@ -167,7 +167,23 @@ deletes a draft only when the editor selects **Reset draft** or when
 A rejected submission therefore needs its pull request **closed** before the
 editor returns to published content.
 
-## 6. Pilot checks
+## 6. One open submission per editor
+
+A second submission supersedes the first. After the new pull request is created,
+`supersedePreviousSubmissions` finds the editor's earlier submissions, and for
+any still open it adds a "Superseded by a newer Content Studio submission"
+comment, closes the pull request, and deletes its branch.
+
+This matches the editor's mental model: the CMS shows one status panel, so only
+one review should be waiting. It also keeps stale branches from accumulating.
+The review dialog warns before the second submit that the previous update will
+be replaced.
+
+Superseding never touches pull requests from other editors or branches outside
+`cms/*`, and a failure to close an old pull request is logged without failing
+the new submission.
+
+## 7. Pilot checks
 
 Before allowing a real update:
 

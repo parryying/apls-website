@@ -75,6 +75,7 @@
   var cloudReady = false;
   var pendingMedia = {};
   var submissionPollTimer;
+  var openSubmissionNumber = null;
 
   var editorContent = document.getElementById("editor-content");
   var previewCanvas = document.getElementById("preview-canvas");
@@ -1668,6 +1669,7 @@
 
   function renderSubmissionStatus(submission) {
     if (!submission) {
+      openSubmissionNumber = null;
       submissionStatusPanel.hidden = true;
       stagingProgress.hidden = true;
       stagingLink.hidden = true;
@@ -1682,6 +1684,7 @@
       closed: ["Review closed", "This submission was closed without being published."]
     };
     var status = statuses[submission.status] ? submission.status : "submitted";
+    openSubmissionNumber = status === "merged" || status === "closed" ? null : submission.prNumber;
     submissionStatusTitle.textContent = statuses[status][0];
     submissionStatusMessage.textContent = statuses[status][1];
     submissionStatusPanel.className = "submission-status is-" + status;
@@ -1755,6 +1758,11 @@
       submitButton.disabled = false;
     }
     document.getElementById("review-sections").innerHTML = labels.map(function (label) { return "<li>" + escapeHtml(label) + "</li>"; }).join("");
+    var replaceNote = document.getElementById("review-replaces");
+    replaceNote.hidden = !openSubmissionNumber;
+    replaceNote.textContent = openSubmissionNumber
+      ? "This replaces your previous update, which is still being reviewed. Only this newer version will be published."
+      : "";
     reviewDialog.showModal();
   }
 

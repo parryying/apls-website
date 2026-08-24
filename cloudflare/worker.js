@@ -158,6 +158,27 @@ function validateSubmissionFiles(files) {
   return entries;
 }
 
+// A newer submission replaces the editor's previous one, so only one review stays open.
+async function supersedePreviousSubmissions(env, identity, currentPrNumber, currentUrl) {
+  var previous = await env.DB.prepare("SELECT pr_number, branch FROM submissions WHERE editor_email = ? AND pr_number != ? ORDER BY id DESC LIMIT 5")
+    .bind(identity.email, currentPrNumber).all();
+  for (var index = 0; index < (previous.results || []).length; index++) {
+    var row = previous.results[index];
+    try {
+      var pull = await github(env, "/pulls/" + row.pr_number);
+      if (pull.state !== "open") continue;
+      await github(env, "/issues/" + row.pr_number + "/comments", {
+        method: "POST",
+        body: JSON.stringify({ body: "Superseded by a newer Content Studio submission: " + currentUrl })
+      });
+      await github(env, "/pulls/" + row.pr_number, { method: "PATCH", body: JSON.stringify({ state: "closed" }) });
+      await github(env, "/git/refs/heads/" + row.branch, { method: "DELETE" });
+    } catch (error) {
+      console.error("Could not supersede pull request " + row.pr_number + ": " + error.message);
+    }
+  }
+}
+
 async function createSubmission(request, env, identity) {
   var body = await request.json();
   var entries = validateSubmissionFiles(body.files);
@@ -202,6 +223,7 @@ async function createSubmission(request, env, identity) {
   });
   await env.DB.prepare("INSERT INTO submissions (editor_email, branch, pr_number, head_sha, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
     .bind(identity.email, branch, pull.number, commit.sha, "submitted", now, now).run();
+  await supersedePreviousSubmissions(env, identity, pull.number, pull.html_url);
   return json({ submission: { branch: branch, prNumber: pull.number, headSha: commit.sha, url: pull.html_url, status: "submitted" } }, 201, request, env);
 }
 
