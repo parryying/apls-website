@@ -44,8 +44,19 @@ Provisioned values for this account:
 | D1 database | `apls-content-studio` |
 
 Access protects the whole origin with a self-hosted application, email one-time
-PIN, and an `Editors` policy listing only the approved addresses. Confirm it is
-enforcing:
+PIN, and an `Editors` policy listing only the approved addresses.
+
+One-time PIN must exist as an **account-level identity provider**, not just be
+implied by the application. Add it under Zero Trust -> Team & Resources ->
+Identity providers -> Add new -> One-time PIN; it needs no credentials. Without
+it the login page offers only "Sign in with Cloudflare", which an editor who has
+no Cloudflare account cannot use. Being listed in the `Editors` policy grants
+authorisation, not a way to authenticate.
+
+Do not add an editor as a Cloudflare account member. That grants dashboard and
+billing access and is unrelated to Access sign-in.
+
+Confirm Access is enforcing:
 
 ```powershell
 curl.exe -s -o NUL -D - "https://apls-content-studio.pages.dev/api/content"
