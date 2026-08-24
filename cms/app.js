@@ -1142,7 +1142,7 @@
         "</div></div>" +
         '<h4>Image and actions</h4><div class="field-grid">' +
           imageUploadField("Flyer or image", "events", base + ".image", item.image || "") +
-          field("Image alt text", base + ".imageAlt", item.imageAlt || "") +
+          field("Image alt text", base + ".imageAlt", item.imageAlt || "", { hint: "Describe the picture for visitors who cannot see it, for example \u201cStudents painting at a table\u201d. Required when an image is published." }) +
           field("Primary button label", base + ".primaryLabel", item.primaryLabel || "") +
           field("Primary button URL", base + ".primaryUrl", item.primaryUrl || "") +
           field("Secondary button label", base + ".secondaryLabel", item.secondaryLabel || "") +
