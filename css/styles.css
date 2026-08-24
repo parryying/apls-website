@@ -840,6 +840,10 @@ body.open-house-popup-open { overflow: hidden; }
   background: var(--white); box-shadow: 0 8px 22px rgba(59, 90, 74, .08);
 }
 .event-card h3 { margin: 0 0 .55rem; color: var(--navy); font-size: 1.35rem; }
+.event-card-thumb {
+  display: block; width: 100%; aspect-ratio: 16 / 9; margin-bottom: 1rem;
+  border-radius: 6px; object-fit: cover; background: #f4efe6;
+}
 .event-card-date { color: var(--navy); font-weight: 800; }
 .event-card .event-actions { margin-top: 1.2rem; }
 .events-empty { text-align: center; }

@@ -143,12 +143,12 @@
     return pendingMedia[path] && pendingMedia[path].previewUrl ? pendingMedia[path].previewUrl : "../" + String(path || "").replace(/^\.\.\//, "");
   }
 
-  function imageUploadField(label, section, path, currentValue) {
+  function imageUploadField(label, section, path, currentValue, hint) {
     if (!window.APLS_CMS_CLOUD || !window.APLS_CMS_CLOUD.enabled) {
-      return field(label + " path", path, currentValue || "", { hint: "Cloud image upload will replace this path field" });
+      return field(label + " path", path, currentValue || "", { hint: hint || "Cloud image upload will replace this path field" });
     }
     var record = pendingMedia[currentValue];
-    return '<label class="image-upload-field"><span class="field-label"><span>' + escapeHtml(label) + '</span><span class="field-hint">JPEG, PNG, or WebP · 10 MB max</span></span>' +
+    return '<label class="image-upload-field"><span class="field-label"><span class="field-label-text">' + escapeHtml(label) + '<span class="field-optional">Optional</span></span><span class="field-hint">' + escapeHtml(hint || "JPEG, PNG, or WebP \u00b7 10 MB max") + '</span></span>' +
       (currentValue ? '<img class="image-upload-preview" src="' + escapeHtml(mediaPreviewSource(currentValue)) + '" alt="" />' : "") +
       '<input type="file" accept="image/jpeg,image/png,image/webp" data-image-upload data-image-section="' + escapeHtml(section) + '" data-image-path="' + escapeHtml(path) + '" />' +
       (currentValue ? '<span class="image-upload-current">' + escapeHtml(currentValue) + "</span>" : "") +
@@ -1173,7 +1173,7 @@
           field("Address", base + ".address", item.address || "", { full: true }) +
         "</div></div>" +
         '<h4>Image and actions</h4><div class="field-grid">' +
-          imageUploadField("Flyer or image", "events", base + ".image", item.image || "") +
+          imageUploadField("Flyer or image", "events", base + ".image", item.image || "", item.featured ? "Shown full size because this item is featured. JPEG, PNG, or WebP \u00b7 10 MB max" : "Shown as a thumbnail on the Events page. Turn on Feature this item to show it full size. JPEG, PNG, or WebP \u00b7 10 MB max") +
           field("Image alt text", base + ".imageAlt", item.imageAlt || "", { hint: "Left blank, the website describes the image using the title and date. Fill this in only when the picture needs a different description." }) +
           field("Primary button label", base + ".primaryLabel", item.primaryLabel || "") +
           field("Primary button URL", base + ".primaryUrl", item.primaryUrl || "") +

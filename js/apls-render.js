@@ -22,7 +22,9 @@
     var thead = el("thead");
     var headRow = el("tr");
     (columns || []).forEach(function (col) {
-      headRow.appendChild(el("th", null, col));
+      var th = el("th", null, col);
+      th.scope = "col";
+      headRow.appendChild(th);
     });
     thead.appendChild(headRow);
     table.appendChild(thead);
@@ -50,6 +52,15 @@
   }
 
   /* ---------- Tuition ---------- */
+  function tuitionHeading(program) {
+    var heading = program.heading || "Tuition";
+    var term = program.term || "";
+    if (term && term !== "Year-round" && heading.toLowerCase().indexOf(term.toLowerCase()) === -1) {
+      return term + " " + heading;
+    }
+    return heading;
+  }
+
   function renderTuition() {
     var root = document.getElementById("tuition-root");
     if (!root || typeof window.APLS_TUITION === "undefined") return;
@@ -59,7 +70,7 @@
     (data.programOrder || Object.keys(data.programs || {})).forEach(function (programKey) {
       var program = (data.programs || {})[programKey];
       if (!program) return;
-      if (program.heading) root.appendChild(el("h2", null, program.heading));
+      if (program.heading) root.appendChild(el("h2", null, tuitionHeading(program)));
       if (program.note) root.appendChild(el("p", null, program.note));
       if ((program.columns || []).length && (program.rows || []).length) {
         root.appendChild(buildTuitionTable(program.columns, program.rows));
@@ -83,7 +94,7 @@
       if (!program) return;
 
       root.innerHTML = "";
-      root.appendChild(el("h2", null, program.heading || "Tuition"));
+      root.appendChild(el("h2", null, tuitionHeading(program)));
       if (program.note) root.appendChild(el("p", "program-tuition-note", program.note));
 
       var hasTable = (program.columns || []).length && (program.rows || []).length;
@@ -437,6 +448,13 @@
 
   function renderEventCard(item) {
     var card = el("article", "event-card");
+    if (item.image) {
+      var thumb = el("img", "event-card-thumb");
+      thumb.src = item.image;
+      thumb.alt = eventImageAlt(item);
+      thumb.loading = "lazy";
+      card.appendChild(thumb);
+    }
     card.appendChild(el("p", "eyebrow", item.type === "announcement" ? "Announcement" : (eventIsPast(item) ? "Past event" : "Upcoming event")));
     card.appendChild(el("h3", null, item.title || "Untitled"));
     if (item.type !== "announcement" && item.startDate) card.appendChild(el("p", "event-card-date", eventWhenLabel(item, false)));
