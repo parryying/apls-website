@@ -272,7 +272,6 @@
     if (item.type === "event" && !dateFromIso(item.startDate)) issues.push("Event date is required");
     if (item.endDate && !dateFromIso(item.endDate)) issues.push("End date is invalid");
     if (dateFromIso(item.startDate) && dateFromIso(item.endDate) && dateFromIso(item.endDate) < dateFromIso(item.startDate)) issues.push("End date is before start date");
-    if (item.image && !String(item.imageAlt || "").trim()) issues.push("Image alt text is required when a flyer or image is used");
     if (item.showOnCalendar && item.type !== "event") issues.push("Only events can appear on the school calendar");
     return issues;
   }

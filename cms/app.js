@@ -1106,7 +1106,6 @@
     if (item.type === "event" && !dateFromIso(item.startDate)) issues.push("Event date is required");
     if (item.endDate && !dateFromIso(item.endDate)) issues.push("End date is invalid");
     if (dateFromIso(item.startDate) && dateFromIso(item.endDate) && dateFromIso(item.endDate) < dateFromIso(item.startDate)) issues.push("End date is before start date");
-    if (item.image && !String(item.imageAlt || "").trim()) issues.push("Image alt text is required when a flyer or image is used");
     if (item.showOnCalendar && item.type !== "event") issues.push("Only events can appear on the school calendar");
     return issues;
   }
@@ -1142,7 +1141,7 @@
         "</div></div>" +
         '<h4>Image and actions</h4><div class="field-grid">' +
           imageUploadField("Flyer or image", "events", base + ".image", item.image || "") +
-          field("Image alt text", base + ".imageAlt", item.imageAlt || "", { hint: "Describe the picture for visitors who cannot see it, for example \u201cStudents painting at a table\u201d. Required when an image is published." }) +
+          field("Image alt text", base + ".imageAlt", item.imageAlt || "", { hint: "Optional. Left blank, the website describes the image using the title and date. Fill this in only when the picture needs a different description." }) +
           field("Primary button label", base + ".primaryLabel", item.primaryLabel || "") +
           field("Primary button URL", base + ".primaryUrl", item.primaryUrl || "") +
           field("Secondary button label", base + ".secondaryLabel", item.secondaryLabel || "") +
@@ -1514,7 +1513,7 @@
     if (featured.image) {
       var image = node("img");
       image.src = mediaPreviewSource(featured.image);
-      image.alt = featured.imageAlt || "";
+      image.alt = featured.imageAlt || featured.title || "APLS event";
       feature.appendChild(image);
     }
     feature.appendChild(node("h2", "", featured.title || "Untitled"));

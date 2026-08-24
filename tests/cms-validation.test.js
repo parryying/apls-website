@@ -47,12 +47,20 @@ test("reversed calendar ranges are rejected", function () {
   assert.ok(result.calendar.some(function (item) { return item.issues.indexOf("End date is before start date") !== -1; }));
 });
 
-test("published event images require alt text", function () {
+test("published event images do not require alt text", function () {
   var data = loadData();
   data.events.items[0].imageAlt = "";
   var result = validation.validateAll(data, { today: "2026-08-21" });
+  assert.equal(result.events.length, 0);
+});
+
+test("published events still require the title the alt text is derived from", function () {
+  var data = loadData();
+  data.events.items[0].imageAlt = "";
+  data.events.items[0].title = "";
+  var result = validation.validateAll(data, { today: "2026-08-21" });
   assert.equal(result.events[0].blocking, true);
-  assert.match(result.events[0].issues.join("\n"), /alt text/);
+  assert.match(result.events[0].issues.join("\n"), /Title is required/);
 });
 
 test("visible Gallery posts require valid Instagram URLs", function () {

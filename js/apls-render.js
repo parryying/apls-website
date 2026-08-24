@@ -335,6 +335,15 @@
     return label;
   }
 
+  function eventImageAlt(item) {
+    var custom = String(item.imageAlt || "").trim();
+    if (custom) return custom;
+    var title = String(item.title || "").trim();
+    var when = item.type === "announcement" ? "" : eventWhenLabel(item, true);
+    if (title && when) return title + " - " + when;
+    return title || (item.type === "announcement" ? "APLS announcement" : "APLS event");
+  }
+
   function eventAction(label, url, primary) {
     if (!label || !url) return null;
     var link = el("a", primary ? "btn btn-primary" : "btn btn-ghost", label);
@@ -416,7 +425,7 @@
       imageLink.setAttribute("aria-label", "Open the full-size image for " + (item.title || "this event"));
       var image = el("img");
       image.src = item.image;
-      image.alt = item.imageAlt || item.title || "APLS event";
+      image.alt = eventImageAlt(item);
       image.loading = "lazy";
       imageLink.appendChild(image);
       figure.appendChild(imageLink);
