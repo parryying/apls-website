@@ -61,6 +61,29 @@
     return heading;
   }
 
+  function preschoolTuitionRange(program) {
+    var prices = [];
+    (program.rows || []).forEach(function (row) {
+      row.slice(1).forEach(function (cell) {
+        var match = String(cell || "").match(/\$([\d,]+(?:\.\d{1,2})?)/);
+        if (match) prices.push(Number(match[1].replace(/,/g, "")));
+      });
+    });
+    if (!prices.length) return "";
+    var currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+    return currency.format(Math.min.apply(Math, prices)) + "–" + currency.format(Math.max.apply(Math, prices)) + " per month";
+  }
+
+  function renderTuitionSummaries() {
+    if (typeof window.APLS_TUITION === "undefined") return;
+    var programs = window.APLS_TUITION.programs || {};
+    document.querySelectorAll("[data-tuition-summary]").forEach(function (summary) {
+      var programKey = summary.getAttribute("data-tuition-summary");
+      var text = programKey === "preschool" && programs[programKey] ? preschoolTuitionRange(programs[programKey]) : "";
+      if (text) summary.textContent = text;
+    });
+  }
+
   function renderTuition() {
     var root = document.getElementById("tuition-root");
     if (!root || typeof window.APLS_TUITION === "undefined") return;
@@ -918,6 +941,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     renderTuition();
     renderProgramTuition();
+    renderTuitionSummaries();
     renderSharedFeeRates();
     renderApplicationLinks();
     renderProgramContent();
