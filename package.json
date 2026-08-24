@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "build:cms": "node scripts/build-cloud-cms.js",
+    "prerender:tuition": "node scripts/prerender-tuition.js",
     "test:cms": "node --test tests/cms-validation.test.js",
+    "test:prerender": "node --test tests/prerender-tuition.test.js",
     "validate:cms": "node scripts/validate-cms-content.js",
     "validate:cms-media": "node scripts/validate-cms-media.js"
   }

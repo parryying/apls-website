@@ -57,6 +57,8 @@ for directory in css data images js videos; do
   cp -R "$repository_root/$directory" "$destination/$directory"
 done
 
+node "$repository_root/scripts/prerender-tuition.js" "$destination"
+
 for pdf in "${pdfs[@]}"; do
   cp "$repository_root/pdfs/$pdf" "$destination/pdfs/$pdf"
 done

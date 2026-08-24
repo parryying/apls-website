@@ -32,3 +32,9 @@ APLS has served Eastside families since 1995. The school is located at 14042 NE 
 - [Japanese-language guide](https://www.apls.org/japanese.html)
 
 Use the linked public pages as the source of truth for current dates, tuition, schedules, forms, and enrollment availability.
+
+<!-- APLS:TUITION:START -->
+## Current Tuition and Fees
+
+Current rates are generated into deployment artifacts from data/tuition.js.
+<!-- APLS:TUITION:END -->

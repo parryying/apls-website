@@ -64,6 +64,8 @@ The Programs & Tuition editor has one workspace per program. Each program owns
 one tuition heading, note, and table used by the full Tuition page, its program
 page, and chat answers. It also stores the current term, enrollment status,
 application URL, dates, and schedule summary for future enrollment workflows.
+Public cPanel packaging also prerenders that same data into crawler-readable
+HTML, JSON-LD, and `llms.txt`; editors still update only `data/tuition.js`.
 Application links on the Forms and program pages already read these records.
 
 Shared fees and policies are edited once beneath the program workspace. Use the
@@ -149,6 +151,11 @@ The cPanel deployments are manual GitHub Actions workflows:
 Both workflows use `.github/scripts/prepare-site.sh` to package only public site
 files. The CMS, audits, temporary files, archived forms, previews, repository
 configuration, and obsolete PDF revisions are not uploaded.
+
+During packaging, `scripts/prerender-tuition.js` inserts tuition into the copied
+HTML files. It never writes generated prices back to the source page templates.
+Run `npm run prerender:tuition -- <deployment-directory>` to regenerate an
+existing copied artifact locally.
 
 Required repository variables are `CPANEL_HOST`, `CPANEL_PORT`,
 `CPANEL_USERNAME`, `CPANEL_STAGING_PATH`, and `CPANEL_PRODUCTION_PATH`. The

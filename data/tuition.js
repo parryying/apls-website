@@ -23,7 +23,7 @@ window.APLS_TUITION = {
       classDates: [],
       editorNote: "",
       heading: "Preschool tuition",
-      note: "Choose a half-day morning session (9:00\u00a0a.m.\u201312:00\u00a0p.m.) or a full-day program (8:00\u00a0a.m.\u20135:30\u00a0p.m.), 2 to 5 days per week.",
+      note: "Monthly tuition. Choose a half-day morning session (9:00\u00a0a.m.\u201312:00\u00a0p.m.) or a full-day program (8:00\u00a0a.m.\u20135:30\u00a0p.m.), 2 to 5 days per week.",
       columns: ["Days per week", "Half day (AM)", "Full day (8am\u20135:30pm)"],
       rows: [
         ["5 days", "$1,100", "$2,050"],

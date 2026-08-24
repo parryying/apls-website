@@ -23,6 +23,10 @@
   <meta name="twitter:description" content="Quality bilingual education at an affordable, non-profit rate in Bellevue." />
   <meta name="twitter:image" content="https://www.apls.org/images/apls-classroom-activity.webp" />
 
+  <!-- APLS:TUITION-JSONLD:START -->
+  <!-- Generated in deployment artifacts from data/tuition.js. -->
+  <!-- APLS:TUITION-JSONLD:END -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
@@ -104,7 +108,7 @@
   </section>
 
   <!-- ============ TUITION TABLE ============ -->
-  <section class="section">
+  <section id="tuition-and-fees" class="section">
     <div class="container prose">
       <p class="muted" style="margin-top:-.4rem;">
         The rates below cover our <strong>Preschool (Learning Center)</strong>,
@@ -115,10 +119,12 @@
 
       <!-- Tuition table & fees are rendered from data/tuition.js — edit that one file to update prices. -->
       <div id="tuition-root">
+        <!-- APLS:TUITION:START -->
         <noscript>
           <p>Please <a href="tour.html">contact us</a> or call
             <a href="tel:+14257474172">425-747-4172</a> for current tuition rates.</p>
         </noscript>
+        <!-- APLS:TUITION:END -->
       </div>
 
       <div class="tour-actions">
