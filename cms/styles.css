@@ -767,6 +767,40 @@ h3 {
   font-weight: 600;
 }
 
+.field-label-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.field-required,
+.field-optional,
+.col-required {
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.field-required,
+.col-required {
+  background: #fdecea;
+  color: #8c2018;
+}
+
+.field-optional {
+  background: #eeeae2;
+  color: #6d6558;
+}
+
+.col-required {
+  margin-left: 0.3rem;
+  font-size: 0.6rem;
+}
+
 .field input,
 .field textarea,
 .field select,

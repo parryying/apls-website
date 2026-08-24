@@ -116,6 +116,9 @@
   function field(label, path, value, options) {
     options = options || {};
     var classes = "field" + (options.full ? " full" : "");
+    var badge = options.required
+      ? '<span class="field-required">Required</span>'
+      : options.options ? "" : '<span class="field-optional">Optional</span>';
     var hint = options.hint ? '<span class="field-hint">' + escapeHtml(options.hint) + "</span>" : "";
     var control;
     if (options.options) {
@@ -129,7 +132,7 @@
     } else {
       control = '<input type="' + (options.type || "text") + '" data-path="' + escapeHtml(path) + '" value="' + escapeHtml(value) + '"' + (options.paymentAmount ? ' data-payment-amount min="0" step="0.01"' : "") + ' />';
     }
-    return '<label class="' + classes + '"><span class="field-label"><span>' + escapeHtml(label) + "</span>" + hint + "</span>" + control + "</label>";
+    return '<label class="' + classes + '"><span class="field-label"><span class="field-label-text">' + escapeHtml(label) + badge + "</span>" + hint + "</span>" + control + "</label>";
   }
 
   function booleanField(label, path, checked, hint) {
@@ -187,6 +190,36 @@
 
   function supportsSeparateCalendarStart(programKey) {
     return programKey === "after-school";
+  }
+
+  // Mirrors the shared validator's fixed-term rule, which wants both dates.
+  function fixedTermProgram(program) {
+    return Boolean(program.term) && String(program.term).toLowerCase() !== "year-round" && program.enrollmentStatus !== "Inquire";
+  }
+
+  function setRequiredBadge(path, required) {
+    var control = editorContent.querySelector('[data-path="' + path + '"]');
+    var wrapper = control && control.closest(".field");
+    var badge = wrapper && wrapper.querySelector(".field-required, .field-optional");
+    if (!badge) return;
+    badge.className = required ? "field-required" : "field-optional";
+    badge.textContent = required ? "Required" : "Optional";
+  }
+
+  // Some fields only become required based on other answers, and typing does not re-render the editor.
+  function refreshRequiredBadges() {
+    if (activeSection === "tuition") {
+      var program = (state.tuition.programs || {})[selectedTuitionProgram] || {};
+      var base = "programs." + selectedTuitionProgram;
+      setRequiredBadge(base + ".applicationUrl", ["Open", "Waitlist", "Coming soon"].indexOf(program.enrollmentStatus) !== -1);
+      setRequiredBadge(base + ".startDate", fixedTermProgram(program));
+      setRequiredBadge(base + ".endDate", fixedTermProgram(program));
+    }
+    if (activeSection === "events") {
+      ((state.events || {}).items || []).forEach(function (item, index) {
+        setRequiredBadge("items." + index + ".startDate", item.type !== "announcement");
+      });
+    }
   }
 
   function programCalendarBoundaryValue(programKey, program, boundary) {
@@ -776,7 +809,7 @@
       blockHeading(program.name || "Program", "Enrollment and schedule details for this program.") +
       '<div id="program-validation" aria-live="polite">' + programValidationHtml(selectedTuitionProgram) + "</div>" +
       '<div class="field-grid">' +
-        field("Program name", base + ".name", program.name || "") +
+        field("Program name", base + ".name", program.name || "", { required: true }) +
         field("Current term", base + ".term", program.term || "", { hint: "Example: Fall 2026" }) +
         field("Enrollment status", base + ".enrollmentStatus", program.enrollmentStatus || "", { options: [
           { value: "", label: "Not set" },
@@ -786,10 +819,10 @@
           { value: "Coming soon", label: "Coming soon" },
           { value: "Inquire", label: "Inquire for availability" }
         ] }) +
-        field("Application URL", base + ".applicationUrl", program.applicationUrl || "") +
-        (supportsSeparateCalendarStart(selectedTuitionProgram) ? field("Calendar start date", base + ".calendarStartDate", program.calendarStartDate || "", { type: "date", hint: "Optional. Use when care or program operations begin before classes." }) : "") +
-        field("Start date", base + ".startDate", program.startDate || "", { type: "date" }) +
-        field("End date", base + ".endDate", program.endDate || "", { type: "date" }) +
+        field("Application URL", base + ".applicationUrl", program.applicationUrl || "", { required: ["Open", "Waitlist", "Coming soon"].indexOf(program.enrollmentStatus) !== -1 }) +
+        (supportsSeparateCalendarStart(selectedTuitionProgram) ? field("Calendar start date", base + ".calendarStartDate", program.calendarStartDate || "", { type: "date", hint: "Use when care or program operations begin before classes." }) : "") +
+        field("Start date", base + ".startDate", program.startDate || "", { type: "date", required: fixedTermProgram(program) }) +
+        field("End date", base + ".endDate", program.endDate || "", { type: "date", required: fixedTermProgram(program) }) +
         field("Extended care", base + ".careStatus", program.careStatus || "not-applicable", { options: [
           { value: "available", label: "Available" },
           { value: "unavailable", label: "Not available" },
@@ -806,7 +839,7 @@
       blockHeading("Tuition", usesScheduleBuilder(selectedTuitionProgram) ? "Total tuition is calculated from class dates. Monthly payments use the installment plan above." : "This single note and table appear on both the Tuition page and the program page.") +
       '<div class="field-grid">' +
         field("Section heading", base + ".heading", program.heading || "") +
-        field("Per-class rate", base + ".ratePerClass", program.ratePerClass || "", { type: "number", hint: usesScheduleBuilder(selectedTuitionProgram) ? "Used to calculate total tuition" : "Optional; numbers only" }) +
+        field("Per-class rate", base + ".ratePerClass", program.ratePerClass || "", { type: "number", required: usesScheduleBuilder(selectedTuitionProgram), hint: usesScheduleBuilder(selectedTuitionProgram) ? "Used to calculate total tuition" : "Numbers only" }) +
         field("Program tuition note", base + ".note", program.note || "", { textarea: true, full: true }) +
       "</div>" +
       renderTableEditor(base, program, false) +
@@ -1016,13 +1049,13 @@
       }).join("") +
       '<button type="button" class="sheet-tab sheet-tab-add" data-action="add-year">+ New year</button></div>' +
       '<section class="sheet-setup"><div class="field-grid">' +
-        field("School-year label", "years." + selectedCalendarYear + ".label", year.label || "") +
-        field("School-year ID", "years." + selectedCalendarYear + ".id", year.id || "", { hint: "YYYY-YYYY" }) +
+        field("School-year label", "years." + selectedCalendarYear + ".label", year.label || "", { required: true }) +
+        field("School-year ID", "years." + selectedCalendarYear + ".id", year.id || "", { required: true, hint: "YYYY-YYYY" }) +
       "</div></section>" +
       '<section class="sheet-status" aria-live="polite"><div><strong data-calendar-count="events">' + rows.length + '</strong><span>events</span></div><div class="is-ready"><strong data-calendar-count="ready">' + summary.ready + '</strong><span>ready</span></div><div class="' + (summary.issues ? "has-issues" : "is-ready") + '"><strong data-calendar-count="issues">' + summary.issues + "</strong><span>need attention</span></div>" +
       '<button class="small-button" type="button" data-action="preview-print-calendar">Printable year</button>' +
       '<button class="small-button" type="button" data-action="add-calendar-row">Add event row</button></section>' +
-      '<section class="calendar-sheet-wrap"><table class="calendar-sheet"><thead><tr><th class="sheet-row-number">#</th><th>School year</th><th>Start date</th><th>End date</th><th class="sheet-event-column">Event</th><th>Category</th><th>Notes</th><th>Check</th><th class="sheet-action-column"></th></tr></thead><tbody>';
+      '<section class="calendar-sheet-wrap"><table class="calendar-sheet"><thead><tr><th class="sheet-row-number">#</th><th>School year</th><th>Start date <span class="col-required">Required</span></th><th>End date</th><th class="sheet-event-column">Event <span class="col-required">Required</span></th><th>Category</th><th>Notes</th><th>Check</th><th class="sheet-action-column"></th></tr></thead><tbody>';
     rows.forEach(function (row) {
       var rowIndex = state.calendarRows.indexOf(row);
       var issues = calendarRowIssues(row, rowIndex);
@@ -1052,7 +1085,7 @@
       var base = String(index);
       html += '<article class="repeater-item"><div class="repeater-heading"><div><span class="repeater-number">Profile ' + (index + 1) + "</span><h3>" + escapeHtml(teacher.name || "Unnamed teacher") + '</h3></div><button class="danger-button" type="button" data-action="remove-teacher" data-index="' + index + '">Remove profile</button></div>' +
         '<div class="field-grid">' +
-          field("Name", base + ".name", teacher.name || "") +
+          field("Name", base + ".name", teacher.name || "", { required: true, hint: "Profiles without a real name stay hidden" }) +
           field("Role or program", base + ".role", teacher.role || "") +
           field("Years at APLS", base + ".years", teacher.years || "", { hint: "Leave blank to hide" }) +
           imageUploadField("Teacher photo", "teachers", base + ".photo", teacher.photo || "") +
@@ -1091,7 +1124,7 @@
         '<button class="danger-button" type="button" data-action="remove-gallery-post" data-index="' + index + '">Remove</button></div></div>' +
         (valid ? "" : '<p class="inline-warning">Paste a public Instagram post or Reel URL.</p>') +
         '<div class="field-grid">' +
-          field("Instagram post URL", "instagramPosts." + index + ".url", post.url || "", { full: true, hint: "instagram.com/p/... or /reel/..." }) +
+          field("Instagram post URL", "instagramPosts." + index + ".url", post.url || "", { full: true, required: post.visible !== false, hint: "instagram.com/p/... or /reel/..." }) +
           field("Internal caption", "instagramPosts." + index + ".caption", post.caption || "", { full: true, hint: "Used in the CMS and as fallback link text" }) +
         '</div><div class="toggle-row">' + booleanField("Show on Gallery page", "instagramPosts." + index + ".visible", post.visible !== false, "Turn off to keep the link without displaying it.") + "</div></article>";
     });
@@ -1128,11 +1161,11 @@
         '<div class="field-grid">' +
           field("Content type", base + ".type", item.type || "event", { options: [{ value: "event", label: "Event" }, { value: "announcement", label: "Announcement" }] }) +
           field("Publishing status", base + ".status", item.status || "draft", { options: [{ value: "draft", label: "Draft \u2014 hidden from the website" }, { value: "published", label: "Published \u2014 visible on the website" }, { value: "archived", label: "Archived \u2014 removed from the website" }], hint: item.status === "published" ? "This item appears on the Events page once your update is published." : "Only Published items appear on the website. Draft items stay private, even after the website is updated." }) +
-          field("Title", base + ".title", item.title || "", { full: true }) +
+          field("Title", base + ".title", item.title || "", { full: true, required: true }) +
           field("Description", base + ".summary", item.summary || "", { textarea: true, full: true, rows: 4 }) +
         '</div><div class="event-only-fields' + (item.type === "announcement" ? " is-hidden" : "") + '"><h4>Event details</h4><div class="field-grid">' +
-          field("Start date", base + ".startDate", item.startDate || "", { type: "date" }) +
-          field("End date", base + ".endDate", item.endDate || "", { type: "date", hint: "Optional for one-day events" }) +
+          field("Start date", base + ".startDate", item.startDate || "", { type: "date", required: item.type !== "announcement" }) +
+          field("End date", base + ".endDate", item.endDate || "", { type: "date", hint: "Leave blank for one-day events" }) +
           field("Start time", base + ".startTime", item.startTime || "", { type: "time" }) +
           field("End time", base + ".endTime", item.endTime || "", { type: "time" }) +
           field("Location name", base + ".locationName", item.locationName || "") +
@@ -1141,7 +1174,7 @@
         "</div></div>" +
         '<h4>Image and actions</h4><div class="field-grid">' +
           imageUploadField("Flyer or image", "events", base + ".image", item.image || "") +
-          field("Image alt text", base + ".imageAlt", item.imageAlt || "", { hint: "Optional. Left blank, the website describes the image using the title and date. Fill this in only when the picture needs a different description." }) +
+          field("Image alt text", base + ".imageAlt", item.imageAlt || "", { hint: "Left blank, the website describes the image using the title and date. Fill this in only when the picture needs a different description." }) +
           field("Primary button label", base + ".primaryLabel", item.primaryLabel || "") +
           field("Primary button URL", base + ".primaryUrl", item.primaryUrl || "") +
           field("Secondary button label", base + ".secondaryLabel", item.secondaryLabel || "") +
@@ -2341,6 +2374,7 @@
       }
       if (activeSection === "tuition" && input.type === "date") {
         markDirty();
+        refreshRequiredBadges();
         updateTuitionValidationFeedback();
         renderPreview();
         return;
@@ -2362,6 +2396,7 @@
         return;
       }
       markDirty();
+      refreshRequiredBadges();
       updateTuitionValidationFeedback();
       renderPreview();
       return;
