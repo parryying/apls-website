@@ -202,7 +202,6 @@ async function createSubmission(request, env, identity) {
   });
   await env.DB.prepare("INSERT INTO submissions (editor_email, branch, pr_number, head_sha, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
     .bind(identity.email, branch, pull.number, commit.sha, "submitted", now, now).run();
-  await env.DB.prepare("DELETE FROM drafts WHERE editor_email = ?").bind(identity.email).run();
   return json({ submission: { branch: branch, prNumber: pull.number, headSha: commit.sha, url: pull.html_url, status: "submitted" } }, 201, request, env);
 }
 
@@ -241,6 +240,10 @@ async function route(request, env) {
     var checks = await github(env, "/commits/" + row.head_sha + "/check-runs");
     var checkRuns = checks.check_runs || [];
     var status = pull.merged_at ? "merged" : pull.state === "closed" ? "closed" : !checkRuns.length || checkRuns.some(function (check) { return check.status !== "completed"; }) ? "checks-running" : checkRuns.some(function (check) { return check.conclusion !== "success" && check.conclusion !== "skipped"; }) ? "checks-failed" : "staging-ready";
+    // The draft is kept while a submission is open so a refresh can restore it; clear it once resolved.
+    if (status === "merged" || status === "closed") {
+      await env.DB.prepare("DELETE FROM drafts WHERE editor_email = ?").bind(identity.email).run();
+    }
     return json({ submission: { branch: row.branch, prNumber: row.pr_number, headSha: row.head_sha, status: status, url: pull.html_url, updatedAt: row.updated_at } }, 200, request, env);
   }
   return json({ error: "Not found" }, 404, request, env);

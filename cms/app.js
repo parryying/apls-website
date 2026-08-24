@@ -1786,16 +1786,22 @@
       note: document.getElementById("review-note").value
     }); }).then(function (result) {
       reviewDialog.close();
-      changedSections = {};
       isDirty = false;
-      localStorage.removeItem(STORAGE_KEY);
+      // Keep the draft, changed sections, and uploaded images so a refresh restores the
+      // submitted work and a follow-up submission still carries its image bytes.
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      if (window.APLS_CMS_CLOUD && window.APLS_CMS_CLOUD.enabled && cloudReady) {
+        window.APLS_CMS_CLOUD.saveDraft({
+          baseSha: cloudBaseSha,
+          state: state,
+          changedSections: Object.keys(changedSections)
+        }).catch(function () {});
+      }
       draftPill.textContent = "Submitted for review";
       draftPill.classList.remove("is-dirty");
       saveStatus.textContent = "Checks running";
       showToast("Review request #" + result.submission.prNumber + " submitted.");
       renderSubmissionStatus(result.submission);
-      if (window.APLS_CMS_MEDIA && window.APLS_CMS_MEDIA.enabled) window.APLS_CMS_MEDIA.clear().catch(function () {});
-      pendingMedia = {};
     }).catch(function (error) {
       if (error.payload && error.payload.code === "STALE_BASE") {
         cloudReady = false;
@@ -1847,6 +1853,21 @@
         draftPill.textContent = "Cloud draft loaded";
         saveStatus.textContent = "Saved " + new Date(context.draft.updatedAt).toLocaleString();
       } else {
+        // The cloud cleared the draft (submission merged or closed), so drop any stale local copy.
+        localStorage.removeItem(STORAGE_KEY);
+        state = clone(sourceState);
+        if (!Array.isArray(state.calendarRows)) state.calendarRows = calendarToRows(state.calendar);
+        changedSections = {};
+        isDirty = false;
+        Object.keys(pendingMedia).forEach(function (path) { if (pendingMedia[path].previewUrl) URL.revokeObjectURL(pendingMedia[path].previewUrl); });
+        pendingMedia = {};
+        if (window.APLS_CMS_MEDIA && window.APLS_CMS_MEDIA.enabled) window.APLS_CMS_MEDIA.clear().catch(function () {});
+        syncAllProgramCalendars();
+        syncAllEventCalendars();
+        renderEditor();
+        renderPreview();
+        draftPill.textContent = "No unsaved changes";
+        draftPill.classList.remove("is-dirty");
         saveStatus.textContent = "Secure cloud editor ready";
       }
       refreshSubmissionStatus();
