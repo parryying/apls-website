@@ -1,8 +1,23 @@
 # APLS Cloud Content Studio Setup
 
-The repository contains the cloud-ready CMS frontend, Worker API, D1 schema,
+The repository contains the cloud-ready CMS frontend, the API worker, D1 schema,
 shared validation, and GitHub review workflow. Account resources and secrets are
 intentionally not committed.
+
+## Architecture
+
+The API is **same-origin**. `cloudflare/worker.js` is copied to `dist-cms/_worker.js`
+by `scripts/build-cloud-cms.js`, so Pages runs it in advanced mode: requests under
+`/api/` are handled by the worker and everything else falls through to
+`env.ASSETS.fetch()`.
+
+There is no standalone Worker. A separate origin was tried and abandoned because
+Cloudflare Access answers cross-origin API calls with a login redirect that
+`fetch()` cannot follow. Same-origin also removes CORS and the need for a second
+Access application.
+
+Pages configuration and the D1 binding live in the **repository-root**
+`wrangler.toml`.
 
 ## Repository checks
 
@@ -19,16 +34,30 @@ so a stale editor build cannot submit against newer website content.
 
 ## 1. Cloudflare Pages and Access
 
-1. Use the Direct Upload Pages project `apls-content-studio`.
-2. Keep `cms` as its production branch.
-3. Build with `npm run build:cms`; the output directory is `dist-cms`.
-4. Add `cms.apls.org`, or use the Pages domain during the pilot.
-5. Create a Cloudflare Access self-hosted application covering the CMS origin.
-6. Allow only Sharon's and Parry's approved email addresses.
-7. Enable email one-time PIN authentication.
+Provisioned values for this account:
 
-The CMS and API must use the same protected origin, or the API must be mounted
-under `/api/*` through a Worker route for that origin.
+| Resource | Value |
+| --- | --- |
+| Pages project | `apls-content-studio` (Direct Upload, production branch `cms`) |
+| CMS origin | `https://apls-content-studio.pages.dev` |
+| Zero Trust team domain | `aplsbellevue.cloudflareaccess.com` |
+| D1 database | `apls-content-studio` |
+
+Access protects the whole origin with a self-hosted application, email one-time
+PIN, and an `Editors` policy listing only the approved addresses. Confirm it is
+enforcing:
+
+```powershell
+curl.exe -s -o NUL -D - "https://apls-content-studio.pages.dev/api/content"
+```
+
+A `302` to `aplsbellevue.cloudflareaccess.com` means Access is active. Do not use
+PowerShell `Invoke-WebRequest -MaximumRedirection 0` for this check; it throws on
+Access redirects.
+
+Cloudflare's OAuth login (`wrangler login`) grants no Access-write scope, so the
+Access application must be created in the Zero Trust dashboard or with an API
+token carrying **Access: Apps and Policies -> Edit**.
 
 ### Automatic deployment
 
@@ -43,32 +72,38 @@ APLS account. The workflow pins Wrangler 3.114.15 and deploys with branch `cms`
 so Direct Upload treats the result as production. `workflow_dispatch` can retry
 a deployment without another commit.
 
-## 2. D1 and Worker
+This workflow is required. Without it, every push to `main` leaves the deployed
+editor behind `main` and the stale-build guard silently drops the CMS into local
+download mode.
 
-From `cloudflare/`, create the database and apply the migration:
+## 2. D1 and secrets
+
+Create the database and apply the migration from `cloudflare/`:
 
 ```powershell
-npx wrangler d1 create apls-content-studio
-npx wrangler d1 migrations apply apls-content-studio --remote
+npx wrangler@3.114.15 d1 create apls-content-studio
+npx wrangler@3.114.15 d1 migrations apply apls-content-studio --remote
 ```
 
-Replace `REPLACE_WITH_D1_DATABASE_ID` in `wrangler.toml` with the returned ID.
+Put the returned ID in `database_id` in the repository-root `wrangler.toml`.
 
-Set non-secret variables in `wrangler.toml` and configure these encrypted
-secrets through `wrangler secret put`:
+The worker reads its secrets from the **Pages project**, not from a Worker:
 
-- `CF_ACCESS_AUD`
+```powershell
+npx wrangler@3.114.15 pages secret put CF_ACCESS_AUD --project-name apls-content-studio
+```
+
+Repeat for:
+
+- `CF_ACCESS_AUD` (Application Audience tag from the Access app)
 - `CF_ACCESS_TEAM_DOMAIN`
 - `CMS_ALLOWED_EMAILS` (comma-separated)
 - `GITHUB_APP_ID`
 - `GITHUB_INSTALLATION_ID`
 - `GITHUB_PRIVATE_KEY`
 
-Deploy with:
-
-```powershell
-npx wrangler deploy
-```
+Wrangler prints `Success` but still exits non-zero for these commands; check the
+message rather than the exit code.
 
 ## 3. GitHub App
 
@@ -78,8 +113,15 @@ Create a GitHub App installed only on `parryying/apls-website` with:
 - Contents: read and write
 - Pull requests: read and write
 
-Do not put its private key in browser JavaScript, repository files, or GitHub
-Pages variables. Store it only as a Worker secret.
+GitHub issues a **PKCS#1** key (`BEGIN RSA PRIVATE KEY`), but the worker calls
+`crypto.subtle.importKey("pkcs8", ...)`. Convert before storing it:
+
+```powershell
+& "C:\Program Files\Git\usr\bin\openssl.exe" pkcs8 -topk8 -nocrypt -in <downloaded>.pem -out <converted>.pem
+```
+
+Store only the converted key, and delete the temporary file afterwards. Do not
+put the key in browser JavaScript, repository files, or GitHub Pages variables.
 
 ## 4. GitHub Actions
 
@@ -92,6 +134,10 @@ The workflow reuses the existing `cpanel-staging` environment, variables, and
 `CPANEL_SSH_PRIVATE_KEY` secret. Production remains the separate protected,
 manual exact-SHA workflow.
 
+**Never create a branch named exactly `cms`.** Git cannot hold `refs/heads/cms`
+as both a file and a directory, so it blocks every `cms/<editor>/<timestamp>`
+branch and GitHub reports `422 Reference update failed`.
+
 ### One-time bootstrap
 
 The review workflow and validation scripts must first be reviewed and merged
@@ -100,18 +146,36 @@ branch, so CMS-generated content pull requests should not be enabled until this
 infrastructure commit is present on `main`. After bootstrap, routine Sharon
 submissions are created on separate `cms/<editor>/<timestamp>` branches.
 
-## 5. Pilot checks
+## 5. Draft lifetime
+
+A draft is kept while a submission is open, so a refresh restores submitted work
+and a follow-up submission still carries its uploaded image bytes. The worker
+deletes a draft only when the editor selects **Reset draft** or when
+`/api/submissions/current` observes the pull request merged or closed.
+
+A rejected submission therefore needs its pull request **closed** before the
+editor returns to published content.
+
+## 6. Pilot checks
 
 Before allowing a real update:
 
 1. Sign in with an allowed email and verify a denied email cannot load the CMS.
 2. Save a structured draft, refresh, and confirm it reloads from D1.
 3. Upload an Event image and confirm WebP conversion, 2,000-pixel maximum edge,
-   1 MB normal limit, IndexedDB recovery, and required alt text.
+   1 MB normal limit, and IndexedDB recovery.
 4. Submit a harmless update and confirm a `cms/*` branch and pull request appear.
-5. Confirm invalid data fails checks and does not deploy staging.
-6. Confirm a valid submission deploys the exact PR commit to `/_newsite/`.
-7. Confirm production is unchanged until Parry runs the protected workflow.
+5. Refresh after submitting and confirm the draft is restored.
+6. Submit a second time and confirm the image is still included and checks pass.
+7. Confirm invalid data is blocked in the review dialog before submission.
+8. Confirm a valid submission deploys the exact PR commit to `/_newsite/`.
+9. Confirm production is unchanged until Parry runs the protected workflow.
+
+Event image alt text is optional. When it is blank the website derives it from
+the item title and date, so a missing description cannot block a submission.
+
+Event images appear full size only on the featured item; other items show a
+thumbnail on the Events page.
 
 The local `file://` CMS intentionally retains Save on this computer and Download
 update as an owner fallback. Those controls change to cloud save and Submit for
