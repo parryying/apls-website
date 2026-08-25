@@ -996,11 +996,35 @@ body.open-house-popup-open { overflow: hidden; }
   .home-visit-photo img { min-height: 380px; aspect-ratio: 16 / 9; }
 }
 @media (max-width: 600px) {
-  .home-page .hero { min-height: 650px; padding: 3rem 0; align-items: end; }
-  .home-page .hero::after { background: linear-gradient(0deg, rgba(14, 83, 103, .84) 0%, rgba(14, 83, 103, .56) 66%, rgba(14, 83, 103, .14) 100%); }
-  .home-page .hero h1 { max-width: none; font-size: clamp(2rem, 8.8vw, 2.5rem); }
-  .home-page .hero-actions { flex-direction: column; }
+  .home-page .hero { display: block; min-height: 0; padding: 0; background: var(--home-paper); }
+  .home-page .hero::after { display: none; }
+  .home-page .hero-inner { display: flex; flex-direction: column; gap: 0; max-width: none; padding: 0; }
+  .home-page .hero-image {
+    position: relative; inset: auto; z-index: 0; order: 0;
+    width: 100%; min-height: clamp(180px, 50vw, 220px);
+  }
+  .home-page .hero-slideshow { z-index: 0; }
+  .home-page .hero-slide { object-position: center 34%; }
+  .home-page .hero-text {
+    order: 1; max-width: none; padding: 1.6rem 20px 1.8rem;
+    background: var(--home-paper);
+  }
+  .home-page .hero .eyebrow { color: var(--home-teal); font-size: .76rem; line-height: 1.45; }
+  .home-page .hero h1 {
+    max-width: none; margin-bottom: .7rem; color: var(--home-ink);
+    font-size: clamp(2rem, 8.8vw, 2.35rem); line-height: 1.04;
+  }
+  .home-page .hero-tagline {
+    max-width: 34ch; margin-bottom: .8rem; color: var(--text);
+    font-size: 1rem; line-height: 1.45;
+  }
+  .home-page .hero-tagline-accent { color: var(--home-teal); }
+  .home-page .hero-actions { flex-direction: column; gap: .55rem; margin: 1rem 0 .8rem; }
   .home-page .hero-actions .btn { width: 100%; }
+  .home-page .hero .btn-lg { padding: .65em 1em; font-size: 1.05rem; }
+  .home-page .hero .btn-ghost { color: var(--home-teal); border-color: var(--home-teal); }
+  .home-page .hero .btn-ghost:hover { background: var(--home-teal); color: var(--white); }
+  .home-page .hero-note { color: #765813; font-size: .86rem; }
   .home-page .stats-inner { grid-template-columns: 1fr 1fr; gap: 1.2rem .7rem; }
   .home-page .stat { padding-left: .7rem; }
   .home-page .stat-num { font-size: 1rem; }
