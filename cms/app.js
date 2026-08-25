@@ -840,7 +840,7 @@
           { value: "Inquire", label: "Inquire for availability" }
         ] }) +
         field("Application URL", base + ".applicationUrl", program.applicationUrl || "", { required: ["Open", "Waitlist", "Coming soon"].indexOf(program.enrollmentStatus) !== -1 }) +
-        documentUploadField("Replace the application form", "tuition", base + ".applicationUrl", "", { hint: "Choose a PDF to replace the application URL above. Leave empty to keep the current form. PDF \u00b7 10 MB max" }) +
+        documentUploadField("Replace the application form", "tuition", base + ".applicationUrl", "", { hint: "Choose a PDF to replace the application URL above. Check that the tuition and dates inside the PDF match this page. PDF \u00b7 10 MB max" }) +
         (supportsSeparateCalendarStart(selectedTuitionProgram) ? field("Calendar start date", base + ".calendarStartDate", program.calendarStartDate || "", { type: "date", hint: "Use when care or program operations begin before classes." }) : "") +
         field("Start date", base + ".startDate", program.startDate || "", { type: "date", required: fixedTermProgram(program) }) +
         field("End date", base + ".endDate", program.endDate || "", { type: "date", required: fixedTermProgram(program) }) +
@@ -2602,9 +2602,13 @@
           markDirty();
           renderEditor();
           renderPreview();
-          showToast(record.large
-            ? "PDF ready (" + Math.ceil(record.size / (1024 * 1024)) + " MB). Large files are slow to download on a phone."
-            : "PDF ready to submit.");
+          if (/\.applicationUrl$/.test(documentInput.dataset.documentPath)) {
+            showToast("Application form ready. Check the tuition and dates in the PDF match this page.");
+          } else {
+            showToast(record.large
+              ? "PDF ready (" + Math.ceil(record.size / (1024 * 1024)) + " MB). Large files are slow to download on a phone."
+              : "PDF ready to submit.");
+          }
         });
       }).catch(function (error) {
         documentInput.disabled = false;
