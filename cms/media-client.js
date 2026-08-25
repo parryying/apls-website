@@ -4,6 +4,8 @@
   var DATABASE = "apls-cms-media-v1";
   var STORE = "pending";
   var MAX_SOURCE_BYTES = 10 * 1024 * 1024;
+  var MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+  var LARGE_DOCUMENT_BYTES = 5 * 1024 * 1024;
   var MAX_EDGE = 2000;
   var TARGET_BYTES = 500 * 1024;
   var HARD_LIMIT = 1024 * 1024;
@@ -52,6 +54,34 @@
     return "images/uploads/" + new Date().getFullYear() + "/" + slug(fileName) + "-" + suffix + ".webp";
   }
 
+  function uniqueDocumentPath(fileName) {
+    var bytes = new Uint8Array(4);
+    crypto.getRandomValues(bytes);
+    var suffix = Array.from(bytes).map(function (byte) { return byte.toString(16).padStart(2, "0"); }).join("");
+    return "pdfs/uploads/" + new Date().getFullYear() + "/" + slug(fileName) + "-" + suffix + ".pdf";
+  }
+
+  // A renamed or mistyped file can still claim to be a PDF, so trust the bytes, not the type.
+  async function looksLikePdf(file) {
+    var head = new Uint8Array(await file.slice(0, 5).arrayBuffer());
+    return head.length === 5 && head[0] === 0x25 && head[1] === 0x50 && head[2] === 0x44 && head[3] === 0x46 && head[4] === 0x2d;
+  }
+
+  async function processDocument(file) {
+    if (file.type && file.type !== "application/pdf") throw new Error("Choose a PDF file.");
+    if (file.size > MAX_DOCUMENT_BYTES) throw new Error("The PDF must be 10 MB or smaller. Ask your website manager to compress it.");
+    if (!(await looksLikePdf(file))) throw new Error("That file is not a PDF. Open it and use Save as PDF, then try again.");
+    return {
+      path: uniqueDocumentPath(file.name),
+      blob: file,
+      size: file.size,
+      type: "application/pdf",
+      large: file.size > LARGE_DOCUMENT_BYTES,
+      originalName: file.name,
+      updatedAt: new Date().toISOString()
+    };
+  }
+
   async function process(file) {
     if (!acceptedTypes.has(file.type)) throw new Error("Choose a JPEG, PNG, or WebP image. SVG files are not accepted.");
     if (file.size > MAX_SOURCE_BYTES) throw new Error("The original image must be 10 MB or smaller.");
@@ -88,6 +118,7 @@
   root.APLS_CMS_MEDIA = {
     enabled: typeof indexedDB !== "undefined" && typeof createImageBitmap === "function",
     process: process,
+    processDocument: processDocument,
     save: function (record) { return transaction("readwrite", function (store) { return store.put(record); }); },
     list: function () { return transaction("readonly", function (store) { return store.getAll(); }); },
     remove: function (path) { return transaction("readwrite", function (store) { return store.delete(path); }); },

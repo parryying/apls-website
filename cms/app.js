@@ -33,7 +33,8 @@
     calendar: ["School calendar", "Enter one event per row. Weekdays and website groupings are calculated automatically.", "Calendar preview"],
     teachers: ["Teacher profiles", "Add, reorder, or update the profiles shown on the homepage and the Why APLS page.", "Teacher section"],
     gallery: ["Gallery", "Curate public Instagram posts for the Latest from APLS section.", "Instagram preview"],
-    events: ["Events and announcements", "Publish event details and announcements, with optional school-calendar visibility.", "Events page preview"]
+    events: ["Events and announcements", "Publish event details and announcements, with optional school-calendar visibility.", "Events page preview"],
+    documents: ["Forms and documents", "Replace the parent handbook and policy PDFs families download from the Forms page.", "Forms page preview"]
   };
 
   function clone(value) {
@@ -58,7 +59,8 @@
     calendar: clone(window.APLS_CALENDAR || { years: [] }),
     teachers: clone(window.APLS_TEACHERS || []),
     gallery: clone(window.APLS_GALLERY || { instagramPosts: [] }),
-    events: clone(window.APLS_EVENTS || { items: [] })
+    events: clone(window.APLS_EVENTS || { items: [] }),
+    documents: clone(window.APLS_DOCUMENTS || { items: [] })
   };
   var savedState = loadDraft();
   var state = savedState ? mergeDefaults(sourceState, savedState) : clone(sourceState);
@@ -154,6 +156,21 @@
       '<input type="file" accept="image/jpeg,image/png,image/webp" data-image-upload data-image-section="' + escapeHtml(section) + '" data-image-path="' + escapeHtml(path) + '" />' +
       (currentValue ? '<span class="image-upload-current">' + escapeHtml(currentValue) + "</span>" : "") +
       (record ? '<span class="image-upload-meta">Optimized: ' + record.width + " × " + record.height + " · " + Math.ceil(record.size / 1024) + " KB</span>" : "") +
+      "</label>";
+  }
+
+  function documentUploadField(label, section, path, currentValue, options) {
+    options = options || {};
+    var hint = options.hint || "PDF \u00b7 10 MB max";
+    if (!window.APLS_CMS_CLOUD || !window.APLS_CMS_CLOUD.enabled) {
+      return field(label + " path", path, currentValue || "", { hint: "Cloud PDF upload will replace this path field", required: options.required });
+    }
+    var record = pendingMedia[currentValue];
+    var badge = options.required ? '<span class="field-required">Required</span>' : '<span class="field-optional">Optional</span>';
+    return '<label class="document-upload-field"><span class="field-label"><span class="field-label-text">' + escapeHtml(label) + badge + '</span><span class="field-hint">' + escapeHtml(hint) + "</span></span>" +
+      '<input type="file" accept="application/pdf,.pdf" data-document-upload data-document-section="' + escapeHtml(section) + '" data-document-path="' + escapeHtml(path) + '" />' +
+      (currentValue ? '<span class="document-upload-current">' + escapeHtml(decodeURIComponent(String(currentValue).replace(/^pdfs\//, ""))) + "</span>" : '<span class="document-upload-current is-empty">No file chosen yet</span>') +
+      (record ? '<span class="document-upload-meta">New file ready: ' + escapeHtml(record.originalName) + " \u00b7 " + Math.ceil(record.size / 1024) + " KB</span>" : "") +
       "</label>";
   }
 
@@ -762,6 +779,7 @@
     var programCount = Object.keys(state.tuition.programs || {}).length;
     var instagramCount = (state.gallery.instagramPosts || []).filter(function (post) { return post.visible !== false; }).length;
     var publishedEventCount = (state.events.items || []).filter(function (item) { return item.status === "published"; }).length;
+    var documentCount = (state.documents.items || []).filter(function (item) { return item.visible !== false; }).length;
     var validationSummary = allProgramValidation();
     var validationDetail = programCount + " program workspaces \u00b7 " + validationSummary.programs + " need review";
     var finalWorkflowStep = cloudReady
@@ -775,6 +793,7 @@
         summaryCard("04", "Teachers", teacherCount + " profile" + (teacherCount === 1 ? "" : "s"), "teachers") +
         summaryCard("05", "Gallery", instagramCount + " curated Instagram post" + (instagramCount === 1 ? "" : "s"), "gallery") +
         summaryCard("06", "Events & announcements", publishedEventCount + " published item" + (publishedEventCount === 1 ? "" : "s"), "events") +
+        summaryCard("07", "Forms & documents", documentCount + " document" + (documentCount === 1 ? "" : "s") + " on the Forms page", "documents") +
       "</div>" +
       '<section class="workflow"><h2>Preview workflow</h2><div class="workflow-steps">' +
         workflowStep("1", "Choose a section", "Open one of the structured content editors.") +
@@ -821,6 +840,7 @@
           { value: "Inquire", label: "Inquire for availability" }
         ] }) +
         field("Application URL", base + ".applicationUrl", program.applicationUrl || "", { required: ["Open", "Waitlist", "Coming soon"].indexOf(program.enrollmentStatus) !== -1 }) +
+        documentUploadField("Replace the application form", "tuition", base + ".applicationUrl", "", { hint: "Choose a PDF to replace the application URL above. Leave empty to keep the current form. PDF \u00b7 10 MB max" }) +
         (supportsSeparateCalendarStart(selectedTuitionProgram) ? field("Calendar start date", base + ".calendarStartDate", program.calendarStartDate || "", { type: "date", hint: "Use when care or program operations begin before classes." }) : "") +
         field("Start date", base + ".startDate", program.startDate || "", { type: "date", required: fixedTermProgram(program) }) +
         field("End date", base + ".endDate", program.endDate || "", { type: "date", required: fixedTermProgram(program) }) +
@@ -1189,6 +1209,45 @@
     editorContent.innerHTML = html;
   }
 
+  function documentItemIssues(item) {
+    if (window.APLS_CMS_VALIDATION) return window.APLS_CMS_VALIDATION.documentItemIssues(item);
+    return [];
+  }
+
+  function programOptions() {
+    var programs = state.tuition.programs || {};
+    return [{ value: "", label: "Parent handbook & policies list" }].concat(Object.keys(programs).map(function (key) {
+      return { value: key, label: "With the " + (programs[key].name || key) + " application" };
+    }));
+  }
+
+  function renderDocumentsEditor() {
+    var items = state.documents.items || [];
+    var html = '<section class="editor-block">' +
+      blockHeading("Forms and documents", "The parent handbook, school policies, and any extra PDFs families download. Program application forms are edited in Programs & Tuition.", '<a class="small-button editor-page-link" href="../forms.html" target="_blank" rel="noopener">Open Forms page</a>') +
+      '<div class="button-row editor-primary-actions"><button class="small-button" type="button" data-action="add-document">Add document</button></div></section>' +
+      '<div class="repeater-list">';
+    if (!items.length) html += '<div class="editor-empty"><strong>No documents</strong><p>Add a document to list it on the Forms page.</p></div>';
+    items.forEach(function (item, index) {
+      var base = "items." + index;
+      var issues = documentItemIssues(item);
+      html += '<article class="repeater-item' + (issues.length ? " has-warning" : "") + '"><div class="repeater-heading"><div><span class="repeater-number">Document ' + (index + 1) + '</span><h3>' + escapeHtml(item.title || "Untitled") + "</h3></div><div class=\"item-actions\">" +
+        '<button class="icon-move-button" type="button" aria-label="Move document ' + (index + 1) + ' up" title="Move up" data-action="move-document" data-index="' + index + '" data-direction="-1"' + (index === 0 ? " disabled" : "") + ">&uarr;</button>" +
+        '<button class="icon-move-button" type="button" aria-label="Move document ' + (index + 1) + ' down" title="Move down" data-action="move-document" data-index="' + index + '" data-direction="1"' + (index === items.length - 1 ? " disabled" : "") + ">&darr;</button>" +
+        '<button class="danger-button" type="button" data-action="remove-document" data-index="' + index + '">Remove</button></div></div>' +
+        (issues.length ? '<p class="inline-warning">' + escapeHtml(issues.join(" | ")) + "</p>" : "") +
+        '<div class="field-grid">' +
+          field("Link text", base + ".title", item.title || "", { full: true, required: true, hint: "What families see, for example Parent handbook (2026)" }) +
+          documentUploadField("PDF file", "documents", base + ".file", item.file || "", { required: true, hint: "Choose a new PDF to replace the current one. PDF \u00b7 10 MB max" }) +
+          field("Where it appears", base + ".program", item.program || "", { options: programOptions() }) +
+        "</div><div class=\"toggle-row\">" +
+          booleanField("Show on the Forms page", base + ".visible", item.visible !== false, "Turn this off to hide the document without deleting it.") +
+        "</div></article>";
+    });
+    html += "</div>";
+    editorContent.innerHTML = html;
+  }
+
   function renderEditor() {
     if (activeSection === "overview") renderOverviewEditor();
     if (activeSection === "tuition") renderTuitionEditor();
@@ -1196,6 +1255,7 @@
     if (activeSection === "teachers") renderTeachersEditor();
     if (activeSection === "gallery") renderGalleryEditor();
     if (activeSection === "events") renderEventsEditor();
+    if (activeSection === "documents") renderDocumentsEditor();
   }
 
   function node(tag, className, text) {
@@ -1229,7 +1289,8 @@
       [(state.calendar.years || []).length, "School years", countCalendarEvents() + " calendar events"],
       [state.teachers.length, "Teacher profiles", "Shown on the homepage and Why APLS"],
       [(state.gallery.instagramPosts || []).filter(function (post) { return post.visible !== false; }).length, "Instagram posts", "Curated for the Gallery page"],
-      [(state.events.items || []).filter(function (item) { return item.status === "published"; }).length, "Published updates", "Events and announcements"]
+      [(state.events.items || []).filter(function (item) { return item.status === "published"; }).length, "Published updates", "Events and announcements"],
+      [(state.documents.items || []).filter(function (item) { return item.visible !== false; }).length, "Documents", "Handbook, policies, and forms"]
     ];
     summaries.forEach(function (summary) {
       var row = node("div", "preview-summary-row");
@@ -1570,6 +1631,39 @@
     previewCanvas.replaceChildren(wrapper);
   }
 
+  function renderDocumentsPreview() {
+    var wrapper = node("div", "documents-preview");
+    var programs = state.tuition.programs || {};
+    var items = (state.documents.items || []).filter(function (item) {
+      return item.visible !== false && String(item.file || "").trim() && String(item.title || "").trim();
+    });
+    var groups = [{ key: "", label: "Parent handbook & policies" }].concat(Object.keys(programs).map(function (key) {
+      return { key: key, label: programs[key].name || key };
+    }));
+    var rendered = 0;
+    groups.forEach(function (group) {
+      var groupItems = items.filter(function (item) { return String(item.program || "") === group.key; });
+      if (!groupItems.length) return;
+      rendered += groupItems.length;
+      wrapper.appendChild(node("h3", "preview-subheading", group.label));
+      var list = node("ul", "documents-preview-list");
+      groupItems.forEach(function (item) {
+        var row = node("li");
+        row.appendChild(node("strong", "", "\uD83D\uDCC4 " + item.title));
+        row.appendChild(node("span", "documents-preview-file", decodeURIComponent(String(item.file).replace(/^pdfs\//, ""))));
+        list.appendChild(row);
+      });
+      wrapper.appendChild(list);
+    });
+    if (!rendered) {
+      var empty = node("div", "preview-empty");
+      empty.appendChild(node("strong", "", "Nothing to show"));
+      empty.appendChild(node("p", "", "Add a document, or turn one back on, to list it on the Forms page."));
+      wrapper.appendChild(empty);
+    }
+    previewCanvas.replaceChildren(wrapper);
+  }
+
   function renderPreview() {
     previewCanvas.classList.toggle("is-calendar-preview", activeSection === "calendar");
     if (activeSection === "overview") renderOverviewPreview();
@@ -1578,6 +1672,7 @@
     if (activeSection === "teachers") renderTeachersPreview();
     if (activeSection === "gallery") renderGalleryPreview();
     if (activeSection === "events") renderEventsPreview();
+    if (activeSection === "documents") renderDocumentsPreview();
   }
 
   function selectSection(section) {
@@ -1717,7 +1812,8 @@
       calendar: state.calendar,
       calendarRows: state.calendarRows,
       events: state.events,
-      gallery: state.gallery
+      gallery: state.gallery,
+      documents: state.documents
     });
     var blocking = [];
     Object.keys(result.programs).forEach(function (key) {
@@ -1733,6 +1829,9 @@
     });
     result.gallery.forEach(function (item) {
       if (item.blocking) blocking.push(["Gallery post " + (item.index + 1), item.issues.join(" | ")]);
+    });
+    (result.documents || []).forEach(function (item) {
+      if (item.blocking) blocking.push(["Forms and documents — item " + (item.index + 1), item.issues.join(" | ")]);
     });
     return blocking;
   }
@@ -1772,7 +1871,8 @@
       calendar: "data/calendar.js",
       teachers: "data/teachers.js",
       gallery: "data/gallery.js",
-      events: "data/events.js"
+      events: "data/events.js",
+      documents: "data/documents.js"
     };
     var files = {};
     Object.keys(changedSections).forEach(function (section) {
@@ -2164,6 +2264,12 @@
     if (action === "remove-event") state.events.items.splice(index, 1);
     if (action === "move-event" && !moveArrayItem(state.events.items, index, Number(button.dataset.direction))) return true;
 
+    if (action === "add-document") {
+      state.documents.items.push({ title: "New document", file: "", program: "", visible: true });
+    }
+    if (action === "remove-document") state.documents.items.splice(index, 1);
+    if (action === "move-document" && !moveArrayItem(state.documents.items, index, Number(button.dataset.direction))) return true;
+
     if (action === "remove-item") getPath(activeSection === "calendar" ? state.calendar : state.tuition, path).splice(index, 1);
     if (action === "add-fee") state.tuition.fees.push({ appliesTo: [], label: "New fee", text: "" });
     if (action === "add-table-row") {
@@ -2246,7 +2352,8 @@
       calendar: "/* APLS calendar data - exported from Content Studio */\nwindow.APLS_CALENDAR = ",
       teachers: "/* APLS teacher data - exported from Content Studio */\nwindow.APLS_TEACHERS = ",
       gallery: "/* APLS gallery data - exported from Content Studio */\nwindow.APLS_GALLERY = ",
-      events: "/* APLS events and announcements data - exported from Content Studio */\nwindow.APLS_EVENTS = "
+      events: "/* APLS events and announcements data - exported from Content Studio */\nwindow.APLS_EVENTS = ",
+      documents: "/* APLS document data - exported from Content Studio */\nwindow.APLS_DOCUMENTS = "
     };
     if (section === "tuition") {
       Object.keys(state.tuition.programs || {}).forEach(function (programKey) {
@@ -2471,6 +2578,36 @@
         });
       }).catch(function (error) {
         imageInput.disabled = false;
+        showToast(error.message);
+      });
+      return;
+    }
+    var documentInput = event.target.closest("[data-document-upload]");
+    if (documentInput) {
+      var documentFile = documentInput.files && documentInput.files[0];
+      if (!documentFile || !window.APLS_CMS_MEDIA || !window.APLS_CMS_MEDIA.enabled) return;
+      documentInput.disabled = true;
+      saveStatus.textContent = "Checking PDF";
+      window.APLS_CMS_MEDIA.processDocument(documentFile).then(function (record) {
+        pendingMedia[record.path] = record;
+        return window.APLS_CMS_MEDIA.save({
+          path: record.path,
+          blob: record.blob,
+          size: record.size,
+          type: record.type,
+          originalName: record.originalName,
+          updatedAt: record.updatedAt
+        }).then(function () {
+          setPath(state[documentInput.dataset.documentSection], documentInput.dataset.documentPath, record.path);
+          markDirty();
+          renderEditor();
+          renderPreview();
+          showToast(record.large
+            ? "PDF ready (" + Math.ceil(record.size / (1024 * 1024)) + " MB). Large files are slow to download on a phone."
+            : "PDF ready to submit.");
+        });
+      }).catch(function (error) {
+        documentInput.disabled = false;
         showToast(error.message);
       });
       return;

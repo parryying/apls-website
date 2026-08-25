@@ -9,7 +9,9 @@ on:
       - data/teachers.js
       - data/gallery.js
       - data/events.js
+      - data/documents.js
       - images/uploads/**
+      - pdfs/uploads/**
 
 permissions:
   contents: read

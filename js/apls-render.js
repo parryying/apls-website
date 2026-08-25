@@ -938,12 +938,44 @@
       return card;
   }
 
+  function documentLink(item) {
+    var link = document.createElement("a");
+    link.href = item.file;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "\uD83D\uDCC4 " + (item.title || "Document");
+    return link;
+  }
+
+  function renderDocuments() {
+    if (typeof window.APLS_DOCUMENTS === "undefined") return;
+    var items = (window.APLS_DOCUMENTS.items || []).filter(function (item) {
+      return item.visible !== false && String(item.file || "").trim() && String(item.title || "").trim();
+    });
+
+    document.querySelectorAll("[data-program-documents]").forEach(function (root) {
+      var key = root.getAttribute("data-program-documents");
+      items.filter(function (item) { return item.program === key; }).forEach(function (item) {
+        root.appendChild(documentLink(item));
+      });
+    });
+
+    document.querySelectorAll("[data-documents-root]").forEach(function (root) {
+      var general = items.filter(function (item) { return !String(item.program || "").trim(); });
+      root.textContent = "";
+      general.forEach(function (item) { root.appendChild(documentLink(item)); });
+      var section = root.closest("[data-documents-section]");
+      if (section) section.hidden = general.length === 0;
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     renderTuition();
     renderProgramTuition();
     renderTuitionSummaries();
     renderSharedFeeRates();
     renderApplicationLinks();
+    renderDocuments();
     renderProgramContent();
     renderCalendar();
     renderTeachers();

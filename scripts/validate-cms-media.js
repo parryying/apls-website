@@ -6,9 +6,12 @@ var loadCmsData = require("./load-cms-data.js");
 
 var repositoryRoot = path.resolve(__dirname, "..");
 var uploadRoot = path.join(repositoryRoot, "images", "uploads");
+var documentRoot = path.join(repositoryRoot, "pdfs", "uploads");
 var allowedExtensions = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 var normalLimit = 1024 * 1024;
 var exceptionLimit = 2 * 1024 * 1024;
+var documentLimit = 10 * 1024 * 1024;
+var largeDocumentLimit = 5 * 1024 * 1024;
 var failures = [];
 var warnings = [];
 
@@ -41,6 +44,15 @@ walk(uploadRoot).forEach(function (file) {
   else if (buffer.length > normalLimit) warnings.push(relative + " exceeds the normal 1 MB media limit and requires reviewer approval");
 });
 
+walk(documentRoot).forEach(function (file) {
+  var relative = path.relative(repositoryRoot, file).replace(/\\/g, "/");
+  var buffer = fs.readFileSync(file);
+  if (path.extname(file).toLowerCase() !== ".pdf") failures.push(relative + " is not a PDF");
+  if (buffer.subarray(0, 5).toString("ascii") !== "%PDF-") failures.push(relative + " does not have a PDF signature");
+  if (buffer.length > documentLimit) failures.push(relative + " exceeds the 10 MB document limit");
+  else if (buffer.length > largeDocumentLimit) warnings.push(relative + " is over 5 MB and will be slow to download on a phone");
+});
+
 function verifyReference(value, label) {
   if (!value || /^https?:\/\//i.test(value)) return;
   var normalized = String(value).replace(/^\.\//, "").replace(/\\/g, "/");
@@ -50,6 +62,11 @@ function verifyReference(value, label) {
 var data = loadCmsData(repositoryRoot);
 (data.teachers || []).forEach(function (teacher, index) { verifyReference(teacher.photo, "Teacher " + (index + 1)); });
 (data.events.items || []).forEach(function (item, index) { verifyReference(item.image, "Event " + (index + 1)); });
+(data.documents && data.documents.items || []).forEach(function (item, index) { verifyReference(item.file, "Document " + (index + 1)); });
+Object.keys(data.tuition && data.tuition.programs || {}).forEach(function (key) {
+  var url = String(data.tuition.programs[key].applicationUrl || "");
+  if (/\.pdf$/i.test(url)) verifyReference(decodeURIComponent(url), "Program " + key + " application");
+});
 
 warnings.forEach(function (message) { console.warn("WARNING: " + message); });
 failures.forEach(function (message) { console.error("ERROR: " + message); });

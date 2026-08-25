@@ -17,6 +17,10 @@ result.events.forEach(function (item) {
   output((item.blocking ? "ERROR" : "WARNING") + " event " + (item.index + 1) + ": " + item.issues.join(" | "));
 });
 result.gallery.forEach(function (item) { console.error("ERROR gallery post " + (item.index + 1) + ": " + item.issues.join(" | ")); });
+(result.documents || []).forEach(function (item) {
+  var output = item.blocking ? console.error : console.warn;
+  output((item.blocking ? "ERROR" : "WARNING") + " document " + (item.index + 1) + ": " + item.issues.join(" | "));
+});
 
 console.log("CMS validation: " + result.summary.errors + " errors, " + result.summary.warnings + " warnings");
 if (result.summary.errors) process.exitCode = 1;

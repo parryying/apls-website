@@ -3,10 +3,12 @@ var APPROVED_DATA_PATHS = new Set([
   "data/calendar.js",
   "data/teachers.js",
   "data/gallery.js",
-  "data/events.js"
+  "data/events.js",
+  "data/documents.js"
 ]);
 var MAX_JSON_BYTES = 1024 * 1024;
 var MAX_MEDIA_BYTES = 2 * 1024 * 1024;
+var MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
 var githubTokenCache = null;
 var accessKeysCache = null;
 
@@ -144,7 +146,8 @@ function validateSubmissionFiles(files) {
     var file = entry[1] || {};
     var isData = APPROVED_DATA_PATHS.has(filePath);
     var isMedia = /^images\/uploads\/\d{4}\/[A-Za-z0-9][A-Za-z0-9._-]*\.webp$/.test(filePath);
-    if (!isData && !isMedia) throw Object.assign(new Error("Submission path is not allowed: " + filePath), { status: 400 });
+    var isDocument = /^pdfs\/uploads\/\d{4}\/[A-Za-z0-9][A-Za-z0-9._-]*\.pdf$/.test(filePath);
+    if (!isData && !isMedia && !isDocument) throw Object.assign(new Error("Submission path is not allowed: " + filePath), { status: 400 });
     if (file.encoding !== "utf-8" && file.encoding !== "base64") throw Object.assign(new Error("Unsupported encoding for " + filePath), { status: 400 });
     var size = file.encoding === "base64" ? Math.ceil(String(file.content || "").length * 0.75) : new TextEncoder().encode(String(file.content || "")).length;
     if (isData && (file.encoding !== "utf-8" || size > MAX_JSON_BYTES)) throw Object.assign(new Error("Invalid data payload for " + filePath), { status: 400 });
@@ -153,6 +156,11 @@ function validateSubmissionFiles(files) {
       var bytes = decodeBase64Url(String(file.content || "").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""));
       var webp = bytes.length >= 12 && new TextDecoder().decode(bytes.slice(0, 4)) === "RIFF" && new TextDecoder().decode(bytes.slice(8, 12)) === "WEBP";
       if (!webp) throw Object.assign(new Error("Media payload is not a valid WebP image: " + filePath), { status: 400 });
+    }
+    if (isDocument) {
+      if (file.encoding !== "base64" || size > MAX_DOCUMENT_BYTES) throw Object.assign(new Error("Invalid document payload for " + filePath), { status: 400 });
+      var documentBytes = decodeBase64Url(String(file.content || "").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""));
+      if (new TextDecoder().decode(documentBytes.slice(0, 5)) !== "%PDF-") throw Object.assign(new Error("Document payload is not a valid PDF: " + filePath), { status: 400 });
     }
   });
   return entries;

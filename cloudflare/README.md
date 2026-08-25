@@ -137,9 +137,10 @@ put the key in browser JavaScript, repository files, or GitHub Pages variables.
 ## 4. GitHub Actions
 
 `Review CMS Content` validates pull requests targeting `main` when an approved
-data file or `images/uploads/**` changes. CMS-generated branches must start with
-`cms/`. Successful same-repository submissions deploy their exact commit to the
-existing cPanel staging environment and add the staging URL to the pull request.
+data file, `images/uploads/**`, or `pdfs/uploads/**` changes. CMS-generated
+branches must start with `cms/`. Successful same-repository submissions deploy
+their exact commit to the existing cPanel staging environment and add the
+staging URL to the pull request.
 
 The workflow reuses the existing `cpanel-staging` environment, variables, and
 `CPANEL_SSH_PRIVATE_KEY` secret. Production remains the separate protected,
@@ -197,6 +198,24 @@ Before allowing a real update:
 7. Confirm invalid data is blocked in the review dialog before submission.
 8. Confirm a valid submission deploys the exact PR commit to `/_newsite/`.
 9. Confirm production is unchanged until Parry runs the protected workflow.
+10. Replace a PDF from Forms and documents, then confirm the new file appears
+    under `pdfs/uploads/YYYY/` on staging and the Forms page links to it.
+
+## 8. PDF documents
+
+`data/documents.js` drives the handbook and policy list on `forms.html`.
+Program application forms stay in `data/tuition.js` as `applicationUrl`, so a
+program never has two sources of truth; the Programs editor uploads into that
+same field.
+
+Uploads land in `pdfs/uploads/YYYY/<slug>-<hash>.pdf`. The worker checks the
+path shape, a 10 MB ceiling, and a `%PDF-` signature, so a renamed file cannot
+enter the repository.
+
+`prepare-site.sh` keeps a hand-maintained allowlist for the original PDFs but
+copies `pdfs/uploads/` wholesale. Without that, an uploaded PDF would pass
+review and then be silently dropped at deploy, leaving a broken link on the live
+site with nothing failing.
 
 Event image alt text is optional. When it is blank the website derives it from
 the item title and date, so a missing description cannot block a submission.

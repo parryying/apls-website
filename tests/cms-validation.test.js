@@ -10,7 +10,7 @@ var validation = require("../cms/shared-validation.js");
 function loadData() {
   var context = { window: {} };
   vm.createContext(context);
-  ["tuition", "calendar", "teachers", "gallery", "events"].forEach(function (name) {
+  ["tuition", "calendar", "teachers", "gallery", "events", "documents"].forEach(function (name) {
     var file = path.join(__dirname, "..", "data", name + ".js");
     vm.runInContext(fs.readFileSync(file, "utf8"), context, { filename: file });
   });
@@ -19,7 +19,8 @@ function loadData() {
     calendar: JSON.parse(JSON.stringify(context.window.APLS_CALENDAR)),
     teachers: JSON.parse(JSON.stringify(context.window.APLS_TEACHERS)),
     gallery: JSON.parse(JSON.stringify(context.window.APLS_GALLERY)),
-    events: JSON.parse(JSON.stringify(context.window.APLS_EVENTS))
+    events: JSON.parse(JSON.stringify(context.window.APLS_EVENTS)),
+    documents: JSON.parse(JSON.stringify(context.window.APLS_DOCUMENTS))
   };
 }
 
@@ -68,4 +69,27 @@ test("visible Gallery posts require valid Instagram URLs", function () {
   data.gallery.instagramPosts.push({ url: "https://example.com/not-instagram", caption: "Invalid", visible: true });
   var result = validation.validateAll(data, { today: "2026-08-21" });
   assert.equal(result.gallery[0].blocking, true);
+});
+
+test("a visible document without a file is rejected", function () {
+  var data = loadData();
+  data.documents.items.push({ title: "Parent handbook (2026)", file: "", program: "", visible: true });
+  var result = validation.validateAll(data, { today: "2026-08-21" });
+  assert.equal(result.documents[0].blocking, true);
+  assert.match(result.documents[0].issues.join("\n"), /PDF file is required/);
+});
+
+test("documents may only point at PDFs inside the pdfs folder", function () {
+  var data = loadData();
+  data.documents.items.push({ title: "Handbook", file: "https://example.com/handbook.pdf", program: "", visible: true });
+  var result = validation.validateAll(data, { today: "2026-08-21" });
+  assert.match(result.documents[0].issues.join("\n"), /must be a PDF in the pdfs folder/);
+});
+
+test("a hidden document with problems does not block a submission", function () {
+  var data = loadData();
+  data.documents.items.push({ title: "", file: "", program: "", visible: false });
+  var result = validation.validateAll(data, { today: "2026-08-21" });
+  assert.equal(result.documents[0].blocking, false);
+  assert.equal(result.summary.errors, 0);
 });
