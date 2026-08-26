@@ -10,7 +10,7 @@
   <link rel="canonical" href="https://www.apls.org/preschool.html" />
 
   <meta property="og:title" content="Chinese Immersion Preschool in Bellevue (Ages 2½–6) | APLS" />
-  <meta property="og:description" content="Full- and half-day Chinese immersion &amp; Japanese bilingual preschool in Bellevue — playful, warm, and school-readying. No prior language needed." />
+  <meta property="og:description" content="Full- and half-day Chinese and Japanese immersion preschool in Bellevue — playful, warm, and school-readying. No prior language needed." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.apls.org/preschool.html" />
   <meta property="og:site_name" content="Asia Pacific Language School" />
@@ -19,7 +19,7 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Chinese Immersion Preschool in Bellevue (Ages 2½–6) | APLS" />
-  <meta name="twitter:description" content="Full- and half-day Chinese immersion &amp; Japanese bilingual preschool in Bellevue — playful, warm, and school-readying." />
+  <meta name="twitter:description" content="Full- and half-day Chinese and Japanese immersion preschool in Bellevue — playful, warm, and school-readying." />
   <meta name="twitter:image" content="https://www.apls.org/images/apls-japanese-lesson.webp" />
 
   <!-- APLS:TUITION-JSONLD:START -->
@@ -29,20 +29,28 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20" />
+  <link rel="stylesheet" href="css/styles.css?v=21" />
 
-  <!-- ============ Structured data: Preschool + FAQ (helps Google & AI Overviews) ============ -->
+  <!-- ============ Structured data: preschool and childcare ============ -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": ["Preschool", "EducationalOrganization", "LocalBusiness"],
-    "name": "Asia Pacific Language School - Chinese & Japanese Immersion Preschool",
-    "alternateName": "APLS Preschool",
-    "description": "Accredited Chinese immersion and Japanese bilingual preschool in Bellevue, WA for ages 2½–6. Full- and half-day Mandarin Chinese or Japanese immersion, low ratios, native early-childhood teachers, year-round enrollment.",
-    "url": "https://www.apls.org/preschool.html",
+    "@type": ["Preschool", "ChildCare"],
+    "@id": "https://www.apls.org/#organization",
+    "name": "Asia Pacific Language School",
+    "alternateName": "APLS",
+    "description": "Accredited Chinese and Japanese immersion preschool in Bellevue, WA for ages 2½–6. Full- and half-day options, approximately six students per teacher, native-speaking early-childhood teachers, and year-round enrollment.",
+    "url": "https://www.apls.org/",
+    "mainEntityOfPage": "https://www.apls.org/preschool.html",
+    "image": "https://www.apls.org/images/apls-japanese-lesson.webp",
     "telephone": "+1-425-747-4172",
     "email": "apls@apls.org",
-    "parentOrganization": { "@id": "https://www.apls.org/#organization" },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "08:00",
+      "closes": "18:00"
+    },
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "14042 NE 8th Street, 1st Floor",
@@ -51,8 +59,26 @@
       "postalCode": "98007",
       "addressCountry": "US"
     },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 47.6175908,
+      "longitude": -122.1518198
+    },
+    "hasMap": "https://maps.app.goo.gl/M1rjURfzHz67xjtdA",
     "areaServed": ["Bellevue", "Redmond", "Kirkland", "Sammamish", "Issaquah", "Newcastle", "Eastside"],
-    "knowsLanguage": ["Chinese", "Japanese", "English"]
+    "knowsLanguage": ["Chinese", "Japanese", "English"],
+    "additionalProperty": [
+      {
+        "@type": "PropertyValue",
+        "name": "Ages served",
+        "value": "2½–6 years"
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Approximate student-teacher ratio",
+        "value": "6:1"
+      }
+    ]
   }
   </script>
 </head>
@@ -125,12 +151,44 @@
       <p class="eyebrow"><span data-program-status-text="preschool">Now enrolling</span> · Ages 2½–6 · Bellevue, WA</p>
       <h1>Chinese &amp; Japanese Immersion Preschool in Bellevue</h1>
       <p>
-        APLS is an accredited <strong>Chinese immersion preschool</strong> and Japanese bilingual
+        APLS is an accredited <strong>Chinese immersion preschool</strong> and Japanese immersion
         preschool in Bellevue, WA, immersing children ages 2½–6 in Mandarin Chinese or Japanese during
         the years a second language comes most naturally — <strong>no prior knowledge of the language
         required</strong>. Through language and culture, we spark curiosity and imagination while building
         the social, emotional, and cognitive skills that make children school-ready.
       </p>
+    </div>
+  </section>
+
+  <section class="preschool-facts" aria-labelledby="preschool-facts-heading">
+    <div class="container">
+      <h2 id="preschool-facts-heading">Preschool at a glance</h2>
+      <dl class="preschool-facts-list">
+        <div>
+          <dt>Ages</dt>
+          <dd>2½–6 years</dd>
+        </div>
+        <div>
+          <dt>Languages</dt>
+          <dd>Chinese or Japanese immersion</dd>
+        </div>
+        <div>
+          <dt>Hours</dt>
+          <dd>Half day 9:00 a.m.–12:00 p.m.; full day 8:00 a.m.–5:30 p.m.</dd>
+        </div>
+        <div>
+          <dt>Schedule</dt>
+          <dd>2–5 days per week</dd>
+        </div>
+        <div>
+          <dt>Student-teacher ratio</dt>
+          <dd>Approximately 6:1</dd>
+        </div>
+        <div>
+          <dt>Monthly tuition</dt>
+          <dd><a href="#tuition-and-fees" data-tuition-summary="preschool"><!-- APLS:TUITION-SUMMARY:START -->View current tuition<!-- APLS:TUITION-SUMMARY:END --></a></dd>
+        </div>
+      </dl>
     </div>
   </section>
 

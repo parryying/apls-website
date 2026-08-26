@@ -63,4 +63,9 @@ for pdf in "${pdfs[@]}"; do
   cp "$repository_root/pdfs/$pdf" "$destination/pdfs/$pdf"
 done
 
+# Content Studio uploads land here, so they must ship without editing this list.
+if [ -d "$repository_root/pdfs/uploads" ]; then
+  cp -R "$repository_root/pdfs/uploads" "$destination/pdfs/uploads"
+fi
+
 find "$destination" -type f -printf '%P\n' | LC_ALL=C sort

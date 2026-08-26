@@ -276,6 +276,15 @@
     return issues;
   }
 
+  function documentItemIssues(item) {
+    var issues = [];
+    var file = String(item.file || "").trim();
+    if (!String(item.title || "").trim()) issues.push("Link text is required");
+    if (!file) issues.push("A PDF file is required");
+    else if (!/^pdfs\/[^?#]+\.pdf$/i.test(file)) issues.push("The file must be a PDF in the pdfs folder");
+    return issues;
+  }
+
   function instagramUrlValid(value) {
     return /^https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/[^/?#]+/i.test(String(value || "").trim());
   }
@@ -283,7 +292,7 @@
   function validateAll(input, options) {
     input = input || {};
     var rows = input.calendarRows || calendarToRows(input.calendar);
-    var result = { programs: {}, calendar: [], events: [], gallery: [], summary: { errors: 0, warnings: 0 } };
+    var result = { programs: {}, calendar: [], events: [], gallery: [], documents: [], summary: { errors: 0, warnings: 0 } };
     Object.keys(input.tuition && input.tuition.programs || {}).forEach(function (key) {
       var validation = validateProgram(key, {
         tuition: input.tuition,
@@ -305,9 +314,14 @@
     (input.gallery && input.gallery.instagramPosts || []).forEach(function (post, index) {
       if (post.visible !== false && !instagramUrlValid(post.url)) result.gallery.push({ index: index, blocking: true, issues: ["A visible Gallery post needs a valid public Instagram post or Reel URL"] });
     });
+    (input.documents && input.documents.items || []).forEach(function (item, index) {
+      var issues = documentItemIssues(item);
+      if (issues.length) result.documents.push({ index: index, blocking: item.visible !== false, issues: issues });
+    });
     result.summary.errors += result.calendar.length;
     result.summary.errors += result.events.filter(function (item) { return item.blocking; }).length;
     result.summary.errors += result.gallery.filter(function (item) { return item.blocking; }).length;
+    result.summary.errors += result.documents.filter(function (item) { return item.blocking; }).length;
     return result;
   }
 
@@ -315,6 +329,7 @@
     calendarRowIssues: calendarRowIssues,
     calendarToRows: calendarToRows,
     dateFromIso: dateFromIso,
+    documentItemIssues: documentItemIssues,
     eventItemIssues: eventItemIssues,
     instagramUrlValid: instagramUrlValid,
     validateAll: validateAll,

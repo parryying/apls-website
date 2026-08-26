@@ -14,10 +14,14 @@ var approvedFiles = new Set([
   "data/calendar.js",
   "data/teachers.js",
   "data/gallery.js",
-  "data/events.js"
+  "data/events.js",
+  "data/documents.js"
 ]);
 var rejected = changed.filter(function (file) {
-  return !approvedFiles.has(file) && !/^images\/uploads\/\d{4}\/[A-Za-z0-9][A-Za-z0-9._-]*$/.test(file);
+  if (approvedFiles.has(file)) return false;
+  if (/^images\/uploads\/\d{4}\/[A-Za-z0-9][A-Za-z0-9._-]*$/.test(file)) return false;
+  if (/^pdfs\/uploads\/\d{4}\/[A-Za-z0-9][A-Za-z0-9._-]*\.pdf$/.test(file)) return false;
+  return true;
 });
 
 console.log("CMS submission files:\n" + changed.map(function (file) { return "- " + file; }).join("\n"));

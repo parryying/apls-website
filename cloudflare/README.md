@@ -44,8 +44,19 @@ Provisioned values for this account:
 | D1 database | `apls-content-studio` |
 
 Access protects the whole origin with a self-hosted application, email one-time
-PIN, and an `Editors` policy listing only the approved addresses. Confirm it is
-enforcing:
+PIN, and an `Editors` policy listing only the approved addresses.
+
+One-time PIN must exist as an **account-level identity provider**, not just be
+implied by the application. Add it under Zero Trust -> Team & Resources ->
+Identity providers -> Add new -> One-time PIN; it needs no credentials. Without
+it the login page offers only "Sign in with Cloudflare", which an editor who has
+no Cloudflare account cannot use. Being listed in the `Editors` policy grants
+authorisation, not a way to authenticate.
+
+Do not add an editor as a Cloudflare account member. That grants dashboard and
+billing access and is unrelated to Access sign-in.
+
+Confirm Access is enforcing:
 
 ```powershell
 curl.exe -s -o NUL -D - "https://apls-content-studio.pages.dev/api/content"
@@ -126,9 +137,10 @@ put the key in browser JavaScript, repository files, or GitHub Pages variables.
 ## 4. GitHub Actions
 
 `Review CMS Content` validates pull requests targeting `main` when an approved
-data file or `images/uploads/**` changes. CMS-generated branches must start with
-`cms/`. Successful same-repository submissions deploy their exact commit to the
-existing cPanel staging environment and add the staging URL to the pull request.
+data file, `images/uploads/**`, or `pdfs/uploads/**` changes. CMS-generated
+branches must start with `cms/`. Successful same-repository submissions deploy
+their exact commit to the existing cPanel staging environment and add the
+staging URL to the pull request.
 
 The workflow reuses the existing `cpanel-staging` environment, variables, and
 `CPANEL_SSH_PRIVATE_KEY` secret. Production remains the separate protected,
@@ -156,7 +168,23 @@ deletes a draft only when the editor selects **Reset draft** or when
 A rejected submission therefore needs its pull request **closed** before the
 editor returns to published content.
 
-## 6. Pilot checks
+## 6. One open submission per editor
+
+A second submission supersedes the first. After the new pull request is created,
+`supersedePreviousSubmissions` finds the editor's earlier submissions, and for
+any still open it adds a "Superseded by a newer Content Studio submission"
+comment, closes the pull request, and deletes its branch.
+
+This matches the editor's mental model: the CMS shows one status panel, so only
+one review should be waiting. It also keeps stale branches from accumulating.
+The review dialog warns before the second submit that the previous update will
+be replaced.
+
+Superseding never touches pull requests from other editors or branches outside
+`cms/*`, and a failure to close an old pull request is logged without failing
+the new submission.
+
+## 7. Pilot checks
 
 Before allowing a real update:
 
@@ -170,6 +198,40 @@ Before allowing a real update:
 7. Confirm invalid data is blocked in the review dialog before submission.
 8. Confirm a valid submission deploys the exact PR commit to `/_newsite/`.
 9. Confirm production is unchanged until Parry runs the protected workflow.
+10. Replace a PDF from Forms and documents, then confirm the new file appears
+    under `pdfs/uploads/YYYY/` on staging and the Forms page links to it.
+
+## 8. When checks fail
+
+Most problems are caught in the review dialog before submission, including
+references to an upload whose bytes are missing from the current device.
+
+If a submission still fails its checks, the review workflow posts a pull-request
+comment marked `<!-- cms-editor-issues -->` listing the `ERROR` lines from
+`validate:cms` and `validate:cms-media`. `/api/submissions/current` reads that
+comment and returns the lines as `issues`, which the editor shows under
+**Update needs attention**.
+
+The editor only falls back to "Contact your website manager" when the failure
+produced no editor-fixable messages, which is the case for a genuine build or
+deployment fault. A dead-end message for a missing required field would send
+the editor to Parry for something she could fix in seconds.
+
+## 9. PDF documents
+
+`data/documents.js` drives the handbook and policy list on `forms.html`.
+Program application forms stay in `data/tuition.js` as `applicationUrl`, so a
+program never has two sources of truth; the Programs editor uploads into that
+same field.
+
+Uploads land in `pdfs/uploads/YYYY/<slug>-<hash>.pdf`. The worker checks the
+path shape, a 10 MB ceiling, and a `%PDF-` signature, so a renamed file cannot
+enter the repository.
+
+`prepare-site.sh` keeps a hand-maintained allowlist for the original PDFs but
+copies `pdfs/uploads/` wholesale. Without that, an uploaded PDF would pass
+review and then be silently dropped at deploy, leaving a broken link on the live
+site with nothing failing.
 
 Event image alt text is optional. When it is blank the website derives it from
 the item title and date, so a missing description cannot block a submission.

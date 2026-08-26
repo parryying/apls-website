@@ -3,10 +3,12 @@ var APPROVED_DATA_PATHS = new Set([
   "data/calendar.js",
   "data/teachers.js",
   "data/gallery.js",
-  "data/events.js"
+  "data/events.js",
+  "data/documents.js"
 ]);
 var MAX_JSON_BYTES = 1024 * 1024;
 var MAX_MEDIA_BYTES = 2 * 1024 * 1024;
+var MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
 var githubTokenCache = null;
 var accessKeysCache = null;
 
@@ -144,7 +146,8 @@ function validateSubmissionFiles(files) {
     var file = entry[1] || {};
     var isData = APPROVED_DATA_PATHS.has(filePath);
     var isMedia = /^images\/uploads\/\d{4}\/[A-Za-z0-9][A-Za-z0-9._-]*\.webp$/.test(filePath);
-    if (!isData && !isMedia) throw Object.assign(new Error("Submission path is not allowed: " + filePath), { status: 400 });
+    var isDocument = /^pdfs\/uploads\/\d{4}\/[A-Za-z0-9][A-Za-z0-9._-]*\.pdf$/.test(filePath);
+    if (!isData && !isMedia && !isDocument) throw Object.assign(new Error("Submission path is not allowed: " + filePath), { status: 400 });
     if (file.encoding !== "utf-8" && file.encoding !== "base64") throw Object.assign(new Error("Unsupported encoding for " + filePath), { status: 400 });
     var size = file.encoding === "base64" ? Math.ceil(String(file.content || "").length * 0.75) : new TextEncoder().encode(String(file.content || "")).length;
     if (isData && (file.encoding !== "utf-8" || size > MAX_JSON_BYTES)) throw Object.assign(new Error("Invalid data payload for " + filePath), { status: 400 });
@@ -154,8 +157,34 @@ function validateSubmissionFiles(files) {
       var webp = bytes.length >= 12 && new TextDecoder().decode(bytes.slice(0, 4)) === "RIFF" && new TextDecoder().decode(bytes.slice(8, 12)) === "WEBP";
       if (!webp) throw Object.assign(new Error("Media payload is not a valid WebP image: " + filePath), { status: 400 });
     }
+    if (isDocument) {
+      if (file.encoding !== "base64" || size > MAX_DOCUMENT_BYTES) throw Object.assign(new Error("Invalid document payload for " + filePath), { status: 400 });
+      var documentBytes = decodeBase64Url(String(file.content || "").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""));
+      if (new TextDecoder().decode(documentBytes.slice(0, 5)) !== "%PDF-") throw Object.assign(new Error("Document payload is not a valid PDF: " + filePath), { status: 400 });
+    }
   });
   return entries;
+}
+
+// A newer submission replaces the editor's previous one, so only one review stays open.
+async function supersedePreviousSubmissions(env, identity, currentPrNumber, currentUrl) {
+  var previous = await env.DB.prepare("SELECT pr_number, branch FROM submissions WHERE editor_email = ? AND pr_number != ? ORDER BY id DESC LIMIT 5")
+    .bind(identity.email, currentPrNumber).all();
+  for (var index = 0; index < (previous.results || []).length; index++) {
+    var row = previous.results[index];
+    try {
+      var pull = await github(env, "/pulls/" + row.pr_number);
+      if (pull.state !== "open") continue;
+      await github(env, "/issues/" + row.pr_number + "/comments", {
+        method: "POST",
+        body: JSON.stringify({ body: "Superseded by a newer Content Studio submission: " + currentUrl })
+      });
+      await github(env, "/pulls/" + row.pr_number, { method: "PATCH", body: JSON.stringify({ state: "closed" }) });
+      await github(env, "/git/refs/heads/" + row.branch, { method: "DELETE" });
+    } catch (error) {
+      console.error("Could not supersede pull request " + row.pr_number + ": " + error.message);
+    }
+  }
 }
 
 async function createSubmission(request, env, identity) {
@@ -202,7 +231,26 @@ async function createSubmission(request, env, identity) {
   });
   await env.DB.prepare("INSERT INTO submissions (editor_email, branch, pr_number, head_sha, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
     .bind(identity.email, branch, pull.number, commit.sha, "submitted", now, now).run();
+  await supersedePreviousSubmissions(env, identity, pull.number, pull.html_url);
   return json({ submission: { branch: branch, prNumber: pull.number, headSha: commit.sha, url: pull.html_url, status: "submitted" } }, 201, request, env);
+}
+
+// Checks that fail for an editor-fixable reason report the details as a marked pull-request comment.
+async function submissionIssues(env, prNumber) {
+  try {
+    var comments = await github(env, "/issues/" + prNumber + "/comments?per_page=100");
+    var latest = (comments || []).filter(function (comment) {
+      return String(comment.body || "").indexOf("<!-- cms-editor-issues -->") !== -1;
+    }).pop();
+    if (!latest) return [];
+    return String(latest.body).split(/\r?\n/)
+      .filter(function (line) { return /^- \S/.test(line); })
+      .map(function (line) { return line.replace(/^- /, "").trim(); })
+      .slice(0, 12);
+  } catch (error) {
+    console.error("Could not read submission issues: " + error.message);
+    return [];
+  }
 }
 
 async function route(request, env) {
@@ -244,7 +292,8 @@ async function route(request, env) {
     if (status === "merged" || status === "closed") {
       await env.DB.prepare("DELETE FROM drafts WHERE editor_email = ?").bind(identity.email).run();
     }
-    return json({ submission: { branch: row.branch, prNumber: row.pr_number, headSha: row.head_sha, status: status, url: pull.html_url, updatedAt: row.updated_at } }, 200, request, env);
+    var issues = status === "checks-failed" ? await submissionIssues(env, row.pr_number) : [];
+    return json({ submission: { branch: row.branch, prNumber: row.pr_number, headSha: row.head_sha, status: status, url: pull.html_url, updatedAt: row.updated_at, issues: issues } }, 200, request, env);
   }
   return json({ error: "Not found" }, 404, request, env);
 }

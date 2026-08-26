@@ -61,6 +61,29 @@
     return heading;
   }
 
+  function preschoolTuitionRange(program) {
+    var prices = [];
+    (program.rows || []).forEach(function (row) {
+      row.slice(1).forEach(function (cell) {
+        var match = String(cell || "").match(/\$([\d,]+(?:\.\d{1,2})?)/);
+        if (match) prices.push(Number(match[1].replace(/,/g, "")));
+      });
+    });
+    if (!prices.length) return "";
+    var currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+    return currency.format(Math.min.apply(Math, prices)) + "–" + currency.format(Math.max.apply(Math, prices)) + " per month";
+  }
+
+  function renderTuitionSummaries() {
+    if (typeof window.APLS_TUITION === "undefined") return;
+    var programs = window.APLS_TUITION.programs || {};
+    document.querySelectorAll("[data-tuition-summary]").forEach(function (summary) {
+      var programKey = summary.getAttribute("data-tuition-summary");
+      var text = programKey === "preschool" && programs[programKey] ? preschoolTuitionRange(programs[programKey]) : "";
+      if (text) summary.textContent = text;
+    });
+  }
+
   function renderTuition() {
     var root = document.getElementById("tuition-root");
     if (!root || typeof window.APLS_TUITION === "undefined") return;
@@ -915,11 +938,44 @@
       return card;
   }
 
+  function documentLink(item) {
+    var link = document.createElement("a");
+    link.href = item.file;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "\uD83D\uDCC4 " + (item.title || "Document");
+    return link;
+  }
+
+  function renderDocuments() {
+    if (typeof window.APLS_DOCUMENTS === "undefined") return;
+    var items = (window.APLS_DOCUMENTS.items || []).filter(function (item) {
+      return item.visible !== false && String(item.file || "").trim() && String(item.title || "").trim();
+    });
+
+    document.querySelectorAll("[data-program-documents]").forEach(function (root) {
+      var key = root.getAttribute("data-program-documents");
+      items.filter(function (item) { return item.program === key; }).forEach(function (item) {
+        root.appendChild(documentLink(item));
+      });
+    });
+
+    document.querySelectorAll("[data-documents-root]").forEach(function (root) {
+      var general = items.filter(function (item) { return !String(item.program || "").trim(); });
+      root.textContent = "";
+      general.forEach(function (item) { root.appendChild(documentLink(item)); });
+      var section = root.closest("[data-documents-section]");
+      if (section) section.hidden = general.length === 0;
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     renderTuition();
     renderProgramTuition();
+    renderTuitionSummaries();
     renderSharedFeeRates();
     renderApplicationLinks();
+    renderDocuments();
     renderProgramContent();
     renderCalendar();
     renderTeachers();

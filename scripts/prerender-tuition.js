@@ -8,6 +8,8 @@ var CONTENT_START = "<!-- APLS:TUITION:START -->";
 var CONTENT_END = "<!-- APLS:TUITION:END -->";
 var JSONLD_START = "<!-- APLS:TUITION-JSONLD:START -->";
 var JSONLD_END = "<!-- APLS:TUITION-JSONLD:END -->";
+var SUMMARY_START = "<!-- APLS:TUITION-SUMMARY:START -->";
+var SUMMARY_END = "<!-- APLS:TUITION-SUMMARY:END -->";
 var SITE_URL = "https://www.apls.org/";
 var PROGRAM_PAGES = {
   preschool: "preschool.html",
@@ -137,6 +139,19 @@ function priceColumnIndexes(programKey, program) {
   if (programKey === "preschool") return (program.columns || []).map(function (_, index) { return index; }).slice(1);
   var tuitionIndex = (program.columns || []).findIndex(function (column) { return /tuition/i.test(column); });
   return tuitionIndex === -1 ? [] : [tuitionIndex];
+}
+
+function preschoolTuitionRange(program) {
+  var prices = [];
+  (program.rows || []).forEach(function (row) {
+    row.slice(1).forEach(function (cell) {
+      var price = parsePrice(cell);
+      if (price) prices.push(Number(price));
+    });
+  });
+  if (!prices.length) return "View current tuition";
+  var currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  return currency.format(Math.min.apply(Math, prices)) + "–" + currency.format(Math.max.apply(Math, prices)) + " per month";
 }
 
 function unitText(programKey) {
@@ -291,6 +306,9 @@ function prerender(destination) {
       applicableFees(data, programKey)
     ));
     replaceFileRegion(file, JSONLD_START, JSONLD_END, renderJsonLd(data, programKey));
+    if (programKey === "preschool") {
+      replaceFileRegion(file, SUMMARY_START, SUMMARY_END, preschoolTuitionRange(data.programs[programKey]));
+    }
   });
 
   replaceFileRegion(path.join(root, "llms.txt"), CONTENT_START, CONTENT_END, renderLlmsTuition(data));
@@ -312,7 +330,10 @@ module.exports = {
   CONTENT_START: CONTENT_START,
   JSONLD_END: JSONLD_END,
   JSONLD_START: JSONLD_START,
+  SUMMARY_END: SUMMARY_END,
+  SUMMARY_START: SUMMARY_START,
   escapeHtml: escapeHtml,
+  preschoolTuitionRange: preschoolTuitionRange,
   prerender: prerender,
   renderFullTuition: renderFullTuition,
   renderJsonLd: renderJsonLd,
