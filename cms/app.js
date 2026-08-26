@@ -216,6 +216,11 @@
     return Boolean(program.term) && String(program.term).toLowerCase() !== "year-round" && program.enrollmentStatus !== "Inquire";
   }
 
+  // Drafts are deliberately allowed to be incomplete, so a field is only required once the item is published.
+  function eventFieldRequired(item) {
+    return item.status === "published";
+  }
+
   function setRequiredBadge(path, required) {
     var control = editorContent.querySelector('[data-path="' + path + '"]');
     var wrapper = control && control.closest(".field");
@@ -236,7 +241,8 @@
     }
     if (activeSection === "events") {
       ((state.events || {}).items || []).forEach(function (item, index) {
-        setRequiredBadge("items." + index + ".startDate", item.type !== "announcement");
+        setRequiredBadge("items." + index + ".startDate", eventFieldRequired(item));
+        setRequiredBadge("items." + index + ".title", eventFieldRequired(item));
       });
     }
   }
@@ -1183,10 +1189,10 @@
         '<div class="field-grid">' +
           field("Content type", base + ".type", item.type || "event", { options: [{ value: "event", label: "Event" }, { value: "announcement", label: "Announcement" }] }) +
           field("Publishing status", base + ".status", item.status || "draft", { options: [{ value: "draft", label: "Draft \u2014 hidden from the website" }, { value: "published", label: "Published \u2014 visible on the website" }, { value: "archived", label: "Archived \u2014 removed from the website" }], hint: item.status === "published" ? "This item appears on the Events page once your update is published." : "Only Published items appear on the website. Draft items stay private, even after the website is updated." }) +
-          field("Title", base + ".title", item.title || "", { full: true, required: true }) +
+          field("Title", base + ".title", item.title || "", { full: true, required: eventFieldRequired(item) }) +
           field("Description", base + ".summary", item.summary || "", { textarea: true, full: true, rows: 4 }) +
         '</div><div class="event-only-fields' + (item.type === "announcement" ? " is-hidden" : "") + '"><h4>Event details</h4><div class="field-grid">' +
-          field("Start date", base + ".startDate", item.startDate || "", { type: "date", required: item.type !== "announcement" }) +
+          field("Start date", base + ".startDate", item.startDate || "", { type: "date", required: eventFieldRequired(item) && item.type !== "announcement", hint: item.status === "published" ? "" : "Needed before you can publish this item." }) +
           field("End date", base + ".endDate", item.endDate || "", { type: "date", hint: "Leave blank for one-day events" }) +
           field("Start time", base + ".startTime", item.startTime || "", { type: "time" }) +
           field("End time", base + ".endTime", item.endTime || "", { type: "time" }) +
