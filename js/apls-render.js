@@ -389,13 +389,72 @@
     return link;
   }
 
+  function calendarDate(value) {
+    return String(value || "").replace(/-/g, "");
+  }
+
+  function calendarDateAfter(value) {
+    var date = dateFromValue(value);
+    if (!date) return "";
+    date.setDate(date.getDate() + 1);
+    return date.getFullYear() + String(date.getMonth() + 1).padStart(2, "0") + String(date.getDate()).padStart(2, "0");
+  }
+
+  function calendarText(value) {
+    return String(value || "")
+      .replace(/\\/g, "\\\\")
+      .replace(/\r?\n/g, "\\n")
+      .replace(/([,;])/g, "\\$1");
+  }
+
+  function calendarTimestamp(date, time) {
+    return calendarDate(date) + "T" + String(time || "").replace(":", "") + "00";
+  }
+
+  function calendarFile(item) {
+    var location = [item.locationName, item.address].filter(Boolean).join(", ");
+    var lines = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Asia Pacific Language School//Events//EN",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      "UID:" + calendarText((item.id || item.title || "event") + "@apls.org"),
+      "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "")
+    ];
+    if (item.startTime) {
+      lines.push("DTSTART;TZID=America/Los_Angeles:" + calendarTimestamp(item.startDate, item.startTime));
+      if (item.endTime) lines.push("DTEND;TZID=America/Los_Angeles:" + calendarTimestamp(item.endDate || item.startDate, item.endTime));
+    } else {
+      lines.push("DTSTART;VALUE=DATE:" + calendarDate(item.startDate));
+      lines.push("DTEND;VALUE=DATE:" + calendarDateAfter(item.endDate || item.startDate));
+    }
+    lines.push("SUMMARY:" + calendarText(item.title || "APLS event"));
+    if (item.summary) lines.push("DESCRIPTION:" + calendarText(item.summary));
+    if (location) lines.push("LOCATION:" + calendarText(location));
+    lines.push("URL:https://www.apls.org/events.html", "STATUS:CONFIRMED", "END:VEVENT", "END:VCALENDAR");
+    return lines.join("\r\n") + "\r\n";
+  }
+
+  function calendarAction(item) {
+    if (item.type === "announcement" || !dateFromValue(item.startDate)) return null;
+    var link = el("a", "btn btn-ghost", "Add to Calendar");
+    link.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(calendarFile(item));
+    link.download = String(item.title || "apls-event").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".ics";
+    link.setAttribute("aria-label", "Add " + (item.title || "this event") + " to your calendar");
+    return link;
+  }
+
   function appendEventActions(parent, item) {
     var primary = eventAction(item.primaryLabel, item.primaryUrl, true);
     var secondary = eventAction(item.secondaryLabel, item.secondaryUrl, false);
-    if (!primary && !secondary) return;
+    var calendar = calendarAction(item);
+    if (!primary && !secondary && !calendar) return;
     var actions = el("div", "event-actions");
     if (primary) actions.appendChild(primary);
     if (secondary) actions.appendChild(secondary);
+    if (calendar) actions.appendChild(calendar);
     parent.appendChild(actions);
   }
 

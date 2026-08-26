@@ -19,8 +19,6 @@ window.APLS_EVENTS = {
       imageAlt: "APLS Open House flyer for Saturday, August 22, 2026, from 10:00 a.m. to 1:00 p.m.",
       primaryLabel: "Get Directions",
       primaryUrl: "https://maps.app.goo.gl/M1rjURfzHz67xjtdA",
-      secondaryLabel: "Contact APLS",
-      secondaryUrl: "contact.html",
       showOnCalendar: true
     }
   ]
