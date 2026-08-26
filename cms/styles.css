@@ -416,6 +416,22 @@ h3 {
   margin-bottom: 0;
 }
 
+.submission-issues {
+  margin: 0.6rem 0 0;
+  padding-left: 1.15rem;
+  color: #8a2f24;
+  font-size: 0.85rem;
+}
+
+.submission-issues[hidden] {
+  display: none;
+}
+
+.submission-issues li {
+  margin-bottom: 0.3rem;
+  overflow-wrap: anywhere;
+}
+
 .submission-status strong {
   color: var(--teal-dark);
 }

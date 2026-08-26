@@ -235,6 +235,24 @@ async function createSubmission(request, env, identity) {
   return json({ submission: { branch: branch, prNumber: pull.number, headSha: commit.sha, url: pull.html_url, status: "submitted" } }, 201, request, env);
 }
 
+// Checks that fail for an editor-fixable reason report the details as a marked pull-request comment.
+async function submissionIssues(env, prNumber) {
+  try {
+    var comments = await github(env, "/issues/" + prNumber + "/comments?per_page=100");
+    var latest = (comments || []).filter(function (comment) {
+      return String(comment.body || "").indexOf("<!-- cms-editor-issues -->") !== -1;
+    }).pop();
+    if (!latest) return [];
+    return String(latest.body).split(/\r?\n/)
+      .filter(function (line) { return /^- \S/.test(line); })
+      .map(function (line) { return line.replace(/^- /, "").trim(); })
+      .slice(0, 12);
+  } catch (error) {
+    console.error("Could not read submission issues: " + error.message);
+    return [];
+  }
+}
+
 async function route(request, env) {
   if (request.method === "OPTIONS") return json({}, 204, request, env);
   var identity = await verifyIdentity(request, env);
@@ -274,7 +292,8 @@ async function route(request, env) {
     if (status === "merged" || status === "closed") {
       await env.DB.prepare("DELETE FROM drafts WHERE editor_email = ?").bind(identity.email).run();
     }
-    return json({ submission: { branch: row.branch, prNumber: row.pr_number, headSha: row.head_sha, status: status, url: pull.html_url, updatedAt: row.updated_at } }, 200, request, env);
+    var issues = status === "checks-failed" ? await submissionIssues(env, row.pr_number) : [];
+    return json({ submission: { branch: row.branch, prNumber: row.pr_number, headSha: row.head_sha, status: status, url: pull.html_url, updatedAt: row.updated_at, issues: issues } }, 200, request, env);
   }
   return json({ error: "Not found" }, 404, request, env);
 }

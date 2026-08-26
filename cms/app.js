@@ -91,6 +91,7 @@
   var submissionStatusPanel = document.getElementById("submission-status");
   var submissionStatusTitle = document.getElementById("submission-status-title");
   var submissionStatusMessage = document.getElementById("submission-status-message");
+  var submissionIssueList = document.getElementById("submission-issues");
   var stagingProgress = document.getElementById("staging-progress");
   var stagingProgressText = document.getElementById("staging-progress-text");
   var stagingLink = document.getElementById("staging-link");
@@ -1773,15 +1774,20 @@
     var statuses = {
       submitted: ["Preparing staging", "Your update was received. The staging button appears at the top of this page in about a minute."],
       "checks-running": ["Preparing staging", "Your update is being checked. The staging button appears at the top of this page in about a minute."],
-      "checks-failed": ["Update needs attention", "This update was not published to staging. Contact your website manager."],
+      "checks-failed": ["Update needs attention", "This update was not published to staging."],
       "staging-ready": ["Staging is ready", "Select View staging site at the top of this page to review your changes before they are published."],
       merged: ["Update approved", "This submission was approved. Its staging preview remains available."],
       closed: ["Review closed", "This submission was closed without being published."]
     };
     var status = statuses[submission.status] ? submission.status : "submitted";
     openSubmissionNumber = status === "merged" || status === "closed" ? null : submission.prNumber;
+    var issues = status === "checks-failed" ? (submission.issues || []) : [];
     submissionStatusTitle.textContent = statuses[status][0];
-    submissionStatusMessage.textContent = statuses[status][1];
+    submissionStatusMessage.textContent = statuses[status][1] + (status === "checks-failed"
+      ? (issues.length ? " Fix the points below, then submit again." : " Contact your website manager.")
+      : "");
+    submissionIssueList.innerHTML = issues.map(function (issue) { return "<li>" + escapeHtml(issue) + "</li>"; }).join("");
+    submissionIssueList.hidden = !issues.length;
     submissionStatusPanel.className = "submission-status is-" + status;
     var waiting = status === "submitted" || status === "checks-running";
     var ready = status === "staging-ready" || status === "merged";
@@ -1803,6 +1809,30 @@
     }).catch(function () {
       submissionStatusMessage.textContent = "Status could not be refreshed. Reload this page to try again.";
     });
+  }
+
+  function uploadPaths(root) {
+    return JSON.stringify(root || {}).match(/(?:images|pdfs)\/uploads\/[^"]+/g) || [];
+  }
+
+  // An upload only exists on the device that made it, so a reference without bytes fails CI after submission.
+  function missingUploadIssues() {
+    var committed = {};
+    uploadPaths(sourceState).forEach(function (path) { committed[path] = true; });
+    var issues = [];
+    function check(value, label) {
+      var path = String(value || "");
+      if (!/^(?:images|pdfs)\/uploads\//.test(path)) return;
+      if (pendingMedia[path] || committed[path]) return;
+      issues.push([label, "The file is not on this device. Choose it again before submitting."]);
+    }
+    (state.teachers || []).forEach(function (teacher, index) { check(teacher.photo, "Teacher " + (index + 1) + " photo"); });
+    (state.events.items || []).forEach(function (item, index) { check(item.image, "Events item " + (index + 1) + " image"); });
+    (state.documents.items || []).forEach(function (item, index) { check(item.file, "Document " + (index + 1) + " PDF"); });
+    Object.keys(state.tuition.programs || {}).forEach(function (key) {
+      check(state.tuition.programs[key].applicationUrl, (state.tuition.programs[key].name || key) + " application form");
+    });
+    return issues;
   }
 
   function blockingSubmissionIssues() {
@@ -1833,7 +1863,7 @@
     (result.documents || []).forEach(function (item) {
       if (item.blocking) blocking.push(["Forms and documents — item " + (item.index + 1), item.issues.join(" | ")]);
     });
-    return blocking;
+    return blocking.concat(missingUploadIssues());
   }
 
   function openReviewDialog() {

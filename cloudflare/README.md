@@ -201,7 +201,23 @@ Before allowing a real update:
 10. Replace a PDF from Forms and documents, then confirm the new file appears
     under `pdfs/uploads/YYYY/` on staging and the Forms page links to it.
 
-## 8. PDF documents
+## 8. When checks fail
+
+Most problems are caught in the review dialog before submission, including
+references to an upload whose bytes are missing from the current device.
+
+If a submission still fails its checks, the review workflow posts a pull-request
+comment marked `<!-- cms-editor-issues -->` listing the `ERROR` lines from
+`validate:cms` and `validate:cms-media`. `/api/submissions/current` reads that
+comment and returns the lines as `issues`, which the editor shows under
+**Update needs attention**.
+
+The editor only falls back to "Contact your website manager" when the failure
+produced no editor-fixable messages, which is the case for a genuine build or
+deployment fault. A dead-end message for a missing required field would send
+the editor to Parry for something she could fix in seconds.
+
+## 9. PDF documents
 
 `data/documents.js` drives the handbook and policy list on `forms.html`.
 Program application forms stay in `data/tuition.js` as `applicationUrl`, so a
