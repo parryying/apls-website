@@ -24,10 +24,16 @@ function loadData() {
   };
 }
 
+// Editors submit real content through these tests, so assertions must target the case under test
+// rather than the whole data set. A draft with blanks is allowed and must not fail an unrelated test.
+function issuesFor(list, index) {
+  var entry = (list || []).find(function (item) { return item.index === index; });
+  return entry ? entry.issues.join("\n") : "";
+}
+
 test("current canonical CMS data passes shared validation", function () {
   var result = validation.validateAll(loadData(), { today: "2026-08-21" });
   assert.equal(result.summary.errors, 0);
-  assert.equal(result.summary.warnings, 0);
 });
 
 test("incorrect per-class tuition is rejected", function () {
@@ -52,7 +58,7 @@ test("published event images do not require alt text", function () {
   var data = loadData();
   data.events.items[0].imageAlt = "";
   var result = validation.validateAll(data, { today: "2026-08-21" });
-  assert.equal(result.events.length, 0);
+  assert.doesNotMatch(issuesFor(result.events, 0), /alt/i);
 });
 
 test("published events still require the title the alt text is derived from", function () {
@@ -60,36 +66,48 @@ test("published events still require the title the alt text is derived from", fu
   data.events.items[0].imageAlt = "";
   data.events.items[0].title = "";
   var result = validation.validateAll(data, { today: "2026-08-21" });
-  assert.equal(result.events[0].blocking, true);
-  assert.match(result.events[0].issues.join("\n"), /Title is required/);
+  assert.equal((result.events.find(function (item) { return item.index === 0; }) || {}).blocking, true);
+  assert.match(issuesFor(result.events, 0), /Title is required/);
 });
 
 test("visible Gallery posts require valid Instagram URLs", function () {
   var data = loadData();
   data.gallery.instagramPosts.push({ url: "https://example.com/not-instagram", caption: "Invalid", visible: true });
+  var index = data.gallery.instagramPosts.length - 1;
   var result = validation.validateAll(data, { today: "2026-08-21" });
-  assert.equal(result.gallery[0].blocking, true);
+  assert.equal((result.gallery.find(function (item) { return item.index === index; }) || {}).blocking, true);
 });
 
 test("a visible document without a file is rejected", function () {
   var data = loadData();
   data.documents.items.push({ title: "Parent handbook (2026)", file: "", program: "", visible: true });
+  var index = data.documents.items.length - 1;
   var result = validation.validateAll(data, { today: "2026-08-21" });
-  assert.equal(result.documents[0].blocking, true);
-  assert.match(result.documents[0].issues.join("\n"), /PDF file is required/);
+  assert.equal((result.documents.find(function (item) { return item.index === index; }) || {}).blocking, true);
+  assert.match(issuesFor(result.documents, index), /PDF file is required/);
 });
 
 test("documents may only point at PDFs inside the pdfs folder", function () {
   var data = loadData();
   data.documents.items.push({ title: "Handbook", file: "https://example.com/handbook.pdf", program: "", visible: true });
+  var index = data.documents.items.length - 1;
   var result = validation.validateAll(data, { today: "2026-08-21" });
-  assert.match(result.documents[0].issues.join("\n"), /must be a PDF in the pdfs folder/);
+  assert.match(issuesFor(result.documents, index), /must be a PDF in the pdfs folder/);
 });
 
 test("a hidden document with problems does not block a submission", function () {
   var data = loadData();
   data.documents.items.push({ title: "", file: "", program: "", visible: false });
+  var index = data.documents.items.length - 1;
   var result = validation.validateAll(data, { today: "2026-08-21" });
-  assert.equal(result.documents[0].blocking, false);
+  assert.equal((result.documents.find(function (item) { return item.index === index; }) || {}).blocking, false);
+});
+
+test("an incomplete draft event does not block a submission", function () {
+  var data = loadData();
+  data.events.items.push({ id: "draft-1", type: "event", status: "draft", title: "New event", startDate: "" });
+  var index = data.events.items.length - 1;
+  var result = validation.validateAll(data, { today: "2026-08-21" });
+  assert.equal((result.events.find(function (item) { return item.index === index; }) || {}).blocking, false);
   assert.equal(result.summary.errors, 0);
 });
