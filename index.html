@@ -30,8 +30,8 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=25" />
 
   <!-- ============ LocalBusiness structured data (helps Google show address, hours, phone) ============ -->
   <!-- ✏️ EDIT: confirm openingHours and the live domain before launch -->
@@ -83,7 +83,7 @@
   }
   </script>
 </head>
-<body>
+<body class="home-page">
 
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
@@ -197,9 +197,11 @@
   <!-- ============ PROGRAMS ============ -->
   <section id="programs" class="section">
     <div class="container">
-      <h2 class="section-title">Our programs</h2>
-      <p class="section-lead">From age 2½ through high school AP credit, in Chinese or Japanese. Year-round enrollment.</p>
-      <div class="hub-grid home-program-grid">
+      <div class="home-section-heading" data-home-reveal>
+        <h2 class="section-title">Find the right place to begin</h2>
+        <p class="section-lead">Chinese or Japanese, from a first classroom experience through high school AP preparation.</p>
+      </div>
+      <div class="hub-grid home-program-grid" data-home-reveal-group>
         <a class="hub-card" href="preschool.html" aria-label="View Preschool Immersion details">
           <img src="images/apls-writing-1.webp" alt="APLS preschool student practicing writing at her desk" loading="lazy" />
           <div class="hub-body">
@@ -290,43 +292,38 @@
 
   <!-- ============ WHY APLS ============ -->
   <section id="why" class="section section-alt">
-    <div class="container">
-      <h2 class="section-title">Why families choose APLS</h2>
-      <p class="section-lead">A warm, accredited language journey with experienced teachers and a clear path from preschool onward.</p>
-      <div class="cards home-proof-cards">
-        <div class="card">
-          <div class="card-icon">🧑‍🏫</div>
+    <div class="container home-story-grid">
+      <div class="home-story-photos" aria-label="Life at APLS" data-home-reveal-group>
+        <img src="images/apls-japanese-lesson.webp" alt="APLS preschoolers learning Japanese together" loading="lazy" />
+        <img src="images/apls-painting.webp" alt="APLS preschoolers painting during an arts activity" loading="lazy" />
+      </div>
+      <div class="home-story-copy" data-home-reveal>
+        <h2 class="section-title">A school day built around belonging</h2>
+        <p class="section-lead">Children learn another language by using it in a warm community filled with play, stories, art, music, and caring teachers.</p>
+        <div class="home-value-list">
+          <div class="home-value">
           <h3>Small classes, dedicated teachers</h3>
           <!-- ✏️ EDIT: content confirmed with Sharon (low turnover, teachers majored in education) -->
           <p>Small classes average a 1:6 teacher-to-student ratio, with college-educated teachers and low turnover.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">💛</div>
+          </div>
+          <div class="home-value">
           <h3>Warm, kind &amp; joyful</h3>
           <p>Play, music, art, and cultural celebration help children feel safe, known, and excited to learn.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">📚</div>
+          </div>
+          <div class="home-value">
           <h3>Real, lasting fluency</h3>
           <p>An accredited immersion path builds speaking, reading, and writing skills from preschool onward.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">🌱</div>
+          </div>
+          <div class="home-value">
           <h3>Non-profit &amp; affordable</h3>
           <p>As a non-profit school, APLS directs tuition toward teachers, classrooms, and children.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">📅</div>
+          </div>
+          <div class="home-value">
           <h3>A schedule tailored to working families</h3>
           <p>Childcare during select school-break weeks, summer programming, and extended care help working families maintain a steadier routine.</p>
+          </div>
         </div>
       </div>
-      <ul class="chips" aria-label="What sets APLS apart">
-        <li class="chip">🗣️ Chinese &amp;/or Japanese immersion</li>
-
-        <li class="chip">🕐 Flexible scheduling + before &amp; after care</li>
-        <li class="chip">📅 Childcare during select school breaks</li>
-      </ul>
     </div>
   </section>
 
@@ -340,28 +337,30 @@
   </section>
 
   <!-- ============ TESTIMONIALS ============ -->
-  <section class="section section-navy">
+  <section class="section home-testimonials">
     <div class="container">
-      <h2 class="section-title light">What parents say</h2>
-      <div class="quotes">
+      <h2 class="section-title" data-home-reveal>Loved by children. Trusted by parents.</h2>
+      <div class="quotes" data-home-reveal-group>
         <blockquote>
           <p>“My son has really thrived and formed good relationships with his teachers, who are nurturing and caring, with a genuine passion for teaching young children. Not only is he learning to speak Japanese, but in doing so it has improved his English too.”</p>
-          <cite>— Andrea, preschool parent</cite>
+          <cite>Andrea, preschool parent</cite>
         </blockquote>
         <blockquote>
           <p>“Thank you and your Chinese teachers for all of your years of support helping my daughter attain her goal of learning Chinese. If you start young and keep at it, Chinese doesn't have to be such a ‘hard’ language to learn!”</p>
-          <cite>— Peggy, parent of a former student</cite>
+          <cite>Peggy, parent of a former student</cite>
         </blockquote>
       </div>
     </div>
   </section>
 
   <!-- ============ GALLERY TEASER ============ -->
-  <section class="section section-alt">
+  <section class="section section-alt home-gallery-section">
     <div class="container">
-      <h2 class="section-title">A peek inside APLS</h2>
-      <p class="section-lead">Warm classrooms, hands-on activities, and cultural celebrations throughout the year.</p>
-      <div class="gallery-carousel">
+      <div class="home-section-heading" data-home-reveal>
+        <h2 class="section-title">See language come to life</h2>
+        <p class="section-lead">Classroom learning grows through calligraphy, painting, music, stories, and cultural celebrations.</p>
+      </div>
+      <div class="gallery-carousel" data-home-reveal>
         <button type="button" class="gallery-arrow gallery-arrow-prev" aria-label="Previous photo" data-gallery-prev>&#8592;</button>
         <div class="gallery-strip" role="region" aria-label="APLS photo highlights; swipe horizontally or use the arrow buttons to see more">
           <img src="images/photo-calligraphy.webp" alt="APLS student practicing Chinese and Japanese calligraphy with brush and ink" class="gallery-tile" width="640" height="480" decoding="async" />
@@ -377,18 +376,24 @@
 
   <!-- ============ ENROLLMENT / TOUR ============ -->
   <section id="contact" class="section section-alt">
-    <div class="container home-cta-grid">
-      <div class="contact-form-wrap tour-card">
-        <h3>Enrollment &amp; contact</h3>
-        <p>Year-round enrollment. Find tuition, application forms, the school calendar, and all the ways to reach us &mdash; in one place.</p>
-        <a href="enrollment.html" class="btn btn-primary btn-lg">Go to Enrollment</a>
-        <p class="small">Questions? <a href="contact.html">Contact us</a> &middot; <a href="tel:+14257474172">425-747-4172</a></p>
+    <div class="container home-visit-grid">
+      <div class="home-visit-photo" data-home-reveal>
+        <img src="images/photo-outdoor-2.webp" alt="APLS students raising their hands during a classroom puppet lesson" loading="lazy" />
       </div>
-      <div class="contact-form-wrap tour-card">
-        <h3>Schedule a tour</h3>
-        <p>The best way to know APLS is to visit. Choose an available time and share a few details in one short booking form.</p>
-        <a href="tour.html" class="btn btn-primary btn-lg">Schedule a Tour</a>
-        <p class="small">Prefer to call? <a href="tel:+14257474172">425-747-4172</a></p>
+      <div class="home-visit-copy" data-home-reveal>
+        <p class="eyebrow">Come visit us</p>
+        <h2>Picture your child at APLS.</h2>
+        <p>Meet our teachers, see the classrooms, and talk through the language and schedule options that fit your family.</p>
+        <div class="home-visit-actions">
+          <a href="tour.html" class="btn btn-primary btn-lg">Schedule a Tour</a>
+          <a href="enrollment.html" class="btn btn-ghost btn-lg">Enrollment Details</a>
+        </div>
+        <nav class="home-parent-links" aria-label="Parent resources">
+          <a href="tuition.html">Tuition</a>
+          <a href="calendar.html">School calendar</a>
+          <a href="forms.html">Forms</a>
+          <a href="contact.html">Contact us</a>
+        </nav>
       </div>
     </div>
   </section>
@@ -424,6 +429,48 @@
   </footer>
 
   <script>
+    // Lightweight homepage motion. Content remains visible without JavaScript.
+    (function () {
+      var page = document.querySelector('.home-page');
+      if (!page || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      var reveals = Array.prototype.slice.call(document.querySelectorAll('[data-home-reveal], [data-home-reveal-group]'));
+
+      document.querySelectorAll('[data-home-reveal-group]').forEach(function (group) {
+        Array.prototype.forEach.call(group.children, function (item, index) {
+          item.style.setProperty('--home-reveal-order', index);
+        });
+      });
+
+      page.classList.add('home-motion-ready');
+
+      window.setTimeout(function () {
+        page.classList.add('home-intro-complete');
+      }, 1100);
+
+      if (document.hidden || !('IntersectionObserver' in window)) {
+        page.classList.add('home-intro-complete');
+        reveals.forEach(function (item) { item.classList.add('is-visible'); });
+        return;
+      }
+
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) return;
+        page.classList.add('home-intro-complete');
+        reveals.forEach(function (item) { item.classList.add('is-visible'); });
+      }, { once: true });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.14, rootMargin: '0px 0px -8% 0px' });
+
+      reveals.forEach(function (item) { observer.observe(item); });
+    })();
+
     // Auto-rotating hero banner slideshow
     (function () {
       var slides = document.querySelectorAll('.hero-slideshow .hero-slide');
@@ -454,15 +501,15 @@
       function scrollGallery(direction) {
         var tile = strip.querySelector('.gallery-tile');
         var gap = parseFloat(getComputedStyle(strip).gap) || 0;
-        var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         strip.scrollBy({
           left: direction * (tile.getBoundingClientRect().width + gap),
-          behavior: reducedMotion ? 'auto' : 'smooth'
+          behavior: 'auto'
         });
+        updateArrows();
       }
 
-      previous.addEventListener('click', function () { scrollGallery(-1); });
-      next.addEventListener('click', function () { scrollGallery(1); });
+      previous.onclick = function () { scrollGallery(-1); };
+      next.onclick = function () { scrollGallery(1); };
       strip.addEventListener('scroll', updateArrows, { passive: true });
       window.addEventListener('resize', updateArrows);
       updateArrows();
@@ -476,6 +523,6 @@
   <script src="data/teachers.js"></script>
   <script src="js/apls-render.js?v=12"></script>
   <script src="data/chat-knowledge.js"></script>
-  <script src="js/chatbox.js?v=4"></script>
+  <script src="js/chatbox.js?v=5"></script>
 </body>
 </html>

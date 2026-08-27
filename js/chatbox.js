@@ -131,16 +131,25 @@
     document.body.appendChild(panel);
     document.body.appendChild(launcher);
 
-    function syncLauncherVisibility() {
-      launcher.hidden = !panel.hidden;
+    var heroActions = document.querySelector(".hero-actions");
+    var homeHero = document.querySelector(".home-page .hero");
+    var mobileViewport = window.matchMedia("(max-width: 560px)");
+
+    function homeHeroBlocksLauncher() {
+      if (!homeHero || !mobileViewport.matches) return false;
+      var bounds = homeHero.getBoundingClientRect();
+      return bounds.bottom > 12 && bounds.top < window.innerHeight - 12;
     }
 
-    var heroActions = document.querySelector(".hero-actions");
-    var mobileViewport = window.matchMedia("(max-width: 560px)");
+    function syncLauncherVisibility() {
+      launcher.hidden = !panel.hidden || homeHeroBlocksLauncher();
+    }
+
     if (heroActions) {
       var updateHeroOffset = function () {
         launcher.style.removeProperty("bottom");
-        if (!mobileViewport.matches || !panel.hidden) return;
+        syncLauncherVisibility();
+        if (!mobileViewport.matches || !panel.hidden || launcher.hidden) return;
         var bounds = heroActions.getBoundingClientRect();
         var margin = 12;
         var launcherHeight = launcher.offsetHeight || 52;
