@@ -423,6 +423,8 @@ a.program h3 { color: var(--navy); }
 .step .btn { margin-top: .2rem; }
 
 /* ---------- Tour booking ---------- */
+.tour-booking-container { max-width: 1080px; }
+.tour-booking-widget { height: 650px; }
 .booking-placeholder { display: flex; flex-direction: column; gap: .4rem; align-items: center; text-align: center; background: var(--peach); border: 2px dashed var(--red); border-radius: var(--radius); padding: 2.4rem 1.4rem; margin: 0 0 1.2rem; }
 .booking-placeholder strong { color: var(--navy); font-size: 1.05rem; }
 .booking-placeholder span { color: var(--muted); font-size: .95rem; }
@@ -450,6 +452,7 @@ a.program h3 { color: var(--navy); }
 .tour-mini-steps { list-style: none; margin: 0 0 1.3rem; padding: 0; display: flex; flex-direction: column; gap: .6rem; }
 .tour-mini-steps li { display: flex; align-items: center; gap: .6rem; font-weight: 600; color: var(--text); }
 .tour-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1.2rem 0 0; }
+@media (max-width: 640px) { .tour-booking-widget { height: 800px; } }
 
 /* ---------- FAQ accordion ---------- */
 .faq { display: grid; gap: .8rem; }

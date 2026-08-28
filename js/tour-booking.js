@@ -55,10 +55,10 @@
 
   function renderCal() {
     widget.id = widget.id || 'apls-cal-inline';
+    widget.className = 'tour-booking-widget';
     widget.style.minWidth = '320px';
     widget.style.width = '100%';
-    widget.style.height = '700px';
-    widget.style.overflow = 'auto';
+    widget.style.overflow = 'visible';
 
     // Load the Cal.com embed loader once (official snippet).
     (function (C, A, L) {
@@ -104,10 +104,9 @@
   }
 
   function renderCalendly() {
-    widget.className = 'calendly-inline-widget';
+    widget.className = 'calendly-inline-widget tour-booking-widget';
     widget.setAttribute('data-url', calendlyUrl);
     widget.style.minWidth = '320px';
-    widget.style.height = '700px';
 
     var s = document.createElement('script');
     s.src = 'https://assets.calendly.com/assets/external/widget.js';
