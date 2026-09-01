@@ -400,6 +400,17 @@ a.program h3 { color: var(--navy); }
   .hub-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
   .program-filter { padding: .65em .9em; }
 }
+@media (max-width: 600px) {
+  .home-program-grid {
+    display: flex; align-items: stretch; gap: .85rem;
+    margin-right: -20px; padding-right: 20px; padding-bottom: .75rem;
+    overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .home-program-grid::-webkit-scrollbar { display: none; }
+  .home-program-grid .hub-card { flex: 0 0 86%; height: auto; align-self: stretch; scroll-snap-align: start; }
+  .home-program-grid .hub-card img { aspect-ratio: 16 / 10; }
+}
 
 /* ---------- Enrollment hub cards ---------- */
 .enroll-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; }
