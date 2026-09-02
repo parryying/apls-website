@@ -87,6 +87,12 @@
 
     var ns = 'apls-tour';
     window.Cal('init', ns, { origin: 'https://cal.com' });
+    if (window.APLS_ANALYTICS && window.APLS_ANALYTICS.registerCalTracking && window.APLS_ANALYTICS.trackEvent) {
+      window.APLS_ANALYTICS.registerCalTracking(window.Cal.ns[ns], function (eventName, parameters) {
+        parameters.page_path = window.location.pathname;
+        window.APLS_ANALYTICS.trackEvent(eventName, parameters);
+      });
+    }
 
     function draw() {
       var config = { layout: 'month_view' };

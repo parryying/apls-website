@@ -20,6 +20,7 @@ pages=(
   japanese.html
   kindergarten.html
   preschool.html
+  privacy.html
   programs.html
   saturday-school.html
   summer-camp.html

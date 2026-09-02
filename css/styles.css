@@ -629,6 +629,49 @@ a.program h3 { color: var(--navy); }
 .footer-col a:hover { color: #fff; }
 .footer-note .small { font-size: .82rem; color: #9db0a5; }
 
+/* ---------- Analytics consent ---------- */
+.analytics-consent-banner {
+  position: fixed; inset: auto 0 0; z-index: 100;
+  padding: 1rem; background: rgba(51, 70, 60, .98); color: var(--white);
+  box-shadow: 0 -8px 28px rgba(20, 28, 24, .24);
+}
+.analytics-consent-banner[hidden], .cookie-settings-dialog[hidden] { display: none; }
+.analytics-consent-body {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .5rem 1.25rem;
+  width: min(100%, var(--maxw)); margin: 0 auto;
+}
+.analytics-consent-body h2 { grid-column: 1; margin: 0; color: var(--white); font-size: 1.15rem; }
+.analytics-consent-body p { grid-column: 1; margin: 0; max-width: 72ch; font-size: .9rem; line-height: 1.45; }
+.analytics-consent-body > a { grid-column: 1; width: fit-content; color: var(--white); font-size: .85rem; text-decoration: underline; }
+.analytics-consent-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+.analytics-consent-body .analytics-consent-actions { grid-column: 2; grid-row: 1 / span 3; justify-content: flex-end; }
+.analytics-consent-banner .btn-ghost { border-color: var(--white); color: var(--white); }
+.cookie-settings-dialog {
+  position: fixed; inset: 0; z-index: 120; display: grid; place-items: center;
+  padding: 20px; background: rgba(20, 28, 24, .62);
+}
+.cookie-settings-panel {
+  width: min(100%, 520px); padding: 1.5rem; border-radius: 8px;
+  background: var(--white); box-shadow: 0 18px 50px rgba(20, 28, 24, .32);
+}
+.cookie-settings-panel h2 { margin-top: 0; }
+.cookie-settings-panel input { width: 20px; height: 20px; margin: 0 .45rem 0 0; vertical-align: middle; }
+.cookie-settings-panel label { color: var(--navy); font-weight: 800; }
+.cookie-settings-panel .small { margin: .65rem 0 1.25rem; }
+.cookie-settings-panel > a { display: inline-block; margin: 0 0 1.25rem; text-decoration: underline; }
+.cookie-settings-link {
+  position: fixed; left: 12px; bottom: 12px; z-index: 80;
+  padding: .4rem .65rem; border: 1px solid #c9c2b7; border-radius: 6px;
+  background: rgba(255, 255, 255, .94); color: var(--navy); font: inherit; font-size: .75rem; cursor: pointer;
+}
+.analytics-consent-banner:not([hidden]) ~ .cookie-settings-link { display: none; }
+
+@media (max-width: 700px) {
+  .analytics-consent-body { grid-template-columns: 1fr; }
+  .analytics-consent-body .analytics-consent-actions { grid-column: 1; grid-row: auto; justify-content: flex-start; margin-top: .35rem; }
+  .analytics-consent-actions .btn { flex: 1 1 150px; }
+}
+
 /* ---------- Quick-answer chat ---------- */
 .chat-launcher {
   position: fixed; right: 20px; bottom: 20px; z-index: 90;

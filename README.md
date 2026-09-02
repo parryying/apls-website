@@ -47,6 +47,22 @@ does not use an LLM, external API, database, or visitor tracking.
 - Interface behavior lives in `js/chatbox.js` and styles live in `css/styles.css`.
 - Questions without a reliable match direct visitors to the Contact page.
 
+### Analytics and consent
+
+The public site uses an APLS-owned GA4 web stream (`G-8D0PYTZKJV`) only after
+the visitor allows analytics. `js/analytics.js` owns the consent UI, 12-month
+choice storage, GA4 loading, event allowlist, and privacy-safe parameter
+filtering. Do not add a Google tag directly to page `<head>` elements.
+
+- `Accept analytics` loads GA4; `Cookie settings` can leave analytics off.
+- Google Signals and ad-personalization flags are sent only after consent.
+- Never send contact values, child information, form/chat text, booking
+	payloads, or other personal information.
+- `privacy.html` is the public disclosure and must ship with any analytics
+	behavior change.
+- Run `npm run test:analytics` after changing analytics, public pages, the
+	sitemap, or deployment packaging.
+
 ### CMS preview
 
 Open `cms/index.html` to use the local fallback editor for programs, tuition,
