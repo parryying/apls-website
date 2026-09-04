@@ -123,3 +123,31 @@ Disallowed:
 - full tour notes
 - plaintext action tokens
 - API/webhook secrets
+
+## Agent Interactions
+
+Add a dedicated operational tab for Sharon-initiated agent usage that is not a proactive follow-up decision.
+
+One row per Q&A or staff-initiated assistant interaction.
+
+Recommended fields:
+- `interaction_id`
+- `prospect_id`
+- `gmail_thread_id`
+- `interaction_type`: FAMILY_QA | FAMILY_SUMMARY | DRAFT_REPLY | ADD_NOTE
+- `question_summary`
+- `answer_summary`
+- `source_summary`
+- `conflict_detected`
+- `communication_id`: populated if a Gmail draft is created
+- `model`
+- `prompt_version`
+- `created_at`
+- `created_by`
+- `status`
+
+Do not store hidden reasoning. Avoid storing full parent email bodies in this tab. The purpose is traceability of assistant usage, not duplication of Gmail content.
+
+### Gmail-thread mapping
+
+`Communications.gmail_thread_id` is the preferred bridge from the current Gmail conversation to the family record. If a thread cannot be resolved uniquely, the assistant should stop and require explicit staff selection rather than guess.
