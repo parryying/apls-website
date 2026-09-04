@@ -101,3 +101,15 @@ Hard requirements:
 - creating a reply draft from Q&A still requires the normal external-send approval policy
 
 Q&A may be available even when a family is opted out, because Sharon may need historical context to respond to an inbound message. However, opt-out remains in force for proactive outreach; the system must distinguish **answering Sharon's internal question** from **initiating new outbound nurture**.
+
+## Gmail thread separation policy
+
+Hard requirements:
+- internal agent notifications must never be inserted into the parent-facing Gmail thread
+- parent-facing AI reply drafts should join the existing parent thread whenever a reliable `gmail_thread_id` exists
+- private rationale, staff notes, lead assessment, and Q&A controls must remain internal
+- before creating a parent draft or internal notification, re-check the Gmail thread for a newer Sharon reply
+- if Sharon already replied, mark the pending action `superseded_by_human_reply` and suppress the draft/notification
+- if Sharon replies manually after an AI draft is created, mark the draft/recommendation obsolete and suppress further reminders
+
+The intended behavior is **human first, agent assist second**.
