@@ -87,3 +87,17 @@ If Sharon skips or overrides an agent recommendation:
 2. Maximum nurture contacts per rolling time window.
 3. Cooldown after Sharon skips a recommendation.
 4. Whether some purely transactional messages may ever be auto-sent without review.
+
+## Family Q&A policy
+
+Q&A is informational and does not itself count as outbound nurture.
+
+Hard requirements:
+- resolve the Gmail thread to a known `prospect_id` before model invocation
+- do not let the model guess family identity
+- show conflicts when CRM, notes, or newer email content disagree
+- do not answer from unrelated families' data
+- school-specific factual claims must come from Approved School Facts
+- creating a reply draft from Q&A still requires the normal external-send approval policy
+
+Q&A may be available even when a family is opted out, because Sharon may need historical context to respond to an inbound message. However, opt-out remains in force for proactive outreach; the system must distinguish **answering Sharon's internal question** from **initiating new outbound nurture**.
