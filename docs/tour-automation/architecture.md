@@ -200,3 +200,53 @@ For factual answers:
 5. approved school facts for school-specific answers
 
 If sources conflict, the agent should surface the conflict instead of silently choosing one.
+
+## 7. Gmail threading and human-first handling
+
+### Thread separation
+
+There are two different communication channels:
+
+1. **Parent thread** — external conversation between APLS and the family.
+2. **Internal agent notification** — private staff assistance for Sharon.
+
+These must not be mixed.
+
+```text
+Parent Gmail thread
+  parent message
+  prior Sharon replies
+  agent-created parent reply draft  <-- joins this thread
+
+Separate internal notification
+  family context
+  why help may be useful
+  Ask about this family / Draft reply / Add note
+```
+
+Internal explanations, agent rationale, lead assessments, and staff notes must never be inserted into the parent thread.
+
+### Human-first race handling
+
+When a parent replies, the system should give Sharon the opportunity to answer normally before escalating agent help.
+
+```text
+PARENT_REPLY_RECEIVED
+        |
+        v
+WAITING_FOR_HUMAN_RESPONSE
+        |
+   +----+----+
+   |         |
+Sharon    no reply / help needed
+replies       |
+   |          v
+   v     AGENT_HELP_ELIGIBLE
+HANDLED       |
+BY_SHARON     v
+         recommend / draft / notify
+```
+
+Before creating a draft or internal notification, perform a final Gmail thread check. If Sharon has already sent a newer message, cancel the pending action and mark it `superseded_by_human_reply`.
+
+If an AI draft already exists and Sharon replies manually from the parent thread, mark the draft/recommendation obsolete and stop reminders for that action.
