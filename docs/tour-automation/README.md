@@ -60,3 +60,11 @@ That action opens a tiny mobile-friendly page tied to the current Gmail thread a
 - Draft a reply using this context.
 
 The agent answers from the CRM, tour notes, communication history, and relevant approved school facts. It may then create a real Gmail reply draft. Sharon remains in control of sending.
+
+## Gmail threading rule
+
+Internal agent explanations must stay **outside** the parent-facing Gmail thread. They are private staff guidance and could contain notes that should never be exposed to a family.
+
+Any agent-generated reply intended for the parent should attach to the **existing parent Gmail thread whenever one exists**, so Sharon sees the full conversation immediately above the draft and does not lose context.
+
+If Sharon replies manually before the agent finishes, the pending AI recommendation/draft is superseded and no additional agent notification should be sent unless there is another clear reason to help.
