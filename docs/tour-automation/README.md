@@ -46,3 +46,17 @@ The Sheet remains the operational source of truth; these Markdown documents expl
 - Every recommendation must be explainable in a short human-readable summary.
 - Parent-facing email is never sent autonomously in the initial design.
 - Exact nurture cadence is configurable and should not be invented by the model.
+
+## Family Q&A assistant
+
+When a parent replies and Sharon wants context, the internal notification should include **Ask about this family**.
+
+That action opens a tiny mobile-friendly page tied to the current Gmail thread and resolved `prospect_id`. Sharon can ask natural-language questions such as:
+- What is the child's name?
+- When do they want to start?
+- What did we talk about during the tour?
+- What concerns did they mention?
+- What have we already told them?
+- Draft a reply using this context.
+
+The agent answers from the CRM, tour notes, communication history, and relevant approved school facts. It may then create a real Gmail reply draft. Sharon remains in control of sending.
