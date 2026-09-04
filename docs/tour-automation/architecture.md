@@ -149,3 +149,54 @@ If the model is unavailable or returns invalid output:
 - record a sanitized failure
 - retry only according to bounded retry rules
 - deterministic booking/tour processing continues without the agent
+
+## 6. Family Q&A flow
+
+A parent reply can also trigger a context-assistant workflow without forcing Sharon into the CRM.
+
+```text
+Parent replies in Gmail
+        |
+        v
+Resolve Gmail thread -> prospect_id
+        |
+        v
+Load bounded family context
+CRM + tour notes + prior communication metadata
+        |
+        v
+Sharon taps "Ask about this family"
+        |
+        v
+Small Apps Script Q&A page
+        |
+        +--> agent answers question
+        |
+        +--> optional "Draft reply"
+                 |
+                 v
+          real Gmail reply draft
+                 |
+                 v
+           Sharon reviews/sends
+```
+
+### Thread-to-family resolution
+
+The backend should resolve the current Gmail thread to a known family before invoking the agent. Preferred matching order:
+1. existing `gmail_thread_id` in Communications
+2. known sender email mapped to a single active prospect
+3. explicit staff selection if ambiguous
+
+Do not let the model guess which family a thread belongs to.
+
+### Q&A source precedence
+
+For factual answers:
+1. latest parent email/reply
+2. structured CRM fields
+3. Sharon's tour notes
+4. prior communication history
+5. approved school facts for school-specific answers
+
+If sources conflict, the agent should surface the conflict instead of silently choosing one.
