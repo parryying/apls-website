@@ -149,3 +149,25 @@ Implementation:
 - opted-out family can still be summarized internally after inbound contact, but no proactive nurture is created
 - Draft Reply creates a real Gmail draft and does not send automatically
 - Q&A page works on Sharon's desktop and iPhone
+
+## Gmail threading + race-condition implementation
+
+Before enabling inbound-reply assistance:
+
+1. Preserve `gmail_thread_id` for every known family conversation.
+2. Create parent-facing reply drafts in the existing Gmail thread whenever possible.
+3. Send internal agent notifications as separate staff-only messages.
+4. Add a human-first waiting state after inbound parent replies.
+5. Re-check the Gmail thread immediately before draft/notification creation.
+6. If Sharon has already sent a newer reply, mark the action `SupersededByHumanReply` and stop.
+7. Reconcile pending AI drafts against later manual Sharon replies and suppress obsolete reminders.
+
+### Threading tests
+
+- AI parent reply draft appears in the correct existing Gmail thread
+- internal agent notification is never inserted into the parent thread
+- internal rationale cannot be accidentally sent as part of the family conversation
+- Sharon manual reply before AI completion suppresses pending draft and notification
+- Sharon manual reply after AI draft creation marks the AI action obsolete
+- no duplicate reminder occurs for an already handled parent reply
+- thread mismatch/ambiguity stops automation rather than guessing
