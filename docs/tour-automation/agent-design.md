@@ -140,3 +140,69 @@ Track:
 - suppression violations (target: zero)
 
 The goal is not maximum outreach. The goal is useful, respectful follow-up with less staff burden.
+
+## Family Q&A capability
+
+The same agent also serves as a **family context assistant** when Sharon wants to remember who a family is or what was previously discussed.
+
+### Entry point
+
+Internal notification email includes:
+- Family Summary
+- Ask about this family
+- Draft Reply
+- Add Note
+
+**Ask about this family** opens a minimal Apps Script page with one text box. Sharon can type a natural-language question without opening the CRM.
+
+Example questions:
+- What is the child's name?
+- When do they expect to start?
+- What did we talk about at the tour?
+- What were their concerns?
+- What did we already tell them?
+- Draft a reply to their latest email.
+
+### Q&A contract
+
+Before answering, backend code resolves the Gmail thread to `prospect_id`. The agent then receives only the target family's bounded context.
+
+The agent may answer using:
+- structured CRM facts
+- child/program/start-date data
+- tour notes
+- relevant prior communication metadata or bounded excerpts/summaries
+- the latest parent reply
+- approved school facts
+
+For conflicting information, answers should explicitly identify the discrepancy, for example:
+
+> CRM says January 2027, but the latest parent email says spring 2027.
+
+The agent must not silently reconcile conflicting facts.
+
+### Q&A response shape
+
+Suggested machine-validated response:
+
+```json
+{
+  "answer": "concise answer for Sharon",
+  "source_summary": ["CRM", "Tour notes", "Latest parent reply"],
+  "conflict_detected": false,
+  "suggested_next_action": "NONE | DRAFT_REPLY | ADD_NOTE"
+}
+```
+
+Do not expose chain-of-thought. `source_summary` identifies the operational source categories only.
+
+### Draft reply from Q&A
+
+If Sharon chooses **Draft reply using this context**:
+1. reuse the resolved `prospect_id` and Gmail thread
+2. load approved school facts if needed
+3. create a real Gmail reply draft in the same thread where possible
+4. record the draft in Communications
+5. require Sharon review before send
+
+The Q&A page should never require copy/paste.
