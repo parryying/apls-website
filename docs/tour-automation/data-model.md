@@ -151,3 +151,16 @@ Do not store hidden reasoning. Avoid storing full parent email bodies in this ta
 ### Gmail-thread mapping
 
 `Communications.gmail_thread_id` is the preferred bridge from the current Gmail conversation to the family record. If a thread cannot be resolved uniquely, the assistant should stop and require explicit staff selection rather than guess.
+
+## Threading and supersession state
+
+Use existing `Communications.gmail_thread_id` to keep parent-facing reply drafts attached to the correct family conversation.
+
+Recommended additions to agent/communication state:
+- `superseded_by_message_id`
+- `superseded_at`
+- status value `SupersededByHumanReply`
+
+These fields/statuses allow the system to cancel stale AI help when Sharon answers manually.
+
+Internal agent notifications should not reuse the parent's `gmail_thread_id`; they are separate private staff communications.
