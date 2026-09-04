@@ -206,3 +206,39 @@ If Sharon chooses **Draft reply using this context**:
 5. require Sharon review before send
 
 The Q&A page should never require copy/paste.
+
+## Gmail threading behavior
+
+### Parent-facing drafts
+
+When replying to an existing family conversation, the backend should create the draft in the **same Gmail thread** whenever Gmail thread metadata is available.
+
+Implementation should preserve the existing conversation context by using the known `gmail_thread_id` and the appropriate reply headers/subject semantics required by Gmail.
+
+### Internal agent messages
+
+Internal explanations to Sharon must remain separate from the family thread.
+
+Never place the following inside the parent thread:
+- why-now rationale
+- lead temperature or agent assessment
+- internal notes
+- suggested strategy
+- private family summary
+- Ask about this family controls
+
+This separation reduces the risk of accidentally sending internal content to a parent.
+
+### Sharon replies first
+
+The agent should not compete with Sharon.
+
+On inbound parent reply:
+1. resolve thread and family
+2. enter a short human-first pending state
+3. check whether Sharon has already replied
+4. only surface agent help if still useful
+5. immediately before draft/notification creation, check the thread again
+6. if Sharon already replied, record `superseded_by_human_reply` and do nothing else
+
+If Sharon later replies manually while an AI draft is pending, the pending draft/recommendation becomes obsolete and should no longer generate reminders.
