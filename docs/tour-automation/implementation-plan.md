@@ -122,3 +122,30 @@ Before production nurture is enabled, choose:
 - any transactional messages that may later be auto-sent
 
 Until chosen, keep long-horizon cadence policy in `Needs decision` state.
+
+## Phase 2A — family Q&A assistant
+
+Add the **Ask about this family** workflow before more autonomous nurture features.
+
+Implementation:
+1. Internal Sharon email includes Ask about this family.
+2. Signed link opens a small Apps Script page.
+3. Backend resolves Gmail thread -> `prospect_id`.
+4. Page loads a one-family bounded context package.
+5. Sharon asks a natural-language question.
+6. Agent returns concise answer + source categories + conflict flag.
+7. Sharon may choose Draft Reply or Add Note.
+8. Draft Reply creates a real Gmail reply draft and records it in Communications.
+9. Interaction metadata is recorded in Agent Interactions.
+
+### Family Q&A tests
+
+- known Gmail thread resolves to correct prospect
+- ambiguous sender/thread does not cause model guessing
+- unrelated family data is never included
+- latest parent reply overrides stale assumptions but conflicts are surfaced
+- child name/start date/tour notes can be answered from CRM
+- approved school facts are used for school-specific questions
+- opted-out family can still be summarized internally after inbound contact, but no proactive nurture is created
+- Draft Reply creates a real Gmail draft and does not send automatically
+- Q&A page works on Sharon's desktop and iPhone
