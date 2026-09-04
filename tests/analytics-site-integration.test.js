@@ -25,7 +25,7 @@ test("every public sitemap page ships the consent-gated analytics controller", f
   pages.forEach(function (page) {
     var html = fs.readFileSync(path.join(repositoryRoot, page), "utf8");
     assert.match(html, /<script src="js\/analytics\.js\?v=1"><\/script>/, page + " loads analytics consent");
-    assert.match(html, /<link rel="stylesheet" href="css\/styles\.css\?v=22" \/>/, page + " loads consent styles");
+    assert.match(html, /<link rel="stylesheet" href="css\/styles\.css\?v=23" \/>/, page + " loads consent styles");
   });
 });
 
